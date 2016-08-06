@@ -1,0 +1,20 @@
+language: scala
+sudo: false
+# usamos una version de java mas reciente dado que la actual falla
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
+scala:
+  - 2.11.7
+jdk:
+  - oraclejdk8
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+before_cache:
+  # nos aseguramos de que los cambios en la cache no persisten
+  - rm -rf $HOME/.ivy2/cache/com.typesafe.play/*
+  - rm -rf $HOME/.ivy2/cache/scala_*/sbt_*/com.typesafe.play/*
+  # borramos todos los archivos de ivydata ya que se tocan en cada build
+  - find $HOME/.ivy2/cache -name "ivydata-*.properties" -print0 | xargs -n10 -0 rm

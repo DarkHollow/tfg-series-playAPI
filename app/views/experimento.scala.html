@@ -1,0 +1,20 @@
+@import twitter4j.Status
+@(tweets: List[Status], message: String)
+@main("Experimento") {
+
+  <div>
+    <a href="experimentos">Volver al listado de experimentos</a>
+    @if(tweets.size() == 0) {
+      <h4>No se han encontrado tweets</h4>
+    } else {
+      <h4>@message</h4>
+      <h4>Listando @tweets.size() tweets:</h4>
+      <ul>
+        @for(tweet <- tweets) {
+          <li><strong>@tweet.getUser().getScreenName()</strong>: @tweet.getText()</li>
+        }
+      </ul>
+    }
+  </div>
+
+}

@@ -18,3 +18,7 @@ GET   /experimento1                 controllers.Experimentos.experimento1
 GET   /experimento2                 controllers.Experimentos.experimento2
 GET   /experimento3                 controllers.Experimentos.experimento3
 GET   /experimento4                 controllers.Experimentos.experimento4
+GET   /experimento5                 controllers.Experimentos.experimento5
+
+GET   /experimentoTVDB1             controllers.Experimentos.formBuscaTVDB
+POST  /experimentoTVDB1             controllers.Experimentos.buscaTVDB

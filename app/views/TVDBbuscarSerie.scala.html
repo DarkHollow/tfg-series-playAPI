@@ -1,0 +1,46 @@
+@(busqueda: String, series: com.fasterxml.jackson.databind.JsonNode)
+
+@import com.fasterxml.jackson.databind.JsonNode
+
+@main("Buscar serie") {
+  <a href="experimentos">Volver al listado de experimentos</a>
+  <h3>Buscar serie en TVDB</h3>
+
+  @helper.form(action = routes.Experimentos.buscaTVDB()) {
+    <input id="seriesName" name="seriesName" value="@busqueda" placeholder="Nombre de la serie">
+    <input type="submit" value="Buscar">
+  }
+
+  @if(series != null) {
+    @if(series.has("Error")) {
+      <p>Error, serie no encontrada o parámetros inválidos.</p>
+    }
+
+
+
+    @if(series.isObject()) {
+      @defining(series.findValuesAsText("seriesName")) { listaSeries=>
+        @defining(series.findValuesAsText("banner")) { listaBanners=>
+          <h3>Series encontradas</h3>
+
+          @for((s, b) <- (listaSeries zip listaBanners)) {
+            <div style="border: 1px solid grey; border-radius: 2px; margin-bottom: 4px; width: 760px;">
+              <p>@s</p>
+              <img src="http://thetvdb.com/banners/@b" />
+            </div>
+          }
+
+        }
+
+      }
+    }
+
+    @if(series.isArray()) {
+      <p>Es un array</p>
+    }
+
+    @if(series.isValueNode()) {
+      <p>Es un value node</p>
+    }
+  }
+}

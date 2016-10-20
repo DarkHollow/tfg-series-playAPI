@@ -14,7 +14,7 @@ Branches
 ## develop [![Build Status](https://travis-ci.org/DarkHollow/tfg-series-playAPI.svg?branch=develop)](https://travis-ci.org/DarkHollow/tfg-series-playAPI)
 
 ##### sprint 1
-- [![Merge](/doc/git-merge.svg) f1-persistencia: added persistence with MySQL](https://github.com/DarkHollow/tfg-series-playAPI/commit/afae5affa2267e11c7a0213d91c4126007203b21)
+- [![Merge](/doc/git-merge.png) f1-persistencia: added persistence with MySQL](https://github.com/DarkHollow/tfg-series-playAPI/commit/afae5affa2267e11c7a0213d91c4126007203b21)
 - f2-loginTVDB
 - f3-buscarSerieTVDB
 

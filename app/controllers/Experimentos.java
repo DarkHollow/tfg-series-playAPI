@@ -25,6 +25,8 @@ import twitter4j.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.concurrent.TimeUnit;
+import java.io.PrintStream;
+import java.io.FileOutputStream;
 
 /**
  * This controller contains an action to handle HTTP requests
@@ -324,9 +326,10 @@ public class Experimentos extends Controller {
         Twitter twitter = tf.getInstance();
 
         List<Status> tweets = new ArrayList<Status>();
+        String hashtag = "#strangerthings";
 
         try {
-          Query query = new Query("#strangerthings");
+          Query query = new Query(hashtag);
           query.setCount(100);
           query.setResultType(Query.RECENT);
           query.setLocale("es");
@@ -347,6 +350,13 @@ public class Experimentos extends Controller {
             float difHoras = diferencia / (60 * 60 * 1000);
             float tweetsHora = tweets.size() / difHoras;
             System.out.println("Tweets por hora: " + tweetsHora);
+
+            // guardar en fichero
+            try (PrintStream ps = new PrintStream(new FileOutputStream("datos.txt", true))) {
+              ps.println(hashtag + " " + tweetsHora);
+            } catch (Exception ex) {
+              System.out.println(ex.getMessage());
+            }
           }
 
         } catch (TwitterException te) {
@@ -355,6 +365,10 @@ public class Experimentos extends Controller {
 
         // devolver
         return ok(experimento.render(tweets, mensaje));
+    }
+
+    public static controllers.Assets.Asset toAsset(String nombre) {
+      return new controllers.Assets.Asset(nombre);
     }
 
     public Result formBuscaTVDB() {

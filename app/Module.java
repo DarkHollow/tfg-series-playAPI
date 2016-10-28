@@ -32,6 +32,8 @@ public class Module extends AbstractModule implements AkkaGuiceSupport {
         bind(Counter.class).to(AtomicCounter.class);
         // Inicializar la clase TVDB para hacer login y mas
         bind(TVDB.class).asEagerSingleton();
+        // bindeamos el actor de TVDB
+        bindActor(TVDBActor.class, "TVDBActor");
     }
 
 }

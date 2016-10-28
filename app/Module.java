@@ -5,6 +5,10 @@ import services.ApplicationTimer;
 import services.AtomicCounter;
 import services.Counter;
 
+import utils.TVDB;
+import actors.TVDBActor;
+import play.libs.akka.AkkaGuiceSupport;
+
 /**
  * This class is a Guice module that tells Guice how to bind several
  * different types. This Guice module is created when the Play
@@ -15,7 +19,7 @@ import services.Counter;
  * adding `play.modules.enabled` settings to the `application.conf`
  * configuration file.
  */
-public class Module extends AbstractModule {
+public class Module extends AbstractModule implements AkkaGuiceSupport {
 
     @Override
     public void configure() {
@@ -26,6 +30,10 @@ public class Module extends AbstractModule {
         bind(ApplicationTimer.class).asEagerSingleton();
         // Set AtomicCounter as the implementation for Counter.
         bind(Counter.class).to(AtomicCounter.class);
+        // Inicializar la clase TVDB para hacer login y mas
+        bind(TVDB.class).asEagerSingleton();
+        // bindeamos el actor de TVDB
+        bindActor(TVDBActor.class, "TVDBActor");
     }
 
 }

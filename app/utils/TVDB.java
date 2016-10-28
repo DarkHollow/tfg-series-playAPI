@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import javax.inject.*;
 import play.libs.ws.*;
+import play.Logger;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 
@@ -44,11 +45,11 @@ public class TVDB {
       JsonNode respuesta = stage.toCompletableFuture().get(5, TimeUnit.SECONDS);
       token = respuesta.get("token").asText();
     } catch (Exception ex) {
-      System.out.println("Excepción: no se ha podido hacer log en TVDB");
+      Logger.error("Excepción: no se ha podido hacer log en TVDB");
       System.out.println(ex.getMessage());
     }
     if (token != null) {
-      System.out.println("Token obtenido");
+      Logger.info("Token obtenido");
     }
   }
 
@@ -61,9 +62,9 @@ public class TVDB {
     try {
       JsonNode respuesta = stage.toCompletableFuture().get(5, TimeUnit.SECONDS);
       token = respuesta.get("token").asText();
-      System.out.println("Token actualizado");
+      Logger.info("Token actualizado");
     } catch (Exception ex) {
-      System.out.println("Excepción: no se ha podido resfrescar token de TVDB");
+      Logger.error("Excepción: no se ha podido resfrescar token de TVDB");
       System.out.println(ex.getMessage());
     }
   }

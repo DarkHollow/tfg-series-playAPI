@@ -9,7 +9,7 @@ public class RootController extends Controller {
 
   public Result index() {
     ObjectNode result = Json.newObject();
-    result.put("root", "API working well");
+    result.put("status", "API working well");
     result.put("API_doc", "http://localhost:9000/api/doc");
     return ok(result);
   }

@@ -1,0 +1,75 @@
+# Example YAML to get you started quickly.
+# Be aware that YAML has indentation based scoping.
+# Code completion support is available so start typing for available options.
+swagger: '2.0'
+
+# This is your document metadata
+info:
+  version: "0.0.1"
+  title: TFG Trending Series v0 `Offline`
+  description: >-
+    The API is accessible via https://darkhollow.github.com/tfg-series-playAPI/
+    and provides the following `REST` endpoints in `JSON` format.
+
+
+
+    How to use this API documentation
+
+    ----------------
+
+
+
+    You may browse the API routes freely without any authentication.
+
+
+    You will NOT be able to use the routes to send requests to the API and
+    get a response because this is a `Offline Documentation` for `Github Pages`.
+
+    Because ofo that, the button `Try it out` is disabled in all the routes.
+
+
+
+    Versioning
+
+    ----------------
+
+
+
+    This documentation automatically uses the version seen at the top and
+    bottom of the page.
+
+
+
+    About this project
+
+    ----------------
+
+
+
+    This [API](https://github.com/DarkHollow/tfg-series-playAPI) and API documentation is part of a `TFG (Final Degree Project)`
+    of Software Engineering by [Roberto Cánovas ![Github](images/github-logo.png)](https://github.com/DarkHollow/) at
+    the University of Alicante (Spain). You can contact me at [Github](https://github.com/DarkHollow/), [e-mail](mailto: rcanovas.corp@gmail.com) or [Twitter](https://twitter.com/RobCanovas).
+
+    ### Status: work in progress
+
+
+basePath: /api
+tags:
+  - name: root
+    description: Status
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /:
+    get:
+      description: >-
+        Status of the API
+      tags:
+        - root
+      responses:
+        '200':
+          description: A JSON response indicating the API's status

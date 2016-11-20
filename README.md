@@ -16,6 +16,7 @@ Branches
 ##### sprint 1
 - [![Merge](/doc/git-merge.png) f1-persistencia](https://github.com/DarkHollow/tfg-series-playAPI/commit/afae5affa2267e11c7a0213d91c4126007203b21) [![Success](/doc/check.png)](https://travis-ci.org/DarkHollow/tfg-series-playAPI/builds/169117350) added persistence with MySQL
 - [![Merge](/doc/git-merge.png) f2-loginTVDB](https://github.com/DarkHollow/tfg-series-playAPI/commit/0d770990d298835e057b4ef3279df0230bfa7b0a) [![Success](/doc/check.png)](https://travis-ci.org/DarkHollow/tfg-series-playAPI/builds/171504480) added log in TVDB on start up and refresh every 12h
+- [![Merge](/doc/git-merge.png) documentacion-swagger](https://github.com/DarkHollow/tfg-series-playAPI/commit/9049dee28153efd6c02b133f2526655eeb4b3dd7) [![Success](/doc/check.png)](https://travis-ci.org/DarkHollow/tfg-series-playAPI/builds/177389040) added Swagger Documentation at http://localhost:9000/api/doc
 - f3-buscarSerieTVDB
 
 ## experiment [![Build Status](https://travis-ci.org/DarkHollow/tfg-series-playAPI.svg?branch=experiment)](https://travis-ci.org/DarkHollow/tfg-series-playAPI)
@@ -23,3 +24,12 @@ Branches
 - /experimentos
 
   Shows a list of runnable experiments
+
+
+How to use it
+=============
+You can simply use this API downloading or cloning this repository and execute in command line
+
+```bash
+$ activator run
+```

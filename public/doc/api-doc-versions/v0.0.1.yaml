@@ -5,11 +5,11 @@ swagger: '2.0'
 
 # This is your document metadata
 info:
-  version: "0.0.0"
-  title: TFG Trending Series v0 `Offline`
+  version: "0.0.1"
+  title: TFG Trending Series v0
   description: >-
-    The API is accessible via https://darkhollow.github.com/tfg-series-playAPI/
-    and provides the following `REST` endpoints in `JSON` format.
+    The API is accessible via http://localhost:9000/api/ and provides the
+    following `REST` endpoints in `JSON` format.
 
 
 
@@ -22,10 +22,8 @@ info:
     You may browse the API routes freely without any authentication.
 
 
-    You will NOT be able to use the routes to send requests to the API and
-    get a response because this is a `Offline Documentation` for `Github Pages`.
-
-    Because ofo that, the button `Try it out` is disabled in all the routes.
+    You will be able to use all the routes to send requests to the API and get
+    a response.
 
 
 

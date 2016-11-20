@@ -11,3 +11,13 @@ GET     /message                    controllers.AsyncController.message
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+
+# API documentation with Swagger
+GET     /api/doc                    controllers.Default.redirect(to = "doc/")
+GET     /api/doc/                   controllers.Assets.at(path="/public/doc", file = "index.html")
+GET     /api/doc/*file              controllers.Assets.at(path="/public/doc", file)
+
+
+# API root
+GET     /api                        controllers.Default.redirect(to = "api/")
+GET     /api/                       controllers.RootController.index

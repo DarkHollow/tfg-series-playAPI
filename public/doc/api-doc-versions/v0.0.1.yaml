@@ -5,10 +5,10 @@ swagger: '2.0'
 
 # This is your document metadata
 info:
-  version: "0.0.1"
+  version: "0.0.2"
   title: TFG Trending Series v0
   description: >-
-    The API is accessible via http://localhost:9000/api/ and provides the
+    The API is accessible via http://localhost:9000/api and provides the
     following `REST` endpoints in `JSON` format.
 
 
@@ -55,6 +55,10 @@ basePath: /api
 tags:
   - name: root
     description: Status
+  - name: Search
+    description: Search for series
+  - name: Series
+    description: Information about a specific series
 schemes:
   - http
 consumes:
@@ -64,10 +68,137 @@ produces:
 paths:
   /:
     get:
-      description: >-
-        Status of the API
       tags:
         - root
+      description: >-
+        Returns the status of the API and a link to the documentation
       responses:
         '200':
-          description: A JSON response indicating the API's status
+          description: JSON response with status and doc link keys
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: status of the API
+              API_doc:
+                type: string
+                description: link to the documentation
+  /search/series/{name}:
+    get:
+      tags:
+        - Search
+      description: >-
+        Allows the user to search for series based on its name (can be partially)
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Name of the series to search for
+          type: string
+      responses:
+        '200':
+          description: JSON response with an array of all results that match partially or exact
+          schema:
+            $ref: '#/definitions/SeriesArray'
+        '404':
+          description: JSON response with 404 Not Found error
+          schema:
+            $ref: '#/definitions/NotFound'
+  /series:
+    get:
+      tags:
+        - Series
+      description: >-
+        Returns basic information about all series (will be deprecated)
+      responses:
+        '200':
+          description: JSON response with an array of all series
+          schema:
+            $ref: '#/definitions/SeriesArray'
+        '404':
+          description: JSON response with 404 Not Found error
+          schema:
+            $ref: '#/definitions/NotFound'
+  /series/{id}:
+    get:
+      tags:
+        - Series
+      description: >-
+        Returns all information about a particular series by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the series
+          type: integer
+      responses:
+        '200':
+          description: JSON response with the information of the series
+          schema:
+            $ref: '#/definitions/Series'
+        '404':
+          description: JSON response with 404 Not Found error
+          schema:
+            $ref: '#/definitions/NotFound'
+definitions:
+  NotFound:
+    properties:
+      error:
+        type: string
+  SeriesArray:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: series id
+        idTVDB:
+          type: integer
+          description: series TVDB id
+        seriesName:
+          type: string
+          description: name of the series
+        firstAired:
+          type: string
+          description: first aired date
+        overview:
+          type: string
+          description: a summary of the series
+        banner:
+          type: string
+          description: relative url of the banner image
+        network:
+          type: string
+          description: network where the series airs
+        status:
+          type: string
+          description: status of the series (continuing or ended)
+  Series:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: series id
+      idTVDB:
+        type: integer
+        description: series TVDB id
+      seriesName:
+        type: string
+        description: name of the series
+      firstAired:
+        type: string
+        description: first aired date
+      overview:
+        type: string
+        description: a summary of the series
+      banner:
+        type: string
+        description: relative url of the banner image
+      network:
+        type: string
+        description: network where the series airs
+      status:
+        type: string
+        description: status of the series (continuing or ended)

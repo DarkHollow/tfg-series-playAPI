@@ -21,3 +21,18 @@ GET     /api/doc/*file              controllers.Assets.at(path="/public/doc", fi
 # API root
 GET     /api                        controllers.Default.redirect(to = "api/")
 GET     /api/                       controllers.RootController.index
+
+
+# API Series
+
+# all series (future pagination?)
+GET     /api/series/                controllers.Default.redirect(to = "../series")
+GET     /api/series                 controllers.SerieController.all
+
+# series by id
+GET     /api/series/:id/            controllers.SerieController.serieById(id: Integer)
+GET     /api/series/:id             controllers.SerieController.serieById(id: Integer)
+
+# series search by LIKE
+GET     /api/search/series/:q/      controllers.SerieController.searchSeriesNameLike(q: String)
+GET     /api/search/series/:q       controllers.SerieController.searchSeriesNameLike(q: String)

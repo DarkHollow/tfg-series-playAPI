@@ -37,11 +37,6 @@ public class SerieService {
     return SerieDAO.all();
   }
 
-  // Update
-  public static Serie update(Serie serie) {
-    return SerieDAO.update(serie);
-  }
-
   // Delete por id
   public static Boolean delete(Integer id) {
     Serie serie = SerieDAO.find(id);

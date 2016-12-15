@@ -56,11 +56,6 @@ public class SerieDAO {
     return JPA.em().createQuery("SELECT s FROM " + TABLE + " s ORDER BY seriesName").getResultList();
   }
 
-  // Update
-  public static Serie update(Serie serie) {
-    return JPA.em().merge(serie);
-  }
-
   // Delete
   public static void delete(Serie serie) {
     JPA.em().remove(serie);

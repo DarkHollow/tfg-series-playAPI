@@ -11,7 +11,7 @@ public class Serie {
   public enum Status { Continuing, Ended }
 
   @Id
-  @GeneratedValue(strategy=GenerationType.AUTO)
+  @GeneratedValue(strategy=GenerationType.IDENTITY)
   public Integer id;
   public Integer idTVDB;
   @Column(length = 100)

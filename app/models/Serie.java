@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.HashSet;
 import play.data.validation.Constraints;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.*;
+import json.SerieViews;
 
 @Entity
 @Table(name = "serie")
@@ -16,25 +18,50 @@ public class Serie {
 
   @Id
   @GeneratedValue(strategy=GenerationType.IDENTITY)
+  @JsonView(SerieViews.SearchSerie.class)
   public Integer id;
+
+  @JsonView(SerieViews.InternalFullSerie.class)
   public Integer idTVDB;
+
   @Column(length = 100)
+  @JsonView(SerieViews.SearchSerie.class)
   public String seriesName;
+
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+  @JsonView(SerieViews.SearchSerie.class)
   public Date firstAired;
+
   @Column(columnDefinition = "text")
+  @JsonView(SerieViews.FullSerie.class)
   public String overview;
+
+  @JsonView(SerieViews.SearchSerie.class)
   public String banner;
+
+  @JsonView(SerieViews.FullSerie.class)
   public String poster;
+
+  @JsonView(SerieViews.FullSerie.class)
   public String fanart;
+
   @Column(length = 50)
+  @JsonView(SerieViews.FullSerie.class)
   public String network;
+
+  @JsonView(SerieViews.FullSerie.class)
   public Integer runtime;
+
+  @JsonView(SerieViews.FullSerie.class)
   @ElementCollection
   public Set<String> genre = new HashSet();
+
+  @JsonView(SerieViews.FullSerie.class)
   public String rating;
+
   // NOTE: error con H2 en test @Column(columnDefinition = "enum('Continuing', 'Ended')")
   @Enumerated(EnumType.STRING)
+  @JsonView(SerieViews.FullSerie.class)
   public Status status;
 
   // constructor vacio

@@ -64,7 +64,8 @@ public class SerieModelDAOTest {
   @Test
   public void testSerieDAOCreate() {
     Serie serie1 = new Serie(3, "Stranger Things", new Date(), "Descripción",
-      "banner.jpg", "Network", Serie.Status.Continuing);
+      "banner.jpg", "poster.jpg", "fanart.jpg", "Network", 45, null, "TV-14",
+      Serie.Status.Continuing);
 
     Serie serie2 = jpa.withTransaction(() -> {
       return SerieDAO.create(serie1);
@@ -76,14 +77,17 @@ public class SerieModelDAOTest {
     assertEquals(serie1.firstAired, serie2.firstAired);
     assertEquals(serie1.overview, serie2.overview);
     assertEquals(serie1.banner, serie2.banner);
+    assertEquals(serie1.poster, serie2.poster);
+    assertEquals(serie1.fanart, serie2.fanart);
     assertEquals(serie1.network, serie2.network);
+    assertEquals(serie1.runtime, serie2.runtime);
+    assertEquals(serie1.rating, serie2.rating);
     assertEquals(serie1.status, serie2.status);
   }
 
   // testeamos buscar por id -> found
   @Test
   public void testSerieDAOFind() {
-
     Serie serie = jpa.withTransaction(() -> {
       return SerieDAO.find(1);
     });

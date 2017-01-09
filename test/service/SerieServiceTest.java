@@ -65,7 +65,8 @@ public class SerieServiceTest {
   @Test
   public void testSerieServiceCreate() {
     Serie serie1 = new Serie(3, "Stranger Things", new Date(), "Descripción",
-      "banner.jpg", "Network", Serie.Status.Continuing);
+      "banner.jpg", "poster.jpg", "fanart.jpg", "Network", 45, null, "TV-14",
+      Serie.Status.Continuing);
 
     Serie serie2 = jpa.withTransaction(() -> {
       return SerieService.create(serie1);

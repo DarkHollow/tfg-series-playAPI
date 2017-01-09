@@ -15,7 +15,9 @@
               arrastrada por su curiosidad y su pasión por el riesgo, abandona
               a su madre y a su novio para convertirse en su compañera de
               fatigas."
-    banner="graphical/78804-g44.jpg" network="BBC One" status="Continuing" />
+    banner="graphical/78804-g44.jpg" poster="posterDoctor.jpg"
+    fanart="fanartDoctor.jpg" network="BBC One" runtime="45" rating="TV-14"
+    status="Continuing" />
 
   <Serie id="2" idTVDB="81189" seriesName="Breaking Bad"
     firstAired="2008-01-20"
@@ -28,5 +30,6 @@
               metanfetamina con su antiguo estudiante Jesse Pinkman para así
               asegurar el bienestar económico de su familia cuando el ya no
               esté."
-    banner="graphical/81189-g21.jpg" network="AMC" status="Ended" />
+    banner="graphical/81189-g21.jpg"  poster="posterBreakingBad.jpg"
+    fanart="fanartBreakingBad.jpg" network="AMC" status="Ended" />
 </dataset>

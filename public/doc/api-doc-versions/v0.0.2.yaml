@@ -217,3 +217,15 @@ definitions:
       status:
         type: string
         description: status of the series (continuing or ended)
+      writer:
+        type: string
+        description: writer or writers of the series
+      actors:
+        type: string
+        description: principal actors of the series
+      imdbRating:
+        type: float
+        description: average rating on imdb of the series
+      trailer:
+        type: string
+        description: YouTube video code of the trailer

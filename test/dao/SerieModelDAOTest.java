@@ -65,7 +65,7 @@ public class SerieModelDAOTest {
   public void testSerieDAOCreate() {
     Serie serie1 = new Serie(3, "Stranger Things", new Date(), "Descripción",
       "banner.jpg", "poster.jpg", "fanart.jpg", "Network", 45, null, "TV-14",
-      Serie.Status.Continuing);
+      Serie.Status.Continuing, "Guionista", "Actor 1, Actor2", (float)9.0, "url_trailer");
 
     Serie serie2 = jpa.withTransaction(() -> {
       return SerieDAO.create(serie1);
@@ -83,6 +83,10 @@ public class SerieModelDAOTest {
     assertEquals(serie1.runtime, serie2.runtime);
     assertEquals(serie1.rating, serie2.rating);
     assertEquals(serie1.status, serie2.status);
+    assertEquals(serie1.writer, serie2.writer);
+    assertEquals(serie1.actors, serie2.actors);
+    assertEquals(serie1.imdbRating, serie2.imdbRating);
+    assertEquals(serie1.trailer, serie2.trailer);
   }
 
   // testeamos buscar por id -> found

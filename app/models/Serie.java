@@ -64,6 +64,18 @@ public class Serie {
   @JsonView(SerieViews.FullSerie.class)
   public Status status;
 
+  @JsonView(SerieViews.FullSerie.class)
+  public String writer;
+
+  @JsonView(SerieViews.FullSerie.class)
+  public String actors;
+
+  @JsonView(SerieViews.FullSerie.class)
+  public Float imdbRating;
+
+  @JsonView(SerieViews.FullSerie.class)
+  public String trailer;
+
   // constructor vacio
   public Serie() {}
 
@@ -71,7 +83,8 @@ public class Serie {
   public Serie(Integer idTVDB, String seriesName, Date firstAired,
               String overview, String banner, String poster, String fanart,
               String network, Integer runtime, Set<String> genre,
-              String rating, Status status) {
+              String rating, Status status, String writer, String actors,
+              Float imdbRating, String trailer) {
 
     this.idTVDB = idTVDB;
     this.seriesName = seriesName;
@@ -85,6 +98,10 @@ public class Serie {
     this.genre = genre;
     this.rating = rating;
     this.status = status;
+    this.writer = writer;
+    this.actors = actors;
+    this.imdbRating = imdbRating;
+    this.trailer = trailer;
   }
 
   // contructor copia
@@ -101,8 +118,13 @@ public class Serie {
     this.genre = serie.genre;
     this.rating = serie.rating;
     this.status = serie.status;
+    this.writer = serie.writer;
+    this.actors = serie.actors;
+    this.imdbRating = serie.imdbRating;
+    this.trailer = serie.trailer;
   }
 
+  // solo informacion importante
   @Override
   public String toString() {
     return "Serie [id=" + id + ", idTVDB=" + idTVDB + ", seriesName="

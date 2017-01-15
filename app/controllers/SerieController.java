@@ -71,27 +71,33 @@ public class SerieController extends Controller {
   // devolver la busqueda de series LIKE
   @Transactional(readOnly = true)
   public Result searchSeriesNameLike(String query) {
-    List<Serie> series = SerieService.findBy("seriesName", query, false);
+    if (query.length() >= 3) {
+      List<Serie> series = SerieService.findBy("seriesName", query, false);
 
-    // si la lista está vacía, not found
-    if (series.isEmpty()) {
+      // si la lista está vacía, not found
+      if (series.isEmpty()) {
+        ObjectNode result = Json.newObject();
+        result.put("error", "Not found");
+        return notFound(result);
+      }
+
+      // si la lista no está vacía, devolvemos datos
+      try {
+        JsonNode jsonNode = Json.parse(new ObjectMapper()
+                                    .writerWithView(SerieViews.SearchSerie.class)
+                                    .writeValueAsString(series));
+        return ok(jsonNode);
+
+      } catch (Exception ex) {
+        // si hubiese un error, devolver error interno
+        ObjectNode result = Json.newObject();
+        result.put("error", "It can't be processed");
+        return internalServerError(result);
+      }
+    } else {
       ObjectNode result = Json.newObject();
-      result.put("error", "Not found");
-      return notFound(result);
-    }
-
-    // si la lista no está vacía, devolvemos datos
-    try {
-      JsonNode jsonNode = Json.parse(new ObjectMapper()
-                                  .writerWithView(SerieViews.SearchSerie.class)
-                                  .writeValueAsString(series));
-      return ok(jsonNode);
-
-    } catch (Exception ex) {
-      // si hubiese un error, devolver error interno
-      ObjectNode result = Json.newObject();
-      result.put("error", "It can't be processed");
-      return internalServerError(result);
+      result.put("error", "Bad request");
+      return badRequest(result);
     }
   }
 

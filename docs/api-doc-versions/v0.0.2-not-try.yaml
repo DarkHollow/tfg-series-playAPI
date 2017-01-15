@@ -103,6 +103,10 @@ paths:
           description: JSON response with an array of all results that match partially or exact
           schema:
             $ref: '#/definitions/SeriesArray'
+        '400':
+          description: JSON response with 400 Bad request error (less than 3 characters searched or empty query)
+          schema:
+            $ref: '#/definitions/BadRequest'
         '404':
           description: JSON response with 404 Not Found error
           schema:
@@ -156,6 +160,10 @@ paths:
           schema:
             $ref: '#/definitions/InternalServerError'
 definitions:
+  BadRequest:
+    properties:
+      error:
+        type: string
   NotFound:
     properties:
       error:

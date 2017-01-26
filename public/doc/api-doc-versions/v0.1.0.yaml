@@ -1,0 +1,239 @@
+# Example YAML to get you started quickly.
+# Be aware that YAML has indentation based scoping.
+# Code completion support is available so start typing for available options.
+swagger: '2.0'
+
+# This is your document metadata
+info:
+  version: "0.1.0"
+  title: TFG Trending Series v0
+  description: >-
+    The API is accessible via http://localhost:9000/api and provides the
+    following `REST` endpoints in `JSON` format.
+
+
+
+    How to use this API documentation
+
+    ----------------
+
+
+
+    You may browse the API routes freely without any authentication.
+
+
+    You will be able to use all the routes to send requests to the API and get
+    a response.
+
+
+
+    Versioning
+
+    ----------------
+
+
+
+    This documentation automatically uses the version seen at the top and
+    bottom of the page.
+
+
+
+    About this project
+
+    ----------------
+
+
+
+    This [API](https://github.com/DarkHollow/tfg-series-playAPI) and API documentation is part of a `TFG (Final Degree Project)`
+    of Software Engineering by [Roberto Cánovas ![Github](images/github-logo.png)](https://github.com/DarkHollow/) at
+    the University of Alicante (Spain). You can contact me at [Github](https://github.com/DarkHollow/), [e-mail](mailto: rcanovas.corp@gmail.com) or [Twitter](https://twitter.com/RobCanovas).
+
+    ### Status: work in progress
+
+
+basePath: /api
+tags:
+  - name: root
+    description: Status
+  - name: Search
+    description: Search for series
+  - name: Series
+    description: Information about a specific series
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /:
+    get:
+      tags:
+        - root
+      description: >-
+        Returns the status of the API and a link to the documentation
+      responses:
+        '200':
+          description: JSON response with status and doc link keys
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: status of the API
+              API_doc:
+                type: string
+                description: link to the documentation
+  /search/series/{name}:
+    get:
+      tags:
+        - Search
+      description: >-
+        Allows the user to search for series based on its name (can be partially)
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Name of the series to search for
+          type: string
+      responses:
+        '200':
+          description: JSON response with an array of all results that match partially or exact
+          schema:
+            $ref: '#/definitions/SeriesArray'
+        '400':
+          description: JSON response with 400 Bad request error (less than 3 characters searched or empty query)
+          schema:
+            $ref: '#/definitions/BadRequest'
+        '404':
+          description: JSON response with 404 Not Found error
+          schema:
+            $ref: '#/definitions/NotFound'
+        '500':
+          description: JSON response with 500 Internal Server error
+          schema:
+            $ref: '#/definitions/InternalServerError'
+  /series:
+    get:
+      tags:
+        - Series
+      description: >-
+        Returns basic information about all series (will be deprecated)
+      responses:
+        '200':
+          description: JSON response with an array of all series
+          schema:
+            $ref: '#/definitions/SeriesArray'
+        '404':
+          description: JSON response with 404 Not Found error
+          schema:
+            $ref: '#/definitions/NotFound'
+        '500':
+          description: JSON response with 500 Internal Server error
+          schema:
+            $ref: '#/definitions/InternalServerError'
+  /series/{id}:
+    get:
+      tags:
+        - Series
+      description: >-
+        Returns all information about a particular series by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the series
+          type: integer
+      responses:
+        '200':
+          description: JSON response with the information of the series
+          schema:
+            $ref: '#/definitions/Series'
+        '404':
+          description: JSON response with 404 Not Found error
+          schema:
+            $ref: '#/definitions/NotFound'
+        '500':
+          description: JSON response with 500 Internal Server error
+          schema:
+            $ref: '#/definitions/InternalServerError'
+definitions:
+  BadRequest:
+    properties:
+      error:
+        type: string
+  NotFound:
+    properties:
+      error:
+        type: string
+  InternalServerError:
+    properties:
+      error:
+        type: string
+  SeriesArray:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: series id
+        seriesName:
+          type: string
+          description: name of the series
+        firstAired:
+          type: string
+          description: first aired date
+        banner:
+          type: string
+          description: relative url of the banner image
+  Series:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: series id
+      seriesName:
+        type: string
+        description: name of the series
+      firstAired:
+        type: string
+        description: first aired date
+      overview:
+        type: string
+        description: a summary of the series
+      banner:
+        type: string
+        description: relative url of the banner image
+      poster:
+        type: string
+        description: relative url of the poster image
+      fanart:
+        type: string
+        description: relative url of the fanart image
+      network:
+        type: string
+        description: network where the series airs
+      runtime:
+        type: integer
+        description: average episode runtime
+      genre:
+        type: array
+        items:
+          type: string
+        description: genres of the series
+      status:
+        type: string
+        description: status of the series (continuing or ended)
+      writer:
+        type: string
+        description: writer or writers of the series
+      actors:
+        type: string
+        description: principal actors of the series
+      imdbRating:
+        type: float
+        description: average rating on imdb of the series
+      trailer:
+        type: string
+        description: YouTube video code of the trailer

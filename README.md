@@ -81,5 +81,5 @@ http://localhost:9000/api/doc
 To access an Offline version of the Swagger API Documentation without the `try it out` buttons in the routes, you can explore it without downloading or cloning the repository browsing
 
 ```
-http://darkhollow.github.com/docs
+http://darkhollow.github.com/tfg-series-playAPI
 ```

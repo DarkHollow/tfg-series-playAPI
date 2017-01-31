@@ -232,7 +232,7 @@ definitions:
         type: string
         description: principal actors of the series
       imdbRating:
-        type: float
+        type: number
         description: average rating on imdb of the series
       trailer:
         type: string

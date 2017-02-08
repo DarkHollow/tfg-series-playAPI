@@ -97,6 +97,28 @@ public class SerieServiceTest {
     assertNull(serie);
   }
 
+  // testeamos buscar por idTVDB
+  @Test
+  public void testSerieServiceFindByIdTvdb() {
+    Serie serie = jpa.withTransaction(() -> {
+      return SerieService.findByIdTvdb(78804);
+    });
+
+    assertEquals(1, (int) serie.id);
+    assertEquals(78804, (int) serie.idTVDB);
+    assertEquals("Doctor Who (2005)", serie.seriesName);
+  }
+
+  // testeamos buscar por idTVDB not found
+  @Test
+  public void testSerieServiceFindByIdTvdbNotFound() {
+    Serie serie = jpa.withTransaction(() -> {
+      return SerieService.findByIdTvdb(000);
+    });
+
+    assertNull(serie);
+  }
+
   // testeamos buscar por campo coincidendo exacto
   @Test
   public void testSerieServiceFindByExact() {

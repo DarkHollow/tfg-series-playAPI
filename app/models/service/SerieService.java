@@ -23,6 +23,11 @@ public class SerieService {
     return SerieDAO.find(id);
   }
 
+  // buscar por idTVDB
+  public static Serie findByIdTvdb(Integer idTVDB) {
+    return SerieDAO.findByIdTvdb(idTVDB);
+  }
+
   // buscar por campo exacto o LIKE
   public static List<Serie> findBy(String field, String value, Boolean exact) {
     if (exact) {

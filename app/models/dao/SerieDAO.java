@@ -31,6 +31,16 @@ public class SerieDAO {
     return JPA.em().find(Serie.class, id);
   }
 
+  // buscar por idTVDB
+  public static Serie findByIdTvdb(Integer idTVDB) {
+    TypedQuery<Serie> query = JPA.em().createQuery("SELECT s FROM " + TABLE + " s WHERE idTVDB = :value", Serie.class);
+    try {
+      return query.setParameter("value", idTVDB).getSingleResult();
+    } catch (NoResultException e) {
+      return null;
+    }
+  }
+
   // buscar por campo exacto
   public static List<Serie> findByExact(String field, String value) {
     TypedQuery<Serie> query = JPA.em().createQuery("SELECT s FROM " + TABLE + " s WHERE " + field + " = :value", Serie.class);

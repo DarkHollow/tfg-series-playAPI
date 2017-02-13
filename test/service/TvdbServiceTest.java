@@ -70,7 +70,7 @@ public class TvdbServiceTest {
 
     running(testServer(3333, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
       browser.goTo("http://localhost:3333");
-      // injector
+      // injector explícito, no podemos usar mocks aquí
       TvdbService tvdbService = Play.current().injector().instanceOf(TvdbService.class);
 
       List<Serie> series = jpa.withTransaction(() -> tvdbService.findOnTVDBby("name", "stranger"));

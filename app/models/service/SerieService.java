@@ -1,52 +1,59 @@
 package models.service;
 
+import com.google.inject.Inject;
 import models.Serie;
 import models.dao.SerieDAO;
-import java.util.ArrayList;
+
 import java.util.List;
-import java.util.Date;
 
 public class SerieService {
+
+  private final SerieDAO serieDAO;
+
+  @Inject
+  public SerieService(SerieDAO serieDAO) {
+    this.serieDAO = serieDAO;
+  }
 
   // CRUD
 
   // Create
-  public static Serie create(Serie serie) {
-    return SerieDAO.create(serie);
+  public Serie create(Serie serie) {
+    return serieDAO.create(serie);
   }
 
   // Read - vamos a hacer varios Read
 
   // Read de busqueda
   // buscar por id
-  public static Serie find(Integer id) {
-    return SerieDAO.find(id);
+  public Serie find(Integer id) {
+    return serieDAO.find(id);
   }
 
   // buscar por idTVDB
-  public static Serie findByIdTvdb(Integer idTVDB) {
-    return SerieDAO.findByIdTvdb(idTVDB);
+  public Serie findByIdTvdb(Integer idTVDB) {
+    return serieDAO.findByIdTvdb(idTVDB);
   }
 
   // buscar por campo exacto o LIKE
-  public static List<Serie> findBy(String field, String value, Boolean exact) {
+  public List<Serie> findBy(String field, String value, Boolean exact) {
     if (exact) {
-      return SerieDAO.findByExact(field, value);
+      return serieDAO.findByExact(field, value);
     } else {
-      return SerieDAO.findByLike(field, value);
+      return serieDAO.findByLike(field, value);
     }
   }
 
   // Read de obtener todas las series
-  public static List<Serie> all() {
-    return SerieDAO.all();
+  public List<Serie> all() {
+    return serieDAO.all();
   }
 
   // Delete por id
-  public static Boolean delete(Integer id) {
-    Serie serie = SerieDAO.find(id);
+  public Boolean delete(Integer id) {
+    Serie serie = serieDAO.find(id);
     if (serie != null) {
-      SerieDAO.delete(serie);
+      serieDAO.delete(serie);
       return true;
     } else {
       return false;

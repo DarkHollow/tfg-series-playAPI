@@ -1,23 +1,28 @@
 package service;
 
 import models.Serie;
+import models.dao.SerieDAO;
+import models.service.SerieService;
 import models.service.TvdbService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.*;
-import play.api.Play;
 import play.db.Database;
 import play.db.Databases;
 import play.db.jpa.JPA;
 import play.db.jpa.JPAApi;
+import play.libs.ws.WS;
+import play.libs.ws.WSClient;
 
 import java.io.FileInputStream;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
 import static play.test.Helpers.*;
 
 public class TvdbServiceTest {
@@ -67,11 +72,17 @@ public class TvdbServiceTest {
   // testeamos buscar en TVDB por nombre (fakeapp para obtener login tvdb)
   @Test
   public void testTvdbServiceFindByName() {
+    final int PORT = 3333;
+    running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
+      browser.goTo("http://localhost:" + PORT);
 
-    running(testServer(3333, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
-      browser.goTo("http://localhost:3333");
-      // injector explícito, no podemos usar mocks aquí
-      TvdbService tvdbService = Play.current().injector().instanceOf(TvdbService.class);
+      WSClient ws = WS.newClient(PORT);
+      SimpleDateFormat df = mock(SimpleDateFormat.class);
+
+      SerieDAO serieDAO = new SerieDAO(jpa);
+      SerieService serieService = new SerieService(serieDAO);
+
+      TvdbService tvdbService = new TvdbService(ws, df, serieService);
 
       List<Serie> series = jpa.withTransaction(() -> tvdbService.findOnTVDBby("name", "stranger"));
 

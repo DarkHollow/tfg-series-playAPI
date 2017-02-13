@@ -2,24 +2,27 @@ package dao;
 
 import models.Serie;
 import models.dao.SerieDAO;
+import org.dbunit.JndiDatabaseTester;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.dbunit.operation.DatabaseOperation;
+import org.junit.*;
 import play.db.Database;
 import play.db.Databases;
-import play.db.jpa.*;
-import play.Logger;
-import org.junit.*;
-import static org.junit.Assert.*;
-import org.dbunit.*;
-import org.dbunit.dataset.*;
-import org.dbunit.dataset.xml.*;
-import org.dbunit.operation.*;
+import play.db.jpa.JPA;
+import play.db.jpa.JPAApi;
+
 import java.io.FileInputStream;
 import java.util.Date;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 public class SerieModelDAOTest {
-  static Database db;
-  static JPAApi jpa;
-  JndiDatabaseTester databaseTester;
+  private static Database db;
+  private static JPAApi jpa;
+  private JndiDatabaseTester databaseTester;
 
   @BeforeClass
   static public void initDatabase() {
@@ -63,13 +66,13 @@ public class SerieModelDAOTest {
   // testeamos crear una serie
   @Test
   public void testSerieDAOCreate() {
+    final SerieDAO serieDAO = new SerieDAO(jpa);
+
     Serie serie1 = new Serie(3, "Stranger Things", new Date(), "Descripción",
       "banner.jpg", "poster.jpg", "fanart.jpg", "Network", 45, null, "TV-14",
       Serie.Status.Continuing, "Guionista", "Actor 1, Actor2", (float)9.0, "url_trailer");
 
-    Serie serie2 = jpa.withTransaction(() -> {
-      return SerieDAO.create(serie1);
-    });
+    Serie serie2 = jpa.withTransaction(() -> serieDAO.create(serie1));
 
     //assertEquals(serie1.id, serie2.id);
     assertEquals(serie1.idTVDB, serie2.idTVDB);
@@ -92,9 +95,8 @@ public class SerieModelDAOTest {
   // testeamos buscar por id -> found
   @Test
   public void testSerieDAOFind() {
-    Serie serie = jpa.withTransaction(() -> {
-      return SerieDAO.find(1);
-    });
+    final SerieDAO serieDAO = new SerieDAO(jpa);
+    Serie serie = jpa.withTransaction(() -> serieDAO.find(1));
 
     assertEquals(1, (int) serie.id);
     assertEquals(78804, (int) serie.idTVDB);
@@ -104,8 +106,9 @@ public class SerieModelDAOTest {
   // testeamos buscar por id -> not found
   @Test
   public void testSerieDAOFindNotFound() {
+    final SerieDAO serieDAO = new SerieDAO(jpa);
     Serie serie = jpa.withTransaction(() -> {
-      return SerieDAO.find(0);
+      return serieDAO.find(0);
     });
 
     assertNull(serie);
@@ -114,8 +117,9 @@ public class SerieModelDAOTest {
   // testeamos buscar por idTVDB
   @Test
   public void testSerieDAOFindByIdTvdb() {
+    final SerieDAO serieDAO = new SerieDAO(jpa);
     Serie serie = jpa.withTransaction(() -> {
-      return SerieDAO.findByIdTvdb(78804);
+      return serieDAO.findByIdTvdb(78804);
     });
 
     assertEquals(1, (int) serie.id);
@@ -126,8 +130,9 @@ public class SerieModelDAOTest {
   // testeamos buscar por idTVDB not found
   @Test
   public void testSerieDAOFindByIdTvdbNotFound() {
+    final SerieDAO serieDAO = new SerieDAO(jpa);
     Serie serie = jpa.withTransaction(() -> {
-      return SerieDAO.findByIdTvdb(000);
+      return serieDAO.findByIdTvdb(000);
     });
 
     assertNull(serie);
@@ -136,14 +141,15 @@ public class SerieModelDAOTest {
   // testeamos buscar por campo coincidendo exacto
   @Test
   public void testSerieDAOFindByExact() {
+    final SerieDAO serieDAO = new SerieDAO(jpa);
     List<Serie> seriesEncontradas = jpa.withTransaction(() -> {
-      return SerieDAO.findByExact("seriesName", "who");
+      return serieDAO.findByExact("seriesName", "who");
     });
 
     assertEquals(0, seriesEncontradas.size());
 
     seriesEncontradas = jpa.withTransaction(() -> {
-      return SerieDAO.findByExact("seriesName", "Doctor Who (2005)");
+      return serieDAO.findByExact("seriesName", "Doctor Who (2005)");
     });
 
     assertEquals(1, seriesEncontradas.size());
@@ -155,8 +161,9 @@ public class SerieModelDAOTest {
   // le pongamos LOWER en el DAO, por lo que ponemos 'Who' con mayúscula
   @Test
   public void testSerieDAOFindByLike() {
+    final SerieDAO serieDAO = new SerieDAO(jpa);
     List<Serie> seriesEncontradas = jpa.withTransaction(() -> {
-      return SerieDAO.findByLike("seriesName", "Who");
+      return serieDAO.findByLike("seriesName", "Who");
     });
 
     assertEquals(1, seriesEncontradas.size());
@@ -166,8 +173,9 @@ public class SerieModelDAOTest {
   // testeamos obtener todas las series
   @Test
   public void testSerieDAOAll() {
+    final SerieDAO serieDAO = new SerieDAO(jpa);
     List<Serie> seriesEncontradas = jpa.withTransaction(() -> {
-      return SerieDAO.all();
+      return serieDAO.all();
     });
 
     assertEquals(2, seriesEncontradas.size());
@@ -178,10 +186,11 @@ public class SerieModelDAOTest {
   // testeamos delete serie
   @Test
   public void testSerieDAODelete() {
+    final SerieDAO serieDAO = new SerieDAO(jpa);
     Serie serie = jpa.withTransaction(() -> {
-      Serie s = SerieDAO.find(1);
-      SerieDAO.delete(s);
-      return SerieDAO.find(1);
+      Serie s = serieDAO.find(1);
+      serieDAO.delete(s);
+      return serieDAO.find(1);
     });
 
     assertNull(serie);
@@ -190,11 +199,11 @@ public class SerieModelDAOTest {
   // testeamos delete serie not found
   @Test
   public void testSerieDAODeleteNotFound() {
-
+    final SerieDAO serieDAO = new SerieDAO(jpa);
     jpa.withTransaction(() -> {
-      Serie serie = SerieDAO.find(0);
+      Serie serie = serieDAO.find(0);
       try {
-        SerieDAO.delete(serie);
+        serieDAO.delete(serie);
       } catch (Exception e) {
         assertNull(serie);
       }

@@ -1,24 +1,32 @@
 package models.dao;
 
+import com.google.inject.Inject;
 import models.Serie;
-import play.db.jpa.*;
 import play.Logger;
-import javax.persistence.*;
-import java.util.ArrayList;
+import play.db.jpa.JPAApi;
+
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 public class SerieDAO {
 
-  static String TABLE = Serie.class.getName();
+  private static String TABLE = Serie.class.getName();
+  private final JPAApi jpa;
+
+  @Inject
+  public SerieDAO(JPAApi jpa) {
+    this.jpa = jpa;
+  }
 
   // CRUD
 
   // Create
-  public static Serie create(Serie serie) {
+  public Serie create(Serie serie) {
     Logger.debug("Persistencia - intentando crear serie: " + serie.seriesName);
-    JPA.em().persist(serie);
-    JPA.em().flush();
-    JPA.em().refresh(serie);
+    jpa.em().persist(serie);
+    jpa.em().flush();
+    jpa.em().refresh(serie);
     Logger.debug("Persistencia - serie añadida: id " + serie.id + ", nombre " + serie.seriesName);
     return serie;
   }
@@ -27,13 +35,13 @@ public class SerieDAO {
 
   // Read de busqueda
   // buscar por id
-  public static Serie find(Integer id) {
-    return JPA.em().find(Serie.class, id);
+  public Serie find(Integer id) {
+    return jpa.em().find(Serie.class, id);
   }
 
   // buscar por idTVDB
-  public static Serie findByIdTvdb(Integer idTVDB) {
-    TypedQuery<Serie> query = JPA.em().createQuery("SELECT s FROM " + TABLE + " s WHERE idTVDB = :value", Serie.class);
+  public Serie findByIdTvdb(Integer idTVDB) {
+    TypedQuery<Serie> query = jpa.em().createQuery("SELECT s FROM " + TABLE + " s WHERE s.idTVDB = :value", Serie.class);
     try {
       return query.setParameter("value", idTVDB).getSingleResult();
     } catch (NoResultException e) {
@@ -42,8 +50,8 @@ public class SerieDAO {
   }
 
   // buscar por campo exacto
-  public static List<Serie> findByExact(String field, String value) {
-    TypedQuery<Serie> query = JPA.em().createQuery("SELECT s FROM " + TABLE + " s WHERE " + field + " = :value", Serie.class);
+  public List<Serie> findByExact(String field, String value) {
+    TypedQuery<Serie> query = jpa.em().createQuery("SELECT s FROM " + TABLE + " s WHERE " + field + " = :value", Serie.class);
     try {
       return query.setParameter("value", value).getResultList();
     } catch (NoResultException e) {
@@ -52,8 +60,8 @@ public class SerieDAO {
   }
 
   // buscar por campo LIKE
-  public static List<Serie> findByLike(String field, String value) {
-    TypedQuery<Serie> query = JPA.em().createQuery("SELECT s FROM " + TABLE + " s WHERE " + field + " LIKE :value", Serie.class);
+  public List<Serie> findByLike(String field, String value) {
+    TypedQuery<Serie> query = jpa.em().createQuery("SELECT s FROM " + TABLE + " s WHERE " + field + " LIKE :value", Serie.class);
     try {
       return query.setParameter("value", "%" + value + "%").getResultList();
     } catch (NoResultException e) {
@@ -62,12 +70,12 @@ public class SerieDAO {
   }
 
   // Read de obtener todas las series
-  public static List<Serie> all() {
-    return JPA.em().createQuery("SELECT s FROM " + TABLE + " s ORDER BY seriesName").getResultList();
+  public List<Serie> all() {
+    return jpa.em().createQuery("SELECT s FROM " + TABLE + " s ORDER BY s.seriesName", Serie.class).getResultList();
   }
 
   // Delete
-  public static void delete(Serie serie) {
-    JPA.em().remove(serie);
+  public void delete(Serie serie) {
+    jpa.em().remove(serie);
   }
 }

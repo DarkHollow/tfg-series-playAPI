@@ -76,6 +76,10 @@ public class Serie {
   @JsonView(SerieViews.FullSerie.class)
   public String trailer;
 
+  @Transient
+  @JsonView(SerieViews.SearchTVDB.class)
+  public Boolean local;
+
   // constructor vacio
   public Serie() {}
 
@@ -102,6 +106,7 @@ public class Serie {
     this.actors = actors;
     this.imdbRating = imdbRating;
     this.trailer = trailer;
+    local = false;
   }
 
   // contructor copia
@@ -122,6 +127,7 @@ public class Serie {
     this.actors = serie.actors;
     this.imdbRating = serie.imdbRating;
     this.trailer = serie.trailer;
+    this.local = false;
   }
 
   // solo informacion importante

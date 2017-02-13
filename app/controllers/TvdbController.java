@@ -15,8 +15,13 @@ import play.mvc.Result;
 import java.util.List;
 
 public class TvdbController extends Controller {
+
+  private final TvdbService tvdbService;
+
   @Inject
-  private TvdbService tvdbService;
+  public TvdbController(TvdbService tvdbService) {
+    this.tvdbService = tvdbService;
+  }
 
   // buscar series en TVDB y marcar las locales
   // devolver la busqueda de series LIKE

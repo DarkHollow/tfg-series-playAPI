@@ -1,11 +1,14 @@
 package utils;
 
-import play.libs.Json;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import javax.inject.*;
-import play.libs.ws.*;
 import play.Logger;
+import play.libs.Json;
+import play.libs.ws.WSClient;
+import play.libs.ws.WSResponse;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 
@@ -23,7 +26,7 @@ public class TVDB {
     tvdbaccount.put("username", "tiruri");
     tvdbaccount.put("userkey", "7EDF3A1BE153C5E9");
 
-    this.ws = ws;
+    TVDB.ws = ws;
 
     token = "";
 

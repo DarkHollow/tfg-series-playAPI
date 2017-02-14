@@ -1,25 +1,34 @@
 package controllers;
 
-import play.mvc.*;
-import play.libs.Json;
-import play.db.jpa.Transactional;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.inject.Inject;
 import json.SerieViews;
 import models.Serie;
 import models.service.SerieService;
-import java.util.ArrayList;
+import play.db.jpa.Transactional;
+import play.libs.Json;
+import play.mvc.Controller;
+import play.mvc.Result;
+
 import java.util.List;
 
 public class SerieController extends Controller {
+
+  private final SerieService serieService;
+
+  @Inject
+  public SerieController(SerieService serieService) {
+    this.serieService = serieService;
+  }
 
   // devolver todas las series (NOTE: futura paginacion?)
   // JSON View SeriesView.SearchSerie: vista que solo incluye los campos
   // relevante de una búsqueda
   @Transactional(readOnly = true)
   public Result all() {
-    List<Serie> series = SerieService.all();
+    List<Serie> series = serieService.all();
 
     // si la lista está vacía, not found
     if (series.isEmpty()) {
@@ -46,7 +55,7 @@ public class SerieController extends Controller {
   // devolver una serie por id
   @Transactional(readOnly = true)
   public Result serieById(Integer id) {
-    Serie serie = SerieService.find(id);
+    Serie serie = serieService.find(id);
     if (serie == null) {
       ObjectNode result = Json.newObject();
       result.put("error", "Not found");
@@ -72,7 +81,7 @@ public class SerieController extends Controller {
   @Transactional(readOnly = true)
   public Result searchSeriesNameLike(String query) {
     if (query.length() >= 3) {
-      List<Serie> series = SerieService.findBy("seriesName", query, false);
+      List<Serie> series = serieService.findBy("seriesName", query, false);
 
       // si la lista está vacía, not found
       if (series.isEmpty()) {

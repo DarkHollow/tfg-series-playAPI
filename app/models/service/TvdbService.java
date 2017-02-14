@@ -18,11 +18,13 @@ public class TvdbService {
 
   private final WSClient ws;
   private final SimpleDateFormat df;
+  private final SerieService serieService;
 
   @Inject
-  public TvdbService(WSClient ws, SimpleDateFormat df) {
+  public TvdbService(WSClient ws, SimpleDateFormat df, SerieService serieService) {
     this.ws = ws;
     this.df = df;
+    this.serieService = serieService;
   }
 
   // buscar en tvdb y en local, marcar las que coinciden
@@ -64,7 +66,7 @@ public class TvdbService {
         }
 
         // buscamos en local para indicar si la tenemos o no
-        Serie serieLocal = SerieService.findByIdTvdb(nuevaSerie.idTVDB);
+        Serie serieLocal = serieService.findByIdTvdb(nuevaSerie.idTVDB);
         if (serieLocal != null) {
           nuevaSerie.local = true;
         }

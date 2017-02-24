@@ -79,4 +79,18 @@ public class TvdbService {
     return series;
   }
 
+  // POST petición serie
+  public Boolean requestSeries(Integer idTVDB) {
+    Boolean result = false;
+
+    // comprobamos que no esté en nuetra base de datos ya
+    if (serieService.findByIdTvdb(idTVDB) == null) {
+      // hacer peticion de la serie
+      // TODO:
+
+    }
+
+    return result;
+  }
+
 }

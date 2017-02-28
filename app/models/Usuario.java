@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "usuario")
@@ -31,6 +32,9 @@ public class Usuario {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   @Temporal(TemporalType.DATE)
   public Date registrationDate;
+
+  @OneToMany(mappedBy = "usuario")
+  public List<RequestedSeries> requestedSeries;
 
   // constructor vacío
   public Usuario() {}

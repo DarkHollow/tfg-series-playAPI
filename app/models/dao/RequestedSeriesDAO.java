@@ -7,6 +7,9 @@ import play.db.jpa.JPAApi;
 
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+import javax.validation.ConstraintViolationException;
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 public class RequestedSeriesDAO {
@@ -22,12 +25,13 @@ public class RequestedSeriesDAO {
   // CRUD
 
   // Create
-  public RequestedSeries create(RequestedSeries request) {
+  public RequestedSeries create(RequestedSeries request) throws ConstraintViolationException {
     Logger.debug("Persistencia - intentando crear request: " + request.idTVDB);
+    request.requestDate = Date.from(Instant.now());
     jpa.em().persist(request);
     jpa.em().flush();
     jpa.em().refresh(request);
-    Logger.debug("Persistencia - request añadida: usuario " + request.usuario + ", idTVDB " + request.idTVDB);
+    Logger.debug("Persistencia - request añadida: usuario " + request.usuario.id + ", idTVDB " + request.idTVDB);
     return request;
   }
 

@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "requestedSeries")
+@Table(name = "requestedSeries", uniqueConstraints = @UniqueConstraint(columnNames = {"idTVDB", "usuarioId"}))
 public class RequestedSeries {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

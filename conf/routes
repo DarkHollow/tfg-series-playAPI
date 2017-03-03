@@ -33,6 +33,9 @@ GET     /api/series                 controllers.SerieController.all
 GET     /api/series/:id/            controllers.SerieController.serieById(id: Integer)
 GET     /api/series/:id             controllers.SerieController.serieById(id: Integer)
 
+# tvshow request
+POST    /api/series/request         controllers.SerieController.requestSeries
+
 # API Search
 
 # series search by LIKE
@@ -42,6 +45,3 @@ GET     /api/search/series/:q       controllers.SerieController.searchSeriesName
 # series search on TVDB by name
 GET     /api/search/TVDB/:q/        controllers.TvdbController.searchSeriesTVDBbyName(q: String)
 GET     /api/search/TVDB/:q         controllers.TvdbController.searchSeriesTVDBbyName(q: String)
-
-# API TV Show Request
-POST    /api/series/request         controllers.SerieController.requestSeries

@@ -7,6 +7,8 @@ import com.google.inject.Inject;
 import json.SerieViews;
 import models.Serie;
 import models.service.TvdbService;
+import play.data.DynamicForm;
+import play.data.FormFactory;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -17,10 +19,12 @@ import java.util.List;
 public class TvdbController extends Controller {
 
   private final TvdbService tvdbService;
+  private final FormFactory formFactory;
 
   @Inject
-  public TvdbController(TvdbService tvdbService) {
+  public TvdbController(TvdbService tvdbService, FormFactory formFactory) {
     this.tvdbService = tvdbService;
+    this.formFactory = formFactory;
   }
 
   // buscar series en TVDB y marcar las locales

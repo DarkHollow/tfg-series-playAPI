@@ -2,7 +2,6 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -35,7 +34,7 @@ public class Usuario {
   public Date registrationDate;
 
   @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
-  public List<RequestedSeries> requestedSeries;
+  public List<TvShowRequest> requestedSeries;
 
   // constructor vacío
   public Usuario() {}

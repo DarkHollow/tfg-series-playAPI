@@ -6,8 +6,8 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "requestedSeries", uniqueConstraints = @UniqueConstraint(columnNames = {"idTVDB", "usuarioId"}))
-public class RequestedSeries {
+@Table(name = "tvShowRequest", uniqueConstraints = @UniqueConstraint(columnNames = {"idTVDB", "usuarioId"}))
+public class TvShowRequest {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   public Integer id;
@@ -24,10 +24,10 @@ public class RequestedSeries {
   public Date requestDate;
 
   // constructor vacío
-  public RequestedSeries() {}
+  public TvShowRequest() {}
 
   // contructor por parámetros
-  public RequestedSeries(Integer idTVDB, Usuario usuario) {
+  public TvShowRequest(Integer idTVDB, Usuario usuario) {
     this.idTVDB = idTVDB;
     this.usuario = usuario;
   }

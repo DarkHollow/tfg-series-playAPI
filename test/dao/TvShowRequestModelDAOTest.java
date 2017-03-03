@@ -1,8 +1,8 @@
 package dao;
 
-import models.RequestedSeries;
+import models.TvShowRequest;
 import models.Usuario;
-import models.dao.RequestedSeriesDAO;
+import models.dao.TvShowRequestDAO;
 import models.dao.UsuarioDAO;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
@@ -17,14 +17,13 @@ import play.db.jpa.JPAApi;
 import java.io.FileInputStream;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
-public class RequestedSeriesModelDAOTest {
+public class TvShowRequestModelDAOTest {
   private static Database db;
   private static JPAApi jpa;
   private JndiDatabaseTester databaseTester;
+  private static TvShowRequestDAO tvShowRequestDAO;
 
   @BeforeClass
   static public void initDatabase() {
@@ -36,13 +35,14 @@ public class RequestedSeriesModelDAOTest {
       connection.createStatement().execute("SET MODE MySQL;");
     });
     jpa = JPA.createFor("memoryPersistenceUnit");
+    tvShowRequestDAO = new TvShowRequestDAO(jpa);
   }
 
   @Before
   public void initData() throws Exception {
     databaseTester = new JndiDatabaseTester("DefaultDS");
     IDataSet initialDataSet = new FlatXmlDataSetBuilder().build(new
-      FileInputStream("test/resources/requestedSeries_dataset.xml"));
+      FileInputStream("test/resources/tvShowRequest_dataset.xml"));
     databaseTester.setDataSet(initialDataSet);
 
     // Set up - CLEAN_INSERT: primero delete all y despues insert
@@ -67,16 +67,13 @@ public class RequestedSeriesModelDAOTest {
 
   // testeamos crear una request
   @Test
-  public void testRequestedSeriesDAOCreate() {
+  public void testTvShowRequestDAOCreate() {
     final UsuarioDAO usuarioDAO = new UsuarioDAO(jpa);
-    final RequestedSeriesDAO requestedSeriesDAO = new RequestedSeriesDAO(jpa);
 
     Usuario usuario = jpa.withTransaction(() -> usuarioDAO.find(1));
 
-    RequestedSeries request1 = new RequestedSeries(222222, usuario);
-
-    RequestedSeries request2 = jpa.withTransaction(() -> requestedSeriesDAO.create(request1));
-    //jpa.withTransaction(() -> usuario.requestedSeries.add(request1));
+    TvShowRequest request1 = new TvShowRequest(222222, usuario);
+    TvShowRequest request2 = jpa.withTransaction(() -> tvShowRequestDAO.create(request1));
 
     assertEquals(request1.idTVDB, request2.idTVDB);
     assertEquals(request1.usuario.id, request2.usuario.id);
@@ -85,10 +82,8 @@ public class RequestedSeriesModelDAOTest {
 
   // testeamos buscar una request
   @Test
-  public void testRequestedSeriesDAOFind() {
-    final RequestedSeriesDAO requestedSeriesDAO = new RequestedSeriesDAO(jpa);
-
-    RequestedSeries request = jpa.withTransaction(() -> requestedSeriesDAO.find(1));
+  public void testTvShowRequestDAOFind() {
+    TvShowRequest request = jpa.withTransaction(() -> tvShowRequestDAO.find(1));
 
     assertEquals(1, (int) request.id);
     assertEquals(111111, (int) request.idTVDB);
@@ -97,44 +92,25 @@ public class RequestedSeriesModelDAOTest {
 
   // testeamos buscar por id -> not found
   @Test
-  public void testRequestedSeriesDAOFindNotFound() {
-    final RequestedSeriesDAO requestedSeriesDAO = new RequestedSeriesDAO(jpa);
-    RequestedSeries request = jpa.withTransaction(() -> requestedSeriesDAO.find(0));
-
+  public void testTvShowRequestDAOFindNotFound() {
+    TvShowRequest request = jpa.withTransaction(() -> tvShowRequestDAO.find(0));
     assertNull(request);
-  }
-
-  // testeamos buscar por campo coincidendo exacto (usuarioId)
-  @Test
-  public void testRequestedSeriesDAOFindByExact() {
-    final RequestedSeriesDAO requestedSeriesDAO = new RequestedSeriesDAO(jpa);
-    List<RequestedSeries> requestsEncontrados = jpa.withTransaction(() -> requestedSeriesDAO.findByExact("usuarioId", "0"));
-
-    assertEquals(0, requestsEncontrados.size());
-
-    requestsEncontrados = jpa.withTransaction(() -> requestedSeriesDAO.findByExact("usuarioId", "1"));
-
-    assertEquals(1, requestsEncontrados.size());
-    assertEquals(1, (int) requestsEncontrados.get(0).id);
   }
 
   // testeamos obtener todos los requests
   @Test
-  public void testRequestedSeriesDAOAll() {
-    final RequestedSeriesDAO requestedSeriesDAO = new RequestedSeriesDAO(jpa);
-    List<RequestedSeries> requestsEncontrados = jpa.withTransaction(requestedSeriesDAO::all);
-
+  public void testTvShowRequestDAOAll() {
+    List<TvShowRequest> requestsEncontrados = jpa.withTransaction(tvShowRequestDAO::all);
     assertEquals(1, requestsEncontrados.size());
   }
 
   // testeamos delete request
   @Test
-  public void testRequestedSeriesDAODelete() {
-    final RequestedSeriesDAO requestedSeriesDAO = new RequestedSeriesDAO(jpa);
-    RequestedSeries request = jpa.withTransaction(() -> {
-      RequestedSeries s = requestedSeriesDAO.find(1);
-      requestedSeriesDAO.delete(s);
-      return requestedSeriesDAO.find(1);
+  public void testTvShowRequestDAODelete() {
+    TvShowRequest request = jpa.withTransaction(() -> {
+      TvShowRequest s = tvShowRequestDAO.find(1);
+      tvShowRequestDAO.delete(s);
+      return tvShowRequestDAO.find(1);
     });
 
     assertNull(request);
@@ -142,12 +118,11 @@ public class RequestedSeriesModelDAOTest {
 
   // testeamos delete request not found
   @Test
-  public void testRequestedSeriesDAODeleteNotFound() {
-    final RequestedSeriesDAO requestedSeriesDAO = new RequestedSeriesDAO(jpa);
+  public void testTvShowRequestDAODeleteNotFound() {
     jpa.withTransaction(() -> {
-      RequestedSeries request = requestedSeriesDAO.find(0);
+      TvShowRequest request = tvShowRequestDAO.find(0);
       try {
-        requestedSeriesDAO.delete(request);
+        tvShowRequestDAO.delete(request);
       } catch (Exception e) {
         assertNull(request);
       }
@@ -156,16 +131,15 @@ public class RequestedSeriesModelDAOTest {
 
   // testeamos delete cascade, borrando un usuario deberian borrarse sus requests
   @Test
-  public void testRequestedSeriesDAODeleteCascadeFromUsuario() {
-    final RequestedSeriesDAO requestedSeriesDAO = new RequestedSeriesDAO(jpa);
+  public void testTvShowRequestDAODeleteCascadeFromUsuario() {
     final UsuarioDAO usuarioDAO = new UsuarioDAO(jpa);
 
     jpa.withTransaction(() -> {
-      RequestedSeries request = requestedSeriesDAO.find(1);
+      TvShowRequest request = tvShowRequestDAO.find(1);
       assertNotNull(request);
 
       usuarioDAO.delete(usuarioDAO.find(1));
-      request = requestedSeriesDAO.find(1);
+      request = tvShowRequestDAO.find(1);
       assertNull(request);
     });
   }

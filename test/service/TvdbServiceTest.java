@@ -1,12 +1,9 @@
 package service;
 
 import models.Serie;
-import models.dao.RequestedSeriesDAO;
 import models.dao.SerieDAO;
-import models.dao.UsuarioDAO;
 import models.service.SerieService;
 import models.service.TvdbService;
-import models.service.UsuarioService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
@@ -23,7 +20,8 @@ import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static play.test.Helpers.*;
 
@@ -33,14 +31,6 @@ public class TvdbServiceTest {
   private JndiDatabaseTester databaseTester;
 
   private final static int PORT = 3333;
-
-  private static WSClient ws;
-  private static SimpleDateFormat df;
-  private static SerieDAO serieDAO;
-  private static SerieService serieService;
-  private static UsuarioDAO usuarioDAO;
-  private static UsuarioService usuarioService;
-  private static RequestedSeriesDAO rqDAO;
   private static TvdbService tvdbService;
 
   @BeforeClass
@@ -54,14 +44,11 @@ public class TvdbServiceTest {
     });
     jpa = JPA.createFor("memoryPersistenceUnit");
 
-    ws = WS.newClient(PORT);
-    df = mock(SimpleDateFormat.class);
-    serieDAO = new SerieDAO(jpa);
-    serieService = new SerieService(serieDAO);
-    usuarioDAO = new UsuarioDAO(jpa);
-    usuarioService = new UsuarioService(usuarioDAO);
-    rqDAO = new RequestedSeriesDAO(jpa);
-    tvdbService = new TvdbService(ws, df, serieService, usuarioService, rqDAO);
+    WSClient ws = WS.newClient(PORT);
+    SimpleDateFormat df = mock(SimpleDateFormat.class);
+    SerieDAO serieDAO = new SerieDAO(jpa);
+    SerieService serieService = new SerieService(serieDAO);
+    tvdbService = new TvdbService(ws, df, serieService);
   }
 
   @Before
@@ -104,27 +91,12 @@ public class TvdbServiceTest {
     });
   }
 
-  // testeamos buscar una serie que exista en TVDB y no tengamos en local
+  // test
   @Test
-  public void TestTvdbServiceFindOnTVDBAndNotOnLocalbyTvdbIdOk() {
+  public void testTvdbServiceFindByName2() {
     running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
       browser.goTo("http://localhost:" + PORT);
-
-      Boolean result = jpa.withTransaction(() -> tvdbService.findOnTVDBAndNotOnLocalbyTvdbId(305288));
-
-      assertTrue(result);
-    });
-  }
-
-  // testeamos buscar una serie que exista en TVDB y tengamos en local
-  @Test
-  public void TestTvdbServiceFindOnTVDBAndNotOnLocalbyTvdbIdLocal() {
-    running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
-      browser.goTo("http://localhost:" + PORT);
-
-      Boolean result = jpa.withTransaction(() -> tvdbService.findOnTVDBAndNotOnLocalbyTvdbId(78804));
-
-      assertFalse(result);
+      // error por poner la fakeApplication
     });
   }
 

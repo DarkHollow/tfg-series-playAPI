@@ -6,13 +6,13 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "tvShowRequest", uniqueConstraints = @UniqueConstraint(columnNames = {"idTVDB", "usuarioId"}))
+@Table(name = "tvShowRequest", uniqueConstraints = @UniqueConstraint(columnNames = {"tvdbId", "usuarioId"}))
 public class TvShowRequest {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   public Integer id;
 
-  public Integer idTVDB;
+  public Integer tvdbId;
 
   // usuario que hace la petición
   @ManyToOne
@@ -27,8 +27,8 @@ public class TvShowRequest {
   public TvShowRequest() {}
 
   // contructor por parámetros
-  public TvShowRequest(Integer idTVDB, Usuario usuario) {
-    this.idTVDB = idTVDB;
+  public TvShowRequest(Integer tvdbId, Usuario usuario) {
+    this.tvdbId = tvdbId;
     this.usuario = usuario;
   }
 

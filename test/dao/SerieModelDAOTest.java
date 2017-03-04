@@ -75,7 +75,7 @@ public class SerieModelDAOTest {
     Serie serie2 = jpa.withTransaction(() -> serieDAO.create(serie1));
 
     //assertEquals(serie1.id, serie2.id);
-    assertEquals(serie1.idTVDB, serie2.idTVDB);
+    assertEquals(serie1.tvdbId, serie2.tvdbId);
     assertEquals(serie1.seriesName, serie2.seriesName);
     assertEquals(serie1.firstAired, serie2.firstAired);
     assertEquals(serie1.overview, serie2.overview);
@@ -99,7 +99,7 @@ public class SerieModelDAOTest {
     Serie serie = jpa.withTransaction(() -> serieDAO.find(1));
 
     assertEquals(1, (int) serie.id);
-    assertEquals(78804, (int) serie.idTVDB);
+    assertEquals(78804, (int) serie.tvdbId);
     assertEquals("Doctor Who (2005)", serie.seriesName);
   }
 
@@ -114,25 +114,25 @@ public class SerieModelDAOTest {
     assertNull(serie);
   }
 
-  // testeamos buscar por idTVDB
+  // testeamos buscar por tvdbId
   @Test
-  public void testSerieDAOFindByIdTvdb() {
+  public void testSerieDAOFindByTvdbId() {
     final SerieDAO serieDAO = new SerieDAO(jpa);
     Serie serie = jpa.withTransaction(() -> {
-      return serieDAO.findByIdTvdb(78804);
+      return serieDAO.findByTvdbId(78804);
     });
 
     assertEquals(1, (int) serie.id);
-    assertEquals(78804, (int) serie.idTVDB);
+    assertEquals(78804, (int) serie.tvdbId);
     assertEquals("Doctor Who (2005)", serie.seriesName);
   }
 
-  // testeamos buscar por idTVDB not found
+  // testeamos buscar por tvdbId not found
   @Test
-  public void testSerieDAOFindByIdTvdbNotFound() {
+  public void testSerieDAOFindByTvdbIdNotFound() {
     final SerieDAO serieDAO = new SerieDAO(jpa);
     Serie serie = jpa.withTransaction(() -> {
-      return serieDAO.findByIdTvdb(000);
+      return serieDAO.findByTvdbId(0);
     });
 
     assertNull(serie);

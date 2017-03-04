@@ -125,27 +125,27 @@ public class SerieController extends Controller {
   @Transactional
   public Result requestSeries() {
     ObjectNode result = Json.newObject();
-    Integer idTVDB, usuarioId;
+    Integer tvdbId, usuarioId;
 
     // obtenemos datos de la petición post
     DynamicForm requestForm = formFactory.form().bindFromRequest();
 
     try {
-      idTVDB = Integer.valueOf(requestForm.get("idTVDB"));
+      tvdbId = Integer.valueOf(requestForm.get("tvdbId"));
       usuarioId = Integer.valueOf(requestForm.get("usuarioId"));
     } catch (Exception ex) {
-      result.put("error", "idTVDB/usuarioId null or not number");
+      result.put("error", "tvdbId/usuarioId null or not number");
       return badRequest(result);
     }
 
     // comprobamos que exista en tvdb y que no la tengamos en local
-    if (idTVDB != null && usuarioId != null) {
-      Serie serie = tvdbService.findOnTvdbByIdTvdb(idTVDB);
+    if (tvdbId != null && usuarioId != null) {
+      Serie serie = tvdbService.findOnTvdbByTvdbId(tvdbId);
       if (serie != null) {
         // comprobamos que esté en local
         if (!serie.local) {
           // intentamos hacer la peticion
-          if (tvShowRequestService.requestTvShow(idTVDB, usuarioId)) {
+          if (tvShowRequestService.requestTvShow(tvdbId, usuarioId)) {
             result.put("ok", "Series request done");
             return ok(result);
           } else {
@@ -161,11 +161,11 @@ public class SerieController extends Controller {
       } else {
         // la serie no existe en TVDB o ya la tenemos en local
         result.put("error", "Series doesn't exist on TVDB");
-        return badRequest(result);
+        return notFound(result);
       }
     } else {
-      // peticion erronea ? idTVDB es null
-      result.put("error", "idTVDB/usuarioId can't be null");
+      // peticion erronea ? tvdbId es null
+      result.put("error", "tvdbId/usuarioId can't be null");
       return badRequest(result);
     }
   }

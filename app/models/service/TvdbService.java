@@ -28,13 +28,13 @@ public class TvdbService {
     this.serieService = serieService;
   }
 
-  // buscar por idTVDB (solo un resultado posible)
-  public Serie findOnTvdbByIdTvdb(Integer idTVDB) {
+  // buscar por tvdbId (solo un resultado posible)
+  public Serie findOnTvdbByTvdbId(Integer tvdbId) {
     Serie serie = null;
     JsonNode respuesta = null;
 
     try {
-      CompletionStage<JsonNode> stage = ws.url("https://api.thetvdb.com/series/" + idTVDB.toString())
+      CompletionStage<JsonNode> stage = ws.url("https://api.thetvdb.com/series/" + tvdbId.toString())
               .setHeader("Authorization", "Bearer " + TVDB.getToken())
               .setHeader("Accept-Language", "es")
               .get()
@@ -54,7 +54,7 @@ public class TvdbService {
 
       // inicializamos la serie
       serie =  new Serie();
-      serie.idTVDB = Integer.parseInt(jsonSerie.get("id").asText()); // id de tvdb
+      serie.tvdbId = Integer.parseInt(jsonSerie.get("id").asText()); // id de tvdb
       serie.seriesName = jsonSerie.get("seriesName").asText();       // nombre de la serie
       serie.banner = jsonSerie.get("banner").asText();               // banner de la serie
       serie.local = false;
@@ -67,7 +67,7 @@ public class TvdbService {
       }
 
       // comprobamos si la tenemos en la base de datos
-      if (serieService.findByIdTvdb(idTVDB) != null) {
+      if (serieService.findByTvdbId(tvdbId) != null) {
         Logger.debug("Serie encontrada en local");
         serie.local = true;
       }
@@ -105,7 +105,7 @@ public class TvdbService {
       for (JsonNode jsonSerie : respuesta.withArray("data")) {
         // obtenemos datos de la serie
         Serie nuevaSerie = new Serie();
-        nuevaSerie.idTVDB = Integer.parseInt(jsonSerie.get("id").asText()); // id de tvdb
+        nuevaSerie.tvdbId = Integer.parseInt(jsonSerie.get("id").asText()); // id de tvdb
         nuevaSerie.seriesName = jsonSerie.get("seriesName").asText();       // nombre de la serie
         nuevaSerie.banner = jsonSerie.get("banner").asText();               // banner de la serie
         nuevaSerie.local = false;                                           // iniciamos por defecto a false
@@ -117,7 +117,7 @@ public class TvdbService {
         }
 
         // buscamos en local para indicar si la tenemos o no
-        Serie serieLocal = serieService.findByIdTvdb(nuevaSerie.idTVDB);
+        Serie serieLocal = serieService.findByTvdbId(nuevaSerie.tvdbId);
         if (serieLocal != null) {
           nuevaSerie.local = true;
         }

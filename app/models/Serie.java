@@ -20,7 +20,7 @@ public class Serie {
   public Integer id;
 
   @JsonView(SerieViews.InternalFullSerie.class)
-  public Integer idTVDB;
+  public Integer tvdbId;
 
   @Column(length = 100)
   @JsonView(SerieViews.SearchSerie.class)
@@ -82,13 +82,13 @@ public class Serie {
   public Serie() {}
 
   // contructor por campos
-  public Serie(Integer idTVDB, String seriesName, Date firstAired,
-              String overview, String banner, String poster, String fanart,
-              String network, Integer runtime, Set<String> genre,
-              String rating, Status status, String writer, String actors,
-              Float imdbRating, String trailer) {
+  public Serie(Integer tvdbId, String seriesName, Date firstAired,
+               String overview, String banner, String poster, String fanart,
+               String network, Integer runtime, Set<String> genre,
+               String rating, Status status, String writer, String actors,
+               Float imdbRating, String trailer) {
 
-    this.idTVDB = idTVDB;
+    this.tvdbId = tvdbId;
     this.seriesName = seriesName;
     this.firstAired = firstAired;
     this.overview = overview;
@@ -109,7 +109,7 @@ public class Serie {
 
   // contructor copia
   public Serie(Serie serie) {
-    this.idTVDB = serie.idTVDB;
+    this.tvdbId = serie.tvdbId;
     this.seriesName = serie.seriesName;
     this.firstAired = serie.firstAired;
     this.overview = serie.overview;
@@ -131,7 +131,7 @@ public class Serie {
   // solo informacion importante
   @Override
   public String toString() {
-    return "Serie [id=" + id + ", idTVDB=" + idTVDB + ", seriesName="
+    return "Serie [id=" + id + ", tvdbId=" + tvdbId + ", seriesName="
             + seriesName + ", firstAired=" + firstAired + ", overview="
             + overview + ", network=" + network
             + ", status=" + status + "]";

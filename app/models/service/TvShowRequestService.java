@@ -20,16 +20,16 @@ public class TvShowRequestService {
   }
 
   // POST petición serie
-  public Boolean requestTvShow(Integer idTVDB, Integer usuarioId) {
+  public Boolean requestTvShow(Integer tvdbId, Integer usuarioId) {
     Boolean result = false;
 
     // comprobamos que no esté en nuetra base de datos ya
-    if (serieService.findByIdTvdb(idTVDB) == null) {
+    if (serieService.findByTvdbId(tvdbId) == null) {
       // encontrar al usuario
       Usuario usuario = usuarioService.find(usuarioId);
       if (usuario != null) {
         // hacemos la peticion
-        TvShowRequest request = new TvShowRequest(idTVDB, usuario);
+        TvShowRequest request = new TvShowRequest(tvdbId, usuario);
         try {
           request = rqDAO.create(request);
 

@@ -75,7 +75,7 @@ public class TvShowRequestModelDAOTest {
     TvShowRequest request1 = new TvShowRequest(222222, usuario);
     TvShowRequest request2 = jpa.withTransaction(() -> tvShowRequestDAO.create(request1));
 
-    assertEquals(request1.idTVDB, request2.idTVDB);
+    assertEquals(request1.tvdbId, request2.tvdbId);
     assertEquals(request1.usuario.id, request2.usuario.id);
     assertEquals(request1.requestDate, request2.requestDate);
   }
@@ -86,7 +86,7 @@ public class TvShowRequestModelDAOTest {
     TvShowRequest request = jpa.withTransaction(() -> tvShowRequestDAO.find(1));
 
     assertEquals(1, (int) request.id);
-    assertEquals(111111, (int) request.idTVDB);
+    assertEquals(111111, (int) request.tvdbId);
     assertEquals(1, (int) request.usuario.id);
   }
 

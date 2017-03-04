@@ -24,12 +24,12 @@ public class TvShowRequestDAO {
 
   // Create
   public TvShowRequest create(TvShowRequest request) throws ConstraintViolationException {
-    Logger.debug("Persistencia - intentando crear request: " + request.idTVDB);
+    Logger.debug("Persistencia - intentando crear request: " + request.tvdbId);
     request.requestDate = Date.from(Instant.now());
     jpa.em().persist(request);
     jpa.em().flush();
     jpa.em().refresh(request);
-    Logger.debug("Persistencia - request añadida: usuario " + request.usuario.id + ", idTVDB " + request.idTVDB);
+    Logger.debug("Persistencia - request añadida: usuario " + request.usuario.id + ", tvdbId " + request.tvdbId);
     return request;
   }
 

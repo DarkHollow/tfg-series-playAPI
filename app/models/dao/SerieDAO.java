@@ -39,11 +39,11 @@ public class SerieDAO {
     return jpa.em().find(Serie.class, id);
   }
 
-  // buscar por idTVDB
-  public Serie findByIdTvdb(Integer idTVDB) {
-    TypedQuery<Serie> query = jpa.em().createQuery("SELECT s FROM " + TABLE + " s WHERE s.idTVDB = :value", Serie.class);
+  // buscar por tvdbId
+  public Serie findByTvdbId(Integer tvdbId) {
+    TypedQuery<Serie> query = jpa.em().createQuery("SELECT s FROM " + TABLE + " s WHERE s.tvdbId = :value", Serie.class);
     try {
-      return query.setParameter("value", idTVDB).getSingleResult();
+      return query.setParameter("value", tvdbId).getSingleResult();
     } catch (NoResultException e) {
       return null;
     }

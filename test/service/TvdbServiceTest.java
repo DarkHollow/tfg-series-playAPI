@@ -29,12 +29,12 @@ public class TvdbServiceTest {
   private static Database db;
   private static JPAApi jpa;
   private JndiDatabaseTester databaseTester;
-
-  private final static int PORT = 3333;
   private static TvdbService tvdbService;
 
-  @BeforeClass
-  static public void initDatabase() {
+  private final static int PORT = 3333;
+
+  @Before
+  public void initData() throws Exception {
     // conectamos con la base de datos de test
     db = Databases.inMemoryWith("jndiName", "DefaultDS");
     db.getConnection();
@@ -44,15 +44,14 @@ public class TvdbServiceTest {
     });
     jpa = JPA.createFor("memoryPersistenceUnit");
 
+    // inicializamos tvdbService
     WSClient ws = WS.newClient(PORT);
     SimpleDateFormat df = mock(SimpleDateFormat.class);
     SerieDAO serieDAO = new SerieDAO(jpa);
     SerieService serieService = new SerieService(serieDAO);
     tvdbService = new TvdbService(ws, df, serieService);
-  }
 
-  @Before
-  public void initData() throws Exception {
+    // inicializamos base de datos de prueba
     databaseTester = new JndiDatabaseTester("DefaultDS");
     IDataSet initialDataSet = new FlatXmlDataSetBuilder().build(new
       FileInputStream("test/resources/series_dataset.xml"));
@@ -69,11 +68,6 @@ public class TvdbServiceTest {
   @After
   public void clearData() throws Exception {
     databaseTester.onTearDown();
-  }
-
-  // al final limpiamos la base de datos y la cerramos
-  @AfterClass
-  static public void shutdownDatabase() {
     jpa.shutdown();
     db.shutdown();
   }

@@ -41,11 +41,12 @@ public class TVDB {
 
   // log in TVDB
   private void loginTVDB() {
+    Logger.info("Haciendo login en TVDB...");
     CompletionStage<JsonNode> stage = ws.url("https://api.thetvdb.com/login")
                                            .post(tvdbaccount)
                                            .thenApply(WSResponse::asJson);
     try {
-      JsonNode respuesta = stage.toCompletableFuture().get(30, TimeUnit.SECONDS);
+      JsonNode respuesta = stage.toCompletableFuture().get(180, TimeUnit.SECONDS);
       token = respuesta.get("token").asText();
       Logger.info("Token obtenido");
     } catch (Exception ex) {
@@ -56,12 +57,13 @@ public class TVDB {
 
   // refresh login token
   public static void refreshToken() {
+    Logger.info("Refrescando token en TVDB...");
     CompletionStage<JsonNode> stage = ws.url("https://api.thetvdb.com/refresh_token")
                                         .setHeader("Authorization", "Bearer " + token)
                                         .get()
                                         .thenApply(WSResponse::asJson);
     try {
-      JsonNode respuesta = stage.toCompletableFuture().get(30, TimeUnit.SECONDS);
+      JsonNode respuesta = stage.toCompletableFuture().get(180, TimeUnit.SECONDS);
       token = respuesta.get("token").asText();
       Logger.info("Token actualizado");
     } catch (Exception ex) {

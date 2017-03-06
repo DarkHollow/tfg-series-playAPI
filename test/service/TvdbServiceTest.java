@@ -20,8 +20,7 @@ import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static play.test.Helpers.*;
 
@@ -29,9 +28,12 @@ public class TvdbServiceTest {
   private static Database db;
   private static JPAApi jpa;
   private JndiDatabaseTester databaseTester;
+  private static TvdbService tvdbService;
 
-  @BeforeClass
-  static public void initDatabase() {
+  private final static int PORT = 3333;
+
+  @Before
+  public void initData() throws Exception {
     // conectamos con la base de datos de test
     db = Databases.inMemoryWith("jndiName", "DefaultDS");
     db.getConnection();
@@ -40,10 +42,15 @@ public class TvdbServiceTest {
       connection.createStatement().execute("SET MODE MySQL;");
     });
     jpa = JPA.createFor("memoryPersistenceUnit");
-  }
 
-  @Before
-  public void initData() throws Exception {
+    // inicializamos tvdbService
+    WSClient ws = WS.newClient(PORT);
+    SimpleDateFormat df = mock(SimpleDateFormat.class);
+    SerieDAO serieDAO = new SerieDAO(jpa);
+    SerieService serieService = new SerieService(serieDAO);
+    tvdbService = new TvdbService(ws, df, serieService);
+
+    // inicializamos base de datos de prueba
     databaseTester = new JndiDatabaseTester("DefaultDS");
     IDataSet initialDataSet = new FlatXmlDataSetBuilder().build(new
       FileInputStream("test/resources/series_dataset.xml"));
@@ -60,29 +67,43 @@ public class TvdbServiceTest {
   @After
   public void clearData() throws Exception {
     databaseTester.onTearDown();
-  }
-
-  // al final limpiamos la base de datos y la cerramos
-  @AfterClass
-  static public void shutdownDatabase() {
     jpa.shutdown();
     db.shutdown();
+  }
+
+  // testeamos buscar en TVDB por id y que esté en local (fakeapp para obtener login tvdb)
+  @Test
+  public void testTvdbServiceFindByTvdbIdIsInLocal() {
+    running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
+      browser.goTo("http://localhost:" + PORT);
+
+      Serie serie = jpa.withTransaction(() -> tvdbService.findOnTvdbByTvdbId(81189));
+
+      assertNotNull(serie);
+      assertEquals("Breaking Bad", serie.seriesName);
+      assertTrue(serie.local);
+    });
+  }
+
+  // testeamos buscar en TVDB por id y que no esté en local (fakeapp para obtener login tvdb)
+  @Test
+  public void testTvdbServiceFindByTvdbIdIsNotInLocal() {
+    running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
+      browser.goTo("http://localhost:" + PORT);
+
+      Serie serie = jpa.withTransaction(() -> tvdbService.findOnTvdbByTvdbId(305288));
+
+      assertNotNull(serie);
+      assertEquals("Stranger Things", serie.seriesName);
+      assertFalse(serie.local);
+    });
   }
 
   // testeamos buscar en TVDB por nombre (fakeapp para obtener login tvdb)
   @Test
   public void testTvdbServiceFindByName() {
-    final int PORT = 3333;
     running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
       browser.goTo("http://localhost:" + PORT);
-
-      WSClient ws = WS.newClient(PORT);
-      SimpleDateFormat df = mock(SimpleDateFormat.class);
-
-      SerieDAO serieDAO = new SerieDAO(jpa);
-      SerieService serieService = new SerieService(serieDAO);
-
-      TvdbService tvdbService = new TvdbService(ws, df, serieService);
 
       List<Serie> series = jpa.withTransaction(() -> tvdbService.findOnTVDBby("name", "stranger"));
 

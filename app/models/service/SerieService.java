@@ -30,9 +30,9 @@ public class SerieService {
     return serieDAO.find(id);
   }
 
-  // buscar por idTVDB
-  public Serie findByIdTvdb(Integer idTVDB) {
-    return serieDAO.findByIdTvdb(idTVDB);
+  // buscar por tvdbId
+  public Serie findByTvdbId(Integer tvdbId) {
+    return serieDAO.findByTvdbId(tvdbId);
   }
 
   // buscar por campo exacto o LIKE

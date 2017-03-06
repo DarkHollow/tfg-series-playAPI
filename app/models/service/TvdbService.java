@@ -3,6 +3,7 @@ package models.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import models.Serie;
+import play.Logger;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSResponse;
 import utils.TVDB;
@@ -27,8 +28,58 @@ public class TvdbService {
     this.serieService = serieService;
   }
 
-  // buscar en tvdb y en local, marcar las que coinciden
-  // buscar por campo exacto o LIKE
+  // buscar por tvdbId (solo un resultado posible)
+  public Serie findOnTvdbByTvdbId(Integer tvdbId) {
+    Serie serie = null;
+    JsonNode respuesta = null;
+
+    try {
+      CompletionStage<JsonNode> stage = ws.url("https://api.thetvdb.com/series/" + tvdbId.toString())
+              .setHeader("Authorization", "Bearer " + TVDB.getToken())
+              .setHeader("Accept-Language", "es")
+              .get()
+              .thenApply(WSResponse::asJson);
+
+      respuesta = stage.toCompletableFuture().get(5, TimeUnit.SECONDS);
+
+      System.out.println(respuesta);
+    } catch (Exception ex) {
+      System.out.println(ex.getMessage());
+    }
+
+    // comprobamos si ha encontrado la serie en TVDB
+    if (respuesta != null && respuesta.has("data")) {
+      JsonNode jsonSerie = respuesta.with("data");
+      Logger.debug("Serie encontrada en TVDB: " + jsonSerie.get("seriesName").asText());
+
+      // inicializamos la serie
+      serie =  new Serie();
+      serie.tvdbId = Integer.parseInt(jsonSerie.get("id").asText()); // id de tvdb
+      serie.seriesName = jsonSerie.get("seriesName").asText();       // nombre de la serie
+      serie.banner = jsonSerie.get("banner").asText();               // banner de la serie
+      serie.local = false;
+
+      try {
+        df.applyPattern("yyyy-MM-dd");
+        serie.firstAired = df.parse(jsonSerie.get("firstAired").asText()); // fecha estreno
+      } catch (ParseException e) {
+        Logger.debug("No se ha podido parsear la fecha de estreno");
+      }
+
+      // comprobamos si la tenemos en la base de datos
+      if (serieService.findByTvdbId(tvdbId) != null) {
+        Logger.debug("Serie encontrada en local");
+        serie.local = true;
+      }
+    } else {
+      Logger.debug("Serie no encontrada en TVDB");
+    }
+
+    return serie;
+  }
+
+  // buscar en tvdb y en local, marcar las que coinciden (multiples resultados posibles)
+  // buscar por campo
   public List<Serie> findOnTVDBby(String field, String value) {
     // buscamos la serie en tvdb
     JsonNode respuesta = null;
@@ -36,11 +87,11 @@ public class TvdbService {
 
     try {
       CompletionStage<JsonNode> stage = ws.url("https://api.thetvdb.com/search/series")
-                                                .setHeader("Authorization", "Bearer " + TVDB.getToken())
-                                                .setHeader("Accept-Language", "es")
-                                                .setQueryParameter(field, value)
-                                                .get()
-                                                .thenApply(WSResponse::asJson);
+              .setHeader("Authorization", "Bearer " + TVDB.getToken())
+              .setHeader("Accept-Language", "es")
+              .setQueryParameter(field, value)
+              .get()
+              .thenApply(WSResponse::asJson);
 
       respuesta = stage.toCompletableFuture().get(5, TimeUnit.SECONDS);
 
@@ -54,7 +105,7 @@ public class TvdbService {
       for (JsonNode jsonSerie : respuesta.withArray("data")) {
         // obtenemos datos de la serie
         Serie nuevaSerie = new Serie();
-        nuevaSerie.idTVDB = Integer.parseInt(jsonSerie.get("id").asText()); // id de tvdb
+        nuevaSerie.tvdbId = Integer.parseInt(jsonSerie.get("id").asText()); // id de tvdb
         nuevaSerie.seriesName = jsonSerie.get("seriesName").asText();       // nombre de la serie
         nuevaSerie.banner = jsonSerie.get("banner").asText();               // banner de la serie
         nuevaSerie.local = false;                                           // iniciamos por defecto a false
@@ -62,11 +113,11 @@ public class TvdbService {
           df.applyPattern("yyyy-MM-dd");
           nuevaSerie.firstAired = df.parse(jsonSerie.get("firstAired").asText()); // fecha estreno
         } catch (ParseException e) {
-          e.printStackTrace();
+          Logger.debug("No se ha podido parsear la fecha de estreno");
         }
 
         // buscamos en local para indicar si la tenemos o no
-        Serie serieLocal = serieService.findByIdTvdb(nuevaSerie.idTVDB);
+        Serie serieLocal = serieService.findByTvdbId(nuevaSerie.tvdbId);
         if (serieLocal != null) {
           nuevaSerie.local = true;
         }

@@ -45,14 +45,12 @@ public class TVDB {
                                            .post(tvdbaccount)
                                            .thenApply(WSResponse::asJson);
     try {
-      JsonNode respuesta = stage.toCompletableFuture().get(5, TimeUnit.SECONDS);
+      JsonNode respuesta = stage.toCompletableFuture().get(30, TimeUnit.SECONDS);
       token = respuesta.get("token").asText();
+      Logger.info("Token obtenido");
     } catch (Exception ex) {
       Logger.error("Excepción: no se ha podido hacer log en TVDB");
       System.out.println(ex.getMessage());
-    }
-    if (token != null) {
-      Logger.info("Token obtenido");
     }
   }
 
@@ -63,7 +61,7 @@ public class TVDB {
                                         .get()
                                         .thenApply(WSResponse::asJson);
     try {
-      JsonNode respuesta = stage.toCompletableFuture().get(5, TimeUnit.SECONDS);
+      JsonNode respuesta = stage.toCompletableFuture().get(30, TimeUnit.SECONDS);
       token = respuesta.get("token").asText();
       Logger.info("Token actualizado");
     } catch (Exception ex) {

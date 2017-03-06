@@ -47,12 +47,10 @@ public class TVDB {
     try {
       JsonNode respuesta = stage.toCompletableFuture().get(30, TimeUnit.SECONDS);
       token = respuesta.get("token").asText();
+      Logger.info("Token obtenido");
     } catch (Exception ex) {
       Logger.error("Excepción: no se ha podido hacer log en TVDB");
       System.out.println(ex.getMessage());
-    }
-    if (token != null) {
-      Logger.info("Token obtenido");
     }
   }
 

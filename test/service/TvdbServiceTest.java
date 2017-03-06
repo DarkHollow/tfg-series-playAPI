@@ -20,8 +20,7 @@ import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static play.test.Helpers.*;
 
@@ -72,6 +71,34 @@ public class TvdbServiceTest {
     db.shutdown();
   }
 
+  // testeamos buscar en TVDB por id y que esté en local (fakeapp para obtener login tvdb)
+  @Test
+  public void testTvdbServiceFindByTvdbIdIsInLocal() {
+    running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
+      browser.goTo("http://localhost:" + PORT);
+
+      Serie serie = jpa.withTransaction(() -> tvdbService.findOnTvdbByTvdbId(81189));
+
+      assertNotNull(serie);
+      assertEquals("Breaking Bad", serie.seriesName);
+      assertTrue(serie.local);
+    });
+  }
+
+  // testeamos buscar en TVDB por id y que no esté en local (fakeapp para obtener login tvdb)
+  @Test
+  public void testTvdbServiceFindByTvdbIdIsNotInLocal() {
+    running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
+      browser.goTo("http://localhost:" + PORT);
+
+      Serie serie = jpa.withTransaction(() -> tvdbService.findOnTvdbByTvdbId(305288));
+
+      assertNotNull(serie);
+      assertEquals("Stranger Things", serie.seriesName);
+      assertFalse(serie.local);
+    });
+  }
+
   // testeamos buscar en TVDB por nombre (fakeapp para obtener login tvdb)
   @Test
   public void testTvdbServiceFindByName() {
@@ -82,15 +109,6 @@ public class TvdbServiceTest {
 
       assertNotNull(series);
       assertFalse(series.isEmpty());
-    });
-  }
-
-  // test
-  @Test
-  public void testTvdbServiceFindByName2() {
-    running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
-      browser.goTo("http://localhost:" + PORT);
-      // error por poner la fakeApplication
     });
   }
 

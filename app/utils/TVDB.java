@@ -46,7 +46,7 @@ public class TVDB {
                                            .post(tvdbaccount)
                                            .thenApply(WSResponse::asJson);
     try {
-      JsonNode respuesta = stage.toCompletableFuture().get(180, TimeUnit.SECONDS);
+      JsonNode respuesta = stage.toCompletableFuture().get(15, TimeUnit.SECONDS);
       token = respuesta.get("token").asText();
       Logger.info("Token obtenido");
     } catch (Exception ex) {
@@ -63,7 +63,7 @@ public class TVDB {
                                         .get()
                                         .thenApply(WSResponse::asJson);
     try {
-      JsonNode respuesta = stage.toCompletableFuture().get(180, TimeUnit.SECONDS);
+      JsonNode respuesta = stage.toCompletableFuture().get(15, TimeUnit.SECONDS);
       token = respuesta.get("token").asText();
       Logger.info("Token actualizado");
     } catch (Exception ex) {

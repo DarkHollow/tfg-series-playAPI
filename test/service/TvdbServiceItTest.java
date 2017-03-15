@@ -24,7 +24,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static play.test.Helpers.*;
 
-public class TvdbServiceTest {
+public class TvdbServiceItTest {
   private static Database db;
   private static JPAApi jpa;
   private JndiDatabaseTester databaseTester;

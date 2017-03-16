@@ -2,7 +2,9 @@ name := """tfg-api"""
 
 version := "1.0-SNAPSHOT"
 
-lazy val root = (project in file(".")).enablePlugins(PlayJava)
+lazy val ItTest = config("it") extend(Test)
+
+lazy val root = project in file(".") enablePlugins(PlayJava) configs(ItTest) settings( inConfig(ItTest)(Defaults.testTasks) : _*)
 
 scalaVersion := "2.11.8"
 
@@ -16,3 +18,10 @@ libraryDependencies ++= Seq(
   javaWs,
   javaJpa
 )
+
+def itTestFilter(name: String): Boolean = ((name endsWith "ItTest") || (name endsWith "IntegrationTest"))
+def unitTestFilter(name: String): Boolean = ((name endsWith "Test") && !itTestFilter(name))
+
+testOptions in ItTest := Seq(Tests.Filter(itTestFilter))
+
+testOptions in Test := Seq(Tests.Filter(unitTestFilter))

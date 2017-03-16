@@ -7,10 +7,6 @@ import com.google.inject.Inject;
 import json.TvShowViews;
 import models.TvShow;
 import models.service.TvShowService;
-import models.service.TvShowRequestService;
-import models.service.TvdbService;
-import play.data.DynamicForm;
-import play.data.FormFactory;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -21,16 +17,10 @@ import java.util.List;
 public class TvShowController extends Controller {
 
   private final TvShowService tvShowService;
-  private final TvdbService tvdbService;
-  private final TvShowRequestService tvShowRequestService;
-  private final FormFactory formFactory;
 
   @Inject
-  public TvShowController(TvShowService tvShowService, TvdbService tvdbService, TvShowRequestService tvShowRequestService, FormFactory formFactory) {
+  public TvShowController(TvShowService tvShowService) {
     this.tvShowService = tvShowService;
-    this.tvdbService = tvdbService;
-    this.tvShowRequestService = tvShowRequestService;
-    this.formFactory = formFactory;
   }
 
   // devolver todas los TV Shows (NOTE: futura paginacion?)
@@ -116,56 +106,6 @@ public class TvShowController extends Controller {
     } else {
       ObjectNode result = Json.newObject();
       result.put("error", "Bad request");
-      return badRequest(result);
-    }
-  }
-
-  // Peticion POST TvShow nuevo
-  // realizar la petición del TV Show
-  @Transactional
-  public Result requestTvShow() {
-    ObjectNode result = Json.newObject();
-    Integer tvdbId, userId;
-
-    // obtenemos datos de la petición post
-    DynamicForm requestForm = formFactory.form().bindFromRequest();
-
-    try {
-      tvdbId = Integer.valueOf(requestForm.get("tvdbId"));
-      userId = Integer.valueOf(requestForm.get("userId"));
-    } catch (Exception ex) {
-      result.put("error", "tvdbId/userId null or not number");
-      return badRequest(result);
-    }
-
-    // comprobamos que exista en tvdb y que no la tengamos en local
-    if (tvdbId != null && userId != null) {
-      TvShow tvShow = tvdbService.findOnTvdbByTvdbId(tvdbId);
-      if (tvShow != null) {
-        // comprobamos que esté en local
-        if (!tvShow.local) {
-          // intentamos hacer la peticion
-          if (tvShowRequestService.requestTvShow(tvdbId, userId)) {
-            result.put("ok", "TV Show request done");
-            return ok(result);
-          } else {
-            // tvShow ya solicitada por este user?
-            result.put("error", "This user requested this TV Show already");
-            return badRequest(result);
-          }
-        } else {
-          result.put("error", "TV Show is on local already");
-          return badRequest(result);
-        }
-
-      } else {
-        // la tvShow no existe en TVDB o ya la tenemos en local
-        result.put("error", "TV Show doesn't exist on TVDB");
-        return notFound(result);
-      }
-    } else {
-      // peticion erronea ? tvdbId es null
-      result.put("error", "tvdbId/userId can't be null");
       return badRequest(result);
     }
   }

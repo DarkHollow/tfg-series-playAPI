@@ -12,36 +12,41 @@ GET     /message                    controllers.AsyncController.message
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
-# API documentation with Swagger
+# API documentation with Swagger --
 GET     /api/doc                    controllers.Default.redirect(to = "doc/")
 GET     /api/doc/                   controllers.Assets.at(path="/public/doc", file = "index.html")
 GET     /api/doc/*file              controllers.Assets.at(path="/public/doc", file)
 
 
-# API root
+# API root ------------------------
 GET     /api                        controllers.Default.redirect(to = "api/")
 GET     /api/                       controllers.RootController.index
 
 
-# API TV Shows
+# TV Shows ------------------------
 
-# all TV Shows (future pagination?)
+## all TV Shows (future pagination?)
 GET     /api/tvshows/                controllers.Default.redirect(to = "../tvShows")
 GET     /api/tvshows                 controllers.TvShowController.all
 
-# TV Show by id
+## TV Show by id
 GET     /api/tvshow/:id/            controllers.TvShowController.tvShowById(id: Integer)
 GET     /api/tvshow/:id             controllers.TvShowController.tvShowById(id: Integer)
 
-# TV Show request
-POST    /api/tvshow/request         controllers.TvShowController.requestTvShow
+# TV Show request ----------------
 
-# API Search
+## TV Shows search on TVDB by name
+GET     /api/search/TVDB/:q/        controllers.TvShowRequestController.searchTvShowTVDBbyName(q: String)
+GET     /api/search/TVDB/:q         controllers.TvShowRequestController.searchTvShowTVDBbyName(q: String)
+
+## TV Show request
+POST    /api/tvshow/request/        controllers.TvShowRequestController.requestTvShow
+POST    /api/tvshow/request         controllers.TvShowRequestController.requestTvShow
+
+
+# API Search ---------------------
 
 # TV Shows search by LIKE
 GET     /api/search/tvshows/:q/      controllers.TvShowController.searchTvShowNameLike(q: String)
 GET     /api/search/tvshows/:q       controllers.TvShowController.searchTvShowNameLike(q: String)
 
-# TV Shows search on TVDB by name
-GET     /api/search/TVDB/:q/        controllers.TvdbController.searchTvShowTVDBbyName(q: String)
-GET     /api/search/TVDB/:q         controllers.TvdbController.searchTvShowTVDBbyName(q: String)

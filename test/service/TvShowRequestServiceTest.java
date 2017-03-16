@@ -3,8 +3,8 @@ package service;
 import models.dao.TvShowDAO;
 import models.dao.TvShowRequestDAO;
 import models.dao.UserDAO;
-import models.service.TvShowService;
 import models.service.TvShowRequestService;
+import models.service.TvShowService;
 import models.service.UserService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
@@ -22,15 +22,12 @@ import java.io.FileInputStream;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static play.test.Helpers.*;
 
 public class TvShowRequestServiceTest {
   private static Database db;
   private static JPAApi jpa;
   private JndiDatabaseTester databaseTester;
   private static TvShowRequestService tvShowRequestService;
-
-  private final static int PORT = 3333;
 
   @Before
   public void initData() throws Exception {
@@ -75,37 +72,22 @@ public class TvShowRequestServiceTest {
   // testeamos pedir un tv show que no tengamos en local (resultado OK)
   @Test
   public void testTvShowRequestRequestTvShowOk() {
-    running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
-      browser.goTo("http://localhost:" + PORT);
-
-      Boolean request = jpa.withTransaction(() -> tvShowRequestService.requestTvShow(296762, 1));
-
-      assertTrue(request);
-    });
+    Boolean request = jpa.withTransaction(() -> tvShowRequestService.requestTvShow(296762, 1));
+    assertTrue(request);
   }
 
   // testeamos pedir un tv show que SÍ tengamos en local (resultado not OK)
   @Test
   public void testTvShowRequestRequestTvShowInLocalNotOk() {
-    running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
-      browser.goTo("http://localhost:" + PORT);
-
-      Boolean request = jpa.withTransaction(() -> tvShowRequestService.requestTvShow(78804, 1));
-
-      assertFalse(request);
-    });
+    Boolean request = jpa.withTransaction(() -> tvShowRequestService.requestTvShow(78804, 1));
+    assertFalse(request);
   }
 
   // testeamos pedir una tv show que no tengamos en local con user inexistente (resultado not OK)
   @Test
   public void testTvShowRequestRequestTvShowInexistentUserNotOk() {
-    running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
-      browser.goTo("http://localhost:" + PORT);
-
-      Boolean request = jpa.withTransaction(() -> tvShowRequestService.requestTvShow(296762, 2));
-
-      assertFalse(request);
-    });
+    Boolean request = jpa.withTransaction(() -> tvShowRequestService.requestTvShow(296762, 2));
+    assertFalse(request);
   }
 
 }

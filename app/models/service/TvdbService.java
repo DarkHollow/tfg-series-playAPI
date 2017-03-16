@@ -2,7 +2,7 @@ package models.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
-import models.Serie;
+import models.TvShow;
 import play.Logger;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSResponse;
@@ -19,18 +19,18 @@ public class TvdbService {
 
   private final WSClient ws;
   private final SimpleDateFormat df;
-  private final SerieService serieService;
+  private final TvShowService tvShowService;
 
   @Inject
-  public TvdbService(WSClient ws, SimpleDateFormat df, SerieService serieService) {
+  public TvdbService(WSClient ws, SimpleDateFormat df, TvShowService tvShowService) {
     this.ws = ws;
     this.df = df;
-    this.serieService = serieService;
+    this.tvShowService = tvShowService;
   }
 
   // buscar por tvdbId (solo un resultado posible)
-  public Serie findOnTvdbByTvdbId(Integer tvdbId) {
-    Serie serie = null;
+  public TvShow findOnTvdbByTvdbId(Integer tvdbId) {
+    TvShow tvShow = null;
     JsonNode respuesta = null;
 
     try {
@@ -47,43 +47,43 @@ public class TvdbService {
       System.out.println(ex.getMessage());
     }
 
-    // comprobamos si ha encontrado la serie en TVDB
+    // comprobamos si ha encontrado la tvShow en TVDB
     if (respuesta != null && respuesta.has("data")) {
-      JsonNode jsonSerie = respuesta.with("data");
-      Logger.debug("Serie encontrada en TVDB: " + jsonSerie.get("seriesName").asText());
+      JsonNode jsonTvShow = respuesta.with("data");
+      Logger.debug("TvShow encontrado en TVDB: " + jsonTvShow.get("seriesName").asText());
 
-      // inicializamos la serie
-      serie =  new Serie();
-      serie.tvdbId = Integer.parseInt(jsonSerie.get("id").asText()); // id de tvdb
-      serie.seriesName = jsonSerie.get("seriesName").asText();       // nombre de la serie
-      serie.banner = jsonSerie.get("banner").asText();               // banner de la serie
-      serie.local = false;
+      // inicializamos la tvShow
+      tvShow =  new TvShow();
+      tvShow.tvdbId = Integer.parseInt(jsonTvShow.get("id").asText()); // id de tvdb
+      tvShow.name = jsonTvShow.get("seriesName").asText();       // nombre de la tvShow
+      tvShow.banner = jsonTvShow.get("banner").asText();               // banner de la tvShow
+      tvShow.local = false;
 
       try {
         df.applyPattern("yyyy-MM-dd");
-        serie.firstAired = df.parse(jsonSerie.get("firstAired").asText()); // fecha estreno
+        tvShow.firstAired = df.parse(jsonTvShow.get("firstAired").asText()); // fecha estreno
       } catch (ParseException e) {
         Logger.debug("No se ha podido parsear la fecha de estreno");
       }
 
       // comprobamos si la tenemos en la base de datos
-      if (serieService.findByTvdbId(tvdbId) != null) {
-        Logger.debug("Serie encontrada en local");
-        serie.local = true;
+      if (tvShowService.findByTvdbId(tvdbId) != null) {
+        Logger.debug("TvShow encontrada en local");
+        tvShow.local = true;
       }
     } else {
-      Logger.debug("Serie no encontrada en TVDB");
+      Logger.debug("TvShow no encontrada en TVDB");
     }
 
-    return serie;
+    return tvShow;
   }
 
   // buscar en tvdb y en local, marcar las que coinciden (multiples resultados posibles)
   // buscar por campo
-  public List<Serie> findOnTVDBby(String field, String value) {
-    // buscamos la serie en tvdb
+  public List<TvShow> findOnTVDBby(String field, String value) {
+    // buscamos el TV Show en tvdb
     JsonNode respuesta = null;
-    List<Serie> series = new ArrayList<>();
+    List<TvShow> tvShows = new ArrayList<>();
 
     try {
       CompletionStage<JsonNode> stage = ws.url("https://api.thetvdb.com/search/series")
@@ -95,39 +95,40 @@ public class TvdbService {
 
       respuesta = stage.toCompletableFuture().get(5, TimeUnit.SECONDS);
 
+      System.out.println("Hola");
       System.out.println(respuesta);
     } catch (Exception ex) {
       System.out.println(ex.getMessage());
     }
 
-    // recorremos series encontradas en TVDB
+    // recorremos tvShows encontradas en TVDB
     if (respuesta != null && respuesta.has("data")) {
-      for (JsonNode jsonSerie : respuesta.withArray("data")) {
-        // obtenemos datos de la serie
-        Serie nuevaSerie = new Serie();
-        nuevaSerie.tvdbId = Integer.parseInt(jsonSerie.get("id").asText()); // id de tvdb
-        nuevaSerie.seriesName = jsonSerie.get("seriesName").asText();       // nombre de la serie
-        nuevaSerie.banner = jsonSerie.get("banner").asText();               // banner de la serie
-        nuevaSerie.local = false;                                           // iniciamos por defecto a false
+      for (JsonNode jsonTvShow : respuesta.withArray("data")) {
+        // obtenemos datos del TV Show
+        TvShow nuevaTvShow = new TvShow();
+        nuevaTvShow.tvdbId = Integer.parseInt(jsonTvShow.get("id").asText()); // id de tvdb
+        nuevaTvShow.name = jsonTvShow.get("seriesName").asText();   // nombre del TV Show
+        nuevaTvShow.banner = jsonTvShow.get("banner").asText();     // banner del TV Show
+        nuevaTvShow.local = false;                                  // iniciamos por defecto a false
         try {
           df.applyPattern("yyyy-MM-dd");
-          nuevaSerie.firstAired = df.parse(jsonSerie.get("firstAired").asText()); // fecha estreno
+          nuevaTvShow.firstAired = df.parse(jsonTvShow.get("firstAired").asText()); // fecha estreno
         } catch (ParseException e) {
           Logger.debug("No se ha podido parsear la fecha de estreno");
         }
 
         // buscamos en local para indicar si la tenemos o no
-        Serie serieLocal = serieService.findByTvdbId(nuevaSerie.tvdbId);
-        if (serieLocal != null) {
-          nuevaSerie.local = true;
+        TvShow tvShowLocal = tvShowService.findByTvdbId(nuevaTvShow.tvdbId);
+        if (tvShowLocal != null) {
+          nuevaTvShow.local = true;
         }
 
         // finalmente la añadimos a la lista
-        series.add(nuevaSerie);
+        tvShows.add(nuevaTvShow);
       }
     }
 
-    return series;
+    return tvShows;
   }
 
 }

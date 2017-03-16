@@ -1,11 +1,11 @@
 package service;
 
-import models.dao.SerieDAO;
+import models.dao.TvShowDAO;
 import models.dao.TvShowRequestDAO;
-import models.dao.UsuarioDAO;
-import models.service.SerieService;
+import models.dao.UserDAO;
+import models.service.TvShowService;
 import models.service.TvShowRequestService;
-import models.service.UsuarioService;
+import models.service.UserService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
@@ -44,12 +44,12 @@ public class TvShowRequestServiceTest {
     jpa = JPA.createFor("memoryPersistenceUnit");
 
     // inicializamos tvShowRequestService
-    SerieDAO serieDAO = new SerieDAO(jpa);
-    SerieService serieService = new SerieService(serieDAO);
-    UsuarioDAO usuarioDAO = new UsuarioDAO(jpa);
-    UsuarioService usuarioService = new UsuarioService(usuarioDAO);
+    TvShowDAO tvShowDAO = new TvShowDAO(jpa);
+    TvShowService tvShowService = new TvShowService(tvShowDAO);
+    UserDAO userDAO = new UserDAO(jpa);
+    UserService userService = new UserService(userDAO);
     TvShowRequestDAO tvShowRequestDAO = new TvShowRequestDAO(jpa);
-    tvShowRequestService = new TvShowRequestService(serieService, usuarioService, tvShowRequestDAO);
+    tvShowRequestService = new TvShowRequestService(tvShowService, userService, tvShowRequestDAO);
 
     // inicializamos base de datos de prueba
     databaseTester = new JndiDatabaseTester("DefaultDS");
@@ -72,7 +72,7 @@ public class TvShowRequestServiceTest {
     db.shutdown();
   }
 
-  // testeamos pedir una serie que no tengamos en local (resultado OK)
+  // testeamos pedir un tv show que no tengamos en local (resultado OK)
   @Test
   public void testTvShowRequestRequestTvShowOk() {
     running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
@@ -84,7 +84,7 @@ public class TvShowRequestServiceTest {
     });
   }
 
-  // testeamos pedir una serie que SÍ tengamos en local (resultado not OK)
+  // testeamos pedir un tv show que SÍ tengamos en local (resultado not OK)
   @Test
   public void testTvShowRequestRequestTvShowInLocalNotOk() {
     running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
@@ -96,7 +96,7 @@ public class TvShowRequestServiceTest {
     });
   }
 
-  // testeamos pedir una serie que no tengamos en local con usuario inexistente (resultado not OK)
+  // testeamos pedir una tv show que no tengamos en local con user inexistente (resultado not OK)
   @Test
   public void testTvShowRequestRequestTvShowInexistentUserNotOk() {
     running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {

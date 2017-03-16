@@ -1,9 +1,9 @@
 package dao;
 
 import models.TvShowRequest;
-import models.Usuario;
+import models.User;
 import models.dao.TvShowRequestDAO;
-import models.dao.UsuarioDAO;
+import models.dao.UserDAO;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
@@ -68,15 +68,15 @@ public class TvShowRequestModelDAOTest {
   // testeamos crear una request
   @Test
   public void testTvShowRequestDAOCreate() {
-    final UsuarioDAO usuarioDAO = new UsuarioDAO(jpa);
+    final UserDAO userDAO = new UserDAO(jpa);
 
-    Usuario usuario = jpa.withTransaction(() -> usuarioDAO.find(1));
+    User user = jpa.withTransaction(() -> userDAO.find(1));
 
-    TvShowRequest request1 = new TvShowRequest(222222, usuario);
+    TvShowRequest request1 = new TvShowRequest(222222, user);
     TvShowRequest request2 = jpa.withTransaction(() -> tvShowRequestDAO.create(request1));
 
     assertEquals(request1.tvdbId, request2.tvdbId);
-    assertEquals(request1.usuario.id, request2.usuario.id);
+    assertEquals(request1.user.id, request2.user.id);
     assertEquals(request1.requestDate, request2.requestDate);
   }
 
@@ -87,7 +87,7 @@ public class TvShowRequestModelDAOTest {
 
     assertEquals(1, (int) request.id);
     assertEquals(111111, (int) request.tvdbId);
-    assertEquals(1, (int) request.usuario.id);
+    assertEquals(1, (int) request.user.id);
   }
 
   // testeamos buscar por id -> not found
@@ -129,16 +129,16 @@ public class TvShowRequestModelDAOTest {
     });
   }
 
-  // testeamos delete cascade, borrando un usuario deberian borrarse sus requests
+  // testeamos delete cascade, borrando un user deberian borrarse sus requests
   @Test
-  public void testTvShowRequestDAODeleteCascadeFromUsuario() {
-    final UsuarioDAO usuarioDAO = new UsuarioDAO(jpa);
+  public void testTvShowRequestDAODeleteCascadeFromUser() {
+    final UserDAO userDAO = new UserDAO(jpa);
 
     jpa.withTransaction(() -> {
       TvShowRequest request = tvShowRequestDAO.find(1);
       assertNotNull(request);
 
-      usuarioDAO.delete(usuarioDAO.find(1));
+      userDAO.delete(userDAO.find(1));
       request = tvShowRequestDAO.find(1);
       assertNull(request);
     });

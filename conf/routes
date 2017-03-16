@@ -23,25 +23,25 @@ GET     /api                        controllers.Default.redirect(to = "api/")
 GET     /api/                       controllers.RootController.index
 
 
-# API Series
+# API TV Shows
 
-# all series (future pagination?)
-GET     /api/series/                controllers.Default.redirect(to = "../series")
-GET     /api/series                 controllers.SerieController.all
+# all TV Shows (future pagination?)
+GET     /api/tvshows/                controllers.Default.redirect(to = "../tvShows")
+GET     /api/tvshows                 controllers.TvShowController.all
 
-# series by id
-GET     /api/series/:id/            controllers.SerieController.serieById(id: Integer)
-GET     /api/series/:id             controllers.SerieController.serieById(id: Integer)
+# TV Show by id
+GET     /api/tvshow/:id/            controllers.TvShowController.tvShowById(id: Integer)
+GET     /api/tvshow/:id             controllers.TvShowController.tvShowById(id: Integer)
 
-# tvshow request
-POST    /api/series/request         controllers.SerieController.requestSeries
+# TV Show request
+POST    /api/tvshow/request         controllers.TvShowController.requestTvShow
 
 # API Search
 
-# series search by LIKE
-GET     /api/search/series/:q/      controllers.SerieController.searchSeriesNameLike(q: String)
-GET     /api/search/series/:q       controllers.SerieController.searchSeriesNameLike(q: String)
+# TV Shows search by LIKE
+GET     /api/search/tvshows/:q/      controllers.TvShowController.searchTvShowNameLike(q: String)
+GET     /api/search/tvshows/:q       controllers.TvShowController.searchTvShowNameLike(q: String)
 
-# series search on TVDB by name
-GET     /api/search/TVDB/:q/        controllers.TvdbController.searchSeriesTVDBbyName(q: String)
-GET     /api/search/TVDB/:q         controllers.TvdbController.searchSeriesTVDBbyName(q: String)
+# TV Shows search on TVDB by name
+GET     /api/search/TVDB/:q/        controllers.TvdbController.searchTvShowTVDBbyName(q: String)
+GET     /api/search/TVDB/:q         controllers.TvdbController.searchTvShowTVDBbyName(q: String)

@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "tvShowRequest", uniqueConstraints = @UniqueConstraint(columnNames = {"tvdbId", "usuarioId"}))
+@Table(name = "tvShowRequest", uniqueConstraints = @UniqueConstraint(columnNames = {"tvdbId", "userId"}))
 public class TvShowRequest {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,10 +14,10 @@ public class TvShowRequest {
 
   public Integer tvdbId;
 
-  // usuario que hace la petición
+  // user que hace la petición
   @ManyToOne
-  @JoinColumn(name = "usuarioId")
-  public Usuario usuario;
+  @JoinColumn(name = "userId")
+  public User user;
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   @Temporal(TemporalType.DATE)
@@ -27,9 +27,9 @@ public class TvShowRequest {
   public TvShowRequest() {}
 
   // contructor por parámetros
-  public TvShowRequest(Integer tvdbId, Usuario usuario) {
+  public TvShowRequest(Integer tvdbId, User user) {
     this.tvdbId = tvdbId;
-    this.usuario = usuario;
+    this.user = user;
   }
 
 }

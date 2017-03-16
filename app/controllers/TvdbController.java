@@ -4,10 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
-import json.SerieViews;
-import models.Serie;
+import json.TvShowViews;
+import models.TvShow;
 import models.service.TvdbService;
-import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.db.jpa.Transactional;
 import play.libs.Json;
@@ -27,15 +26,15 @@ public class TvdbController extends Controller {
     this.formFactory = formFactory;
   }
 
-  // buscar series en TVDB y marcar las locales
-  // devolver la busqueda de series LIKE
+  // buscar TV Show en TVDB y marcar las locales
+  // devolver la busqueda de TV Show LIKE
   @Transactional(readOnly = true)
-  public Result searchSeriesTVDBbyName(String query) {
+  public Result searchTvShowTVDBbyName(String query) {
     if (query.length() >= 3) {
-      List<Serie> series = tvdbService.findOnTVDBby("name", query);
+      List<TvShow> tvShows = tvdbService.findOnTVDBby("name", query);
 
       // si la lista está vacía, not found
-      if (series.isEmpty()) {
+      if (tvShows.isEmpty()) {
         ObjectNode result = Json.newObject();
         result.put("error", "Not found");
         return notFound(result);
@@ -44,8 +43,8 @@ public class TvdbController extends Controller {
       // si la lista no está vacía, devolvemos datos
       try {
         JsonNode jsonNode = Json.parse(new ObjectMapper()
-                                    .writerWithView(SerieViews.SearchTVDB.class)
-                                    .writeValueAsString(series));
+                                    .writerWithView(TvShowViews.SearchTVDB.class)
+                                    .writeValueAsString(tvShows));
         return ok(jsonNode);
 
       } catch (Exception ex) {

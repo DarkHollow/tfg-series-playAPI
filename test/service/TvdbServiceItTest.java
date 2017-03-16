@@ -1,8 +1,8 @@
 package service;
 
-import models.Serie;
-import models.dao.SerieDAO;
-import models.service.SerieService;
+import models.TvShow;
+import models.dao.TvShowDAO;
+import models.service.TvShowService;
 import models.service.TvdbService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
@@ -46,14 +46,14 @@ public class TvdbServiceItTest {
     // inicializamos tvdbService
     WSClient ws = WS.newClient(PORT);
     SimpleDateFormat df = mock(SimpleDateFormat.class);
-    SerieDAO serieDAO = new SerieDAO(jpa);
-    SerieService serieService = new SerieService(serieDAO);
-    tvdbService = new TvdbService(ws, df, serieService);
+    TvShowDAO tvShowDAO = new TvShowDAO(jpa);
+    TvShowService tvShowService = new TvShowService(tvShowDAO);
+    tvdbService = new TvdbService(ws, df, tvShowService);
 
     // inicializamos base de datos de prueba
     databaseTester = new JndiDatabaseTester("DefaultDS");
     IDataSet initialDataSet = new FlatXmlDataSetBuilder().build(new
-      FileInputStream("test/resources/series_dataset.xml"));
+      FileInputStream("test/resources/tvShow_dataset.xml"));
     databaseTester.setDataSet(initialDataSet);
 
     // Set up - CLEAN_INSERT: primero delete all y despues insert
@@ -77,11 +77,11 @@ public class TvdbServiceItTest {
     running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
       browser.goTo("http://localhost:" + PORT);
 
-      Serie serie = jpa.withTransaction(() -> tvdbService.findOnTvdbByTvdbId(81189));
+      TvShow tvShow = jpa.withTransaction(() -> tvdbService.findOnTvdbByTvdbId(81189));
 
-      assertNotNull(serie);
-      assertEquals("Breaking Bad", serie.seriesName);
-      assertTrue(serie.local);
+      assertNotNull(tvShow);
+      assertEquals("Breaking Bad", tvShow.name);
+      assertTrue(tvShow.local);
     });
   }
 
@@ -91,11 +91,11 @@ public class TvdbServiceItTest {
     running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
       browser.goTo("http://localhost:" + PORT);
 
-      Serie serie = jpa.withTransaction(() -> tvdbService.findOnTvdbByTvdbId(305288));
+      TvShow tvShow = jpa.withTransaction(() -> tvdbService.findOnTvdbByTvdbId(305288));
 
-      assertNotNull(serie);
-      assertEquals("Stranger Things", serie.seriesName);
-      assertFalse(serie.local);
+      assertNotNull(tvShow);
+      assertEquals("Stranger Things", tvShow.name);
+      assertFalse(tvShow.local);
     });
   }
 
@@ -105,10 +105,10 @@ public class TvdbServiceItTest {
     running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
       browser.goTo("http://localhost:" + PORT);
 
-      List<Serie> series = jpa.withTransaction(() -> tvdbService.findOnTVDBby("name", "stranger"));
+      List<TvShow> tvShows = jpa.withTransaction(() -> tvdbService.findOnTVDBby("name", "stranger"));
 
-      assertNotNull(series);
-      assertFalse(series.isEmpty());
+      assertNotNull(tvShows);
+      assertFalse(tvShows.isEmpty());
     });
   }
 

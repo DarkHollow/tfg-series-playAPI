@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
-import json.SerieViews;
-import models.Serie;
-import models.service.SerieService;
+import json.TvShowViews;
+import models.TvShow;
+import models.service.TvShowService;
 import models.service.TvShowRequestService;
 import models.service.TvdbService;
 import play.data.DynamicForm;
@@ -18,30 +18,30 @@ import play.mvc.Result;
 
 import java.util.List;
 
-public class SerieController extends Controller {
+public class TvShowController extends Controller {
 
-  private final SerieService serieService;
+  private final TvShowService tvShowService;
   private final TvdbService tvdbService;
   private final TvShowRequestService tvShowRequestService;
   private final FormFactory formFactory;
 
   @Inject
-  public SerieController(SerieService serieService, TvdbService tvdbService, TvShowRequestService tvShowRequestService, FormFactory formFactory) {
-    this.serieService = serieService;
+  public TvShowController(TvShowService tvShowService, TvdbService tvdbService, TvShowRequestService tvShowRequestService, FormFactory formFactory) {
+    this.tvShowService = tvShowService;
     this.tvdbService = tvdbService;
     this.tvShowRequestService = tvShowRequestService;
     this.formFactory = formFactory;
   }
 
-  // devolver todas las series (NOTE: futura paginacion?)
-  // JSON View SeriesView.SearchSerie: vista que solo incluye los campos
+  // devolver todas los TV Shows (NOTE: futura paginacion?)
+  // JSON View TvShowView.SearchTvShow: vista que solo incluye los campos
   // relevante de una búsqueda
   @Transactional(readOnly = true)
   public Result all() {
-    List<Serie> series = serieService.all();
+    List<TvShow> tvShows = tvShowService.all();
 
     // si la lista está vacía, not found
-    if (series.isEmpty()) {
+    if (tvShows.isEmpty()) {
       ObjectNode result = Json.newObject();
       result.put("error", "Not found");
       return notFound(result);
@@ -50,8 +50,8 @@ public class SerieController extends Controller {
     // si la lista no está vacía, devolvemos datos
     try {
       JsonNode jsonNode = Json.parse(new ObjectMapper()
-                                  .writerWithView(SerieViews.SearchSerie.class)
-                                  .writeValueAsString(series));
+                                  .writerWithView(TvShowViews.SearchTvShow.class)
+                                  .writeValueAsString(tvShows));
       return ok(jsonNode);
 
     } catch (Exception ex) {
@@ -62,11 +62,11 @@ public class SerieController extends Controller {
     }
   }
 
-  // devolver una serie por id
+  // devolver un TV Show por id
   @Transactional(readOnly = true)
-  public Result serieById(Integer id) {
-    Serie serie = serieService.find(id);
-    if (serie == null) {
+  public Result tvShowById(Integer id) {
+    TvShow tvShow = tvShowService.find(id);
+    if (tvShow == null) {
       ObjectNode result = Json.newObject();
       result.put("error", "Not found");
       return notFound(result);
@@ -75,8 +75,8 @@ public class SerieController extends Controller {
     // si la lista no está vacía, devolvemos datos
     try {
       JsonNode jsonNode = Json.parse(new ObjectMapper()
-                                  .writerWithView(SerieViews.FullSerie.class)
-                                  .writeValueAsString(serie));
+                                  .writerWithView(TvShowViews.FullTvShow.class)
+                                  .writeValueAsString(tvShow));
       return ok(jsonNode);
 
     } catch (Exception ex) {
@@ -87,14 +87,14 @@ public class SerieController extends Controller {
     }
   }
 
-  // devolver la busqueda de series LIKE
+  // devolver la busqueda de TV Shows LIKE
   @Transactional(readOnly = true)
-  public Result searchSeriesNameLike(String query) {
+  public Result searchTvShowNameLike(String query) {
     if (query.length() >= 3) {
-      List<Serie> series = serieService.findBy("seriesName", query, false);
+      List<TvShow> tvShows = tvShowService.findBy("name", query, false);
 
       // si la lista está vacía, not found
-      if (series.isEmpty()) {
+      if (tvShows.isEmpty()) {
         ObjectNode result = Json.newObject();
         result.put("error", "Not found");
         return notFound(result);
@@ -103,8 +103,8 @@ public class SerieController extends Controller {
       // si la lista no está vacía, devolvemos datos
       try {
         JsonNode jsonNode = Json.parse(new ObjectMapper()
-                                    .writerWithView(SerieViews.SearchSerie.class)
-                                    .writeValueAsString(series));
+                                    .writerWithView(TvShowViews.SearchTvShow.class)
+                                    .writeValueAsString(tvShows));
         return ok(jsonNode);
 
       } catch (Exception ex) {
@@ -120,52 +120,52 @@ public class SerieController extends Controller {
     }
   }
 
-  // Peticion POST TvShow nueva
-  // realizar la petición de la serie
+  // Peticion POST TvShow nuevo
+  // realizar la petición del TV Show
   @Transactional
-  public Result requestSeries() {
+  public Result requestTvShow() {
     ObjectNode result = Json.newObject();
-    Integer tvdbId, usuarioId;
+    Integer tvdbId, userId;
 
     // obtenemos datos de la petición post
     DynamicForm requestForm = formFactory.form().bindFromRequest();
 
     try {
       tvdbId = Integer.valueOf(requestForm.get("tvdbId"));
-      usuarioId = Integer.valueOf(requestForm.get("usuarioId"));
+      userId = Integer.valueOf(requestForm.get("userId"));
     } catch (Exception ex) {
-      result.put("error", "tvdbId/usuarioId null or not number");
+      result.put("error", "tvdbId/userId null or not number");
       return badRequest(result);
     }
 
     // comprobamos que exista en tvdb y que no la tengamos en local
-    if (tvdbId != null && usuarioId != null) {
-      Serie serie = tvdbService.findOnTvdbByTvdbId(tvdbId);
-      if (serie != null) {
+    if (tvdbId != null && userId != null) {
+      TvShow tvShow = tvdbService.findOnTvdbByTvdbId(tvdbId);
+      if (tvShow != null) {
         // comprobamos que esté en local
-        if (!serie.local) {
+        if (!tvShow.local) {
           // intentamos hacer la peticion
-          if (tvShowRequestService.requestTvShow(tvdbId, usuarioId)) {
-            result.put("ok", "Series request done");
+          if (tvShowRequestService.requestTvShow(tvdbId, userId)) {
+            result.put("ok", "TV Show request done");
             return ok(result);
           } else {
-            // serie ya solicitada por este usuario?
-            result.put("error", "This user requested this series already");
+            // tvShow ya solicitada por este user?
+            result.put("error", "This user requested this TV Show already");
             return badRequest(result);
           }
         } else {
-          result.put("error", "Series is on local already");
+          result.put("error", "TV Show is on local already");
           return badRequest(result);
         }
 
       } else {
-        // la serie no existe en TVDB o ya la tenemos en local
-        result.put("error", "Series doesn't exist on TVDB");
+        // la tvShow no existe en TVDB o ya la tenemos en local
+        result.put("error", "TV Show doesn't exist on TVDB");
         return notFound(result);
       }
     } else {
       // peticion erronea ? tvdbId es null
-      result.put("error", "tvdbId/usuarioId can't be null");
+      result.put("error", "tvdbId/userId can't be null");
       return badRequest(result);
     }
   }

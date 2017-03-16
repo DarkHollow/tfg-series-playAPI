@@ -2,34 +2,34 @@ package models.service;
 
 import com.google.inject.Inject;
 import models.TvShowRequest;
-import models.Usuario;
+import models.User;
 import models.dao.TvShowRequestDAO;
 import play.Logger;
 
 public class TvShowRequestService {
 
-  private final SerieService serieService;
-  private final UsuarioService usuarioService;
+  private final TvShowService tvShowService;
+  private final UserService userService;
   private final TvShowRequestDAO rqDAO;
 
   @Inject
-  public TvShowRequestService(SerieService serieService, UsuarioService usuarioService, TvShowRequestDAO rqDAO) {
-    this.serieService = serieService;
-    this.usuarioService = usuarioService;
+  public TvShowRequestService(TvShowService tvShowService, UserService userService, TvShowRequestDAO rqDAO) {
+    this.tvShowService = tvShowService;
+    this.userService = userService;
     this.rqDAO = rqDAO;
   }
 
-  // POST petición serie
-  public Boolean requestTvShow(Integer tvdbId, Integer usuarioId) {
+  // POST petición TV Show
+  public Boolean requestTvShow(Integer tvdbId, Integer userId) {
     Boolean result = false;
 
     // comprobamos que no esté en nuetra base de datos ya
-    if (serieService.findByTvdbId(tvdbId) == null) {
-      // encontrar al usuario
-      Usuario usuario = usuarioService.find(usuarioId);
-      if (usuario != null) {
+    if (tvShowService.findByTvdbId(tvdbId) == null) {
+      // encontrar al user
+      User user = userService.find(userId);
+      if (user != null) {
         // hacemos la peticion
-        TvShowRequest request = new TvShowRequest(tvdbId, usuario);
+        TvShowRequest request = new TvShowRequest(tvdbId, user);
         try {
           request = rqDAO.create(request);
 
@@ -37,8 +37,8 @@ public class TvShowRequestService {
             result = true;
           }
         } catch (Exception ex) {
-          // el mismo usuario pidiendo la misma serie?
-          Logger.debug("Serie ya pedida por este usuario");
+          // el mismo user pidiendo el mismo TV Show ?
+          Logger.debug("TvShow ya pedido por este user");
         }
       }
     }

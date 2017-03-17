@@ -1,12 +1,12 @@
+import actors.TvdbActor;
 import com.google.inject.AbstractModule;
 import java.time.Clock;
 
+import models.service.tvdb.TvdbConnection;
 import services.ApplicationTimer;
 import services.AtomicCounter;
 import services.Counter;
 
-import utils.TVDB;
-import actors.TVDBActor;
 import play.libs.akka.AkkaGuiceSupport;
 
 /**
@@ -30,10 +30,10 @@ public class Module extends AbstractModule implements AkkaGuiceSupport {
         bind(ApplicationTimer.class).asEagerSingleton();
         // Set AtomicCounter as the implementation for Counter.
         bind(Counter.class).to(AtomicCounter.class);
-        // Inicializar la clase TVDB para hacer login y mas
-        bind(TVDB.class).asEagerSingleton();
-        // bindeamos el actor de TVDB
-        bindActor(TVDBActor.class, "TVDBActor");
+        // Inicializar la clase TvdbConnection para hacer login y mas
+        bind(TvdbConnection.class).asEagerSingleton();
+        // bindeamos el actor de TvdbConnection
+        bindActor(TvdbActor.class, "TvdbActor");
     }
 
 }

@@ -8,8 +8,8 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "usuario")
-public class Usuario {
+@Table(name = "user")
+public class User {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,14 +33,14 @@ public class Usuario {
   @Temporal(TemporalType.DATE)
   public Date registrationDate;
 
-  @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
-  public List<TvShowRequest> requestedSeries;
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  public List<TvShowRequest> requestedTvShows;
 
   // constructor vacío
-  public Usuario() {}
+  public User() {}
 
   // constructor por parámetros
-  public Usuario(String email, String password, String salt, String name) {
+  public User(String email, String password, String salt, String name) {
     this.email = email;
     this.password = password;
     this.salt = salt;
@@ -48,17 +48,17 @@ public class Usuario {
   }
 
   // constructor copia
-  public Usuario(Usuario usuario) {
-    email = usuario.email;
-    password = usuario.password;
-    salt = usuario.salt;
-    name = usuario.name;
+  public User(User user) {
+    email = user.email;
+    password = user.password;
+    salt = user.salt;
+    name = user.name;
   }
 
   // toString - solo info importante
   @Override
   public String toString() {
-    return "Usuario [id=" + id + ", email=" + email + ", name="
+    return "User [id=" + id + ", email=" + email + ", name="
             + name + ", registrationDate=" + registrationDate + "]";
   }
 

@@ -44,7 +44,7 @@ info:
 
 
 
-    This [API](https://github.com/DarkHollow/tfg-series-playAPI) and API documentation is part of a `TFG (Final Degree Project)`
+    This [API](https://github.com/DarkHollow/tfg-tvShows-playAPI) and API documentation is part of a `TFG (Final Degree Project)`
     of Software Engineering by [Roberto Cánovas ![Github](images/github-logo.png)](https://github.com/DarkHollow/) at
     the University of Alicante (Spain). You can contact me at [Github](https://github.com/DarkHollow/), [e-mail](mailto: rcanovas.corp@gmail.com) or [Twitter](https://twitter.com/RobCanovas).
 
@@ -56,9 +56,9 @@ tags:
   - name: root
     description: Status
   - name: Search
-    description: Search for series
+    description: Search for tvShows
   - name: Series
-    description: Information about a specific series
+    description: Information about a specific tvShows
 schemes:
   - http
 consumes:
@@ -84,17 +84,17 @@ paths:
               API_doc:
                 type: string
                 description: link to the documentation
-  /search/series/{name}:
+  /search/tvShows/{name}:
     get:
       tags:
         - Search
       description: >-
-        Allows the user to search for series based on its name (can be partially)
+        Allows the user to search for tvShows based on its name (can be partially)
       parameters:
         - name: name
           in: path
           required: true
-          description: Name of the series to search for
+          description: Name of the tvShows to search for
           type: string
       responses:
         '200':
@@ -118,12 +118,12 @@ paths:
       tags:
         - Search
       description: >-
-        Allows the user to search for series based on its name on TVDB and match them with series in our bbdd
+        Allows the user to search for tvShows based on its name on TVDB and match them with tvShows in our bbdd
       parameters:
         - name: name
           in: path
           required: true
-          description: Name of the series to search for
+          description: Name of the tvShows to search for
           type: string
       responses:
         '200':
@@ -142,15 +142,15 @@ paths:
           description: JSON response with 500 Internal Server error
           schema:
             $ref: '#/definitions/InternalServerError'
-  /series:
+  /tvShows:
     get:
       tags:
         - Series
       description: >-
-        Returns basic information about all series (will be deprecated)
+        Returns basic information about all tvShows (will be deprecated)
       responses:
         '200':
-          description: JSON response with an array of all series
+          description: JSON response with an array of all tvShows
           schema:
             $ref: '#/definitions/SeriesArray'
         '404':
@@ -161,21 +161,21 @@ paths:
           description: JSON response with 500 Internal Server error
           schema:
             $ref: '#/definitions/InternalServerError'
-  /series/{id}:
+  /tvShows/{id}:
     get:
       tags:
         - Series
       description: >-
-        Returns all information about a particular series by id
+        Returns all information about a particular tvShows by id
       parameters:
         - name: id
           in: path
           required: true
-          description: ID of the series
+          description: ID of the tvShows
           type: integer
       responses:
         '200':
-          description: JSON response with the information of the series
+          description: JSON response with the information of the tvShows
           schema:
             $ref: '#/definitions/Series'
         '404':
@@ -206,10 +206,10 @@ definitions:
       properties:
         id:
           type: integer
-          description: series id
-        seriesName:
+          description: tvShows id
+        name:
           type: string
-          description: name of the series
+          description: name of the tvShows
         firstAired:
           type: string
           description: first aired date
@@ -223,10 +223,10 @@ definitions:
       properties:
         id:
           type: integer
-          description: series id
-        seriesName:
+          description: tvShows id
+        name:
           type: string
-          description: name of the series
+          description: name of the tvShows
         firstAired:
           type: string
           description: first aired date
@@ -235,22 +235,22 @@ definitions:
           description: relative url of the banner image
         local:
           type: bool
-          description: true if the series is in our bbdd
+          description: true if the tvShows is in our bbdd
   Series:
     type: object
     properties:
       id:
         type: integer
-        description: series id
-      seriesName:
+        description: tvShows id
+      name:
         type: string
-        description: name of the series
+        description: name of the tvShows
       firstAired:
         type: string
         description: first aired date
       overview:
         type: string
-        description: a summary of the series
+        description: a summary of the tvShows
       banner:
         type: string
         description: relative url of the banner image
@@ -262,7 +262,7 @@ definitions:
         description: relative url of the fanart image
       network:
         type: string
-        description: network where the series airs
+        description: network where the tvShows airs
       runtime:
         type: integer
         description: average episode runtime
@@ -270,19 +270,19 @@ definitions:
         type: array
         items:
           type: string
-        description: genres of the series
+        description: genres of the tvShows
       status:
         type: string
-        description: status of the series (continuing or ended)
+        description: status of the tvShows (continuing or ended)
       writer:
         type: string
-        description: writer or writers of the series
+        description: writer or writers of the tvShows
       actors:
         type: string
-        description: principal actors of the series
+        description: principal actors of the tvShows
       imdbRating:
         type: float
-        description: average rating on imdb of the series
+        description: average rating on imdb of the tvShows
       trailer:
         type: string
         description: YouTube video code of the trailer

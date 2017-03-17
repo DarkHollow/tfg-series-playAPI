@@ -1,14 +1,16 @@
-package service;
+package service.tvdb;
 
-import models.Serie;
-import models.dao.SerieDAO;
-import models.service.SerieService;
-import models.service.TvdbService;
+import models.TvShow;
+import models.service.tvdb.TvdbConnection;
+import models.service.tvdb.TvdbService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import play.api.Play;
 import play.db.Database;
 import play.db.Databases;
 import play.db.jpa.JPA;
@@ -24,11 +26,12 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static play.test.Helpers.*;
 
-public class TvdbServiceTest {
+public class TvdbServiceItTest {
   private static Database db;
   private static JPAApi jpa;
   private JndiDatabaseTester databaseTester;
-  private static TvdbService tvdbService;
+  private static WSClient ws;
+  private static SimpleDateFormat df;
 
   private final static int PORT = 3333;
 
@@ -43,17 +46,14 @@ public class TvdbServiceTest {
     });
     jpa = JPA.createFor("memoryPersistenceUnit");
 
-    // inicializamos tvdbService
-    WSClient ws = WS.newClient(PORT);
-    SimpleDateFormat df = mock(SimpleDateFormat.class);
-    SerieDAO serieDAO = new SerieDAO(jpa);
-    SerieService serieService = new SerieService(serieDAO);
-    tvdbService = new TvdbService(ws, df, serieService);
+    // inicializamos mocks y servicios
+    ws = WS.newClient(PORT);
+    df = mock(SimpleDateFormat.class);
 
     // inicializamos base de datos de prueba
     databaseTester = new JndiDatabaseTester("DefaultDS");
     IDataSet initialDataSet = new FlatXmlDataSetBuilder().build(new
-      FileInputStream("test/resources/series_dataset.xml"));
+      FileInputStream("test/resources/tvShow_dataset.xml"));
     databaseTester.setDataSet(initialDataSet);
 
     // Set up - CLEAN_INSERT: primero delete all y despues insert
@@ -71,44 +71,48 @@ public class TvdbServiceTest {
     db.shutdown();
   }
 
-  // testeamos buscar en TVDB por id y que esté en local (fakeapp para obtener login tvdb)
+  // testeamos buscar en TVDB por id y que encuentre
   @Test
-  public void testTvdbServiceFindByTvdbIdIsInLocal() {
+  public void testTvdbServiceFindByTvdbIdOk() {
     running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
       browser.goTo("http://localhost:" + PORT);
 
-      Serie serie = jpa.withTransaction(() -> tvdbService.findOnTvdbByTvdbId(81189));
+      TvdbService tvdbService = new TvdbService(ws, df, Play.current().injector().instanceOf(TvdbConnection.class));
 
-      assertNotNull(serie);
-      assertEquals("Breaking Bad", serie.seriesName);
-      assertTrue(serie.local);
+      TvShow tvShow = jpa.withTransaction(() -> tvdbService.findOnTvdbByTvdbId(81189));
+
+      assertNotNull(tvShow);
+      assertEquals("Breaking Bad", tvShow.name);
     });
   }
 
-  // testeamos buscar en TVDB por id y que no esté en local (fakeapp para obtener login tvdb)
+  // testeamos buscar en TVDB por id y que no encuentre
   @Test
-  public void testTvdbServiceFindByTvdbIdIsNotInLocal() {
+  public void testTvdbServiceFindByTvdbIdNotOk() {
     running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
       browser.goTo("http://localhost:" + PORT);
 
-      Serie serie = jpa.withTransaction(() -> tvdbService.findOnTvdbByTvdbId(305288));
+      TvdbService tvdbService = new TvdbService(ws, df, Play.current().injector().instanceOf(TvdbConnection.class));
 
-      assertNotNull(serie);
-      assertEquals("Stranger Things", serie.seriesName);
-      assertFalse(serie.local);
+      TvShow tvShow = jpa.withTransaction(() -> tvdbService.findOnTvdbByTvdbId(305288));
+
+      assertNotNull(tvShow);
+      assertEquals("Stranger Things", tvShow.name);
     });
   }
 
-  // testeamos buscar en TVDB por nombre (fakeapp para obtener login tvdb)
+  // testeamos buscar en TVDB por nombre
   @Test
   public void testTvdbServiceFindByName() {
     running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
       browser.goTo("http://localhost:" + PORT);
 
-      List<Serie> series = jpa.withTransaction(() -> tvdbService.findOnTVDBby("name", "stranger"));
+      TvdbService tvdbService = new TvdbService(ws, df, Play.current().injector().instanceOf(TvdbConnection.class));
 
-      assertNotNull(series);
-      assertFalse(series.isEmpty());
+      List<TvShow> tvShows = jpa.withTransaction(() -> tvdbService.findOnTVDBby("name", "stranger"));
+
+      assertNotNull(tvShows);
+      assertFalse(tvShows.isEmpty());
     });
   }
 

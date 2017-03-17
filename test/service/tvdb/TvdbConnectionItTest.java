@@ -1,13 +1,17 @@
+package service.tvdb;
+
+import models.service.tvdb.TvdbConnection;
+import org.junit.Test;
 import play.Logger;
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
+import play.api.Play;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static play.test.Helpers.*;
-import static org.fluentlenium.core.filter.FilterConstructor.*;
 
-import utils.TVDB;
-
-public class TVDBClassTest {
+public class TvdbConnectionItTest {
 
   // probamos a comprobar que se ha logueado al inicio y se puede resfrescar
   // NOTE: hacemos ambos en uno ya que es con una fake app y se borraria el estado
@@ -18,7 +22,8 @@ public class TVDBClassTest {
 
       // LOGIN
       // obtenemos el token
-      String token1 = TVDB.getToken();
+      String token1 = Play.current().injector().instanceOf(TvdbConnection.class).getToken();
+
       // comprobamos que no es nulo
       assertNotNull(token1);
       Logger.debug("TVDB: login al inicio OK");
@@ -32,9 +37,9 @@ public class TVDBClassTest {
 
       // REFRESH
       // llamamos a refrescar
-      TVDB.refreshToken();
+      Play.current().injector().instanceOf(TvdbConnection.class).refreshToken();
       //obtenemos el token
-      String token2 = TVDB.getToken();
+      String token2 = Play.current().injector().instanceOf(TvdbConnection.class).getToken();
       // comprobamos que es distinto al de login
       assertThat(token2, is(not(token1)));
       Logger.debug("TVDB: refresh de token OK");
@@ -42,3 +47,4 @@ public class TVDBClassTest {
   }
 
 }
+

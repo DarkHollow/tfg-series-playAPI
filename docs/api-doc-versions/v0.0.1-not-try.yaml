@@ -8,7 +8,7 @@ info:
   version: "0.0.1"
   title: TFG Trending Series v0 `Offline`
   description: >-
-    The API is accessible via https://darkhollow.github.com/tfg-series-playAPI/
+    The API is accessible via https://darkhollow.github.com/tfg-tvShows-playAPI/
     and provides the following `REST` endpoints in `JSON` format.
 
 
@@ -46,7 +46,7 @@ info:
 
 
 
-    This [API](https://github.com/DarkHollow/tfg-series-playAPI) and API documentation is part of a `TFG (Final Degree Project)`
+    This [API](https://github.com/DarkHollow/tfg-tvShows-playAPI) and API documentation is part of a `TFG (Final Degree Project)`
     of Software Engineering by [Roberto Cánovas ![Github](images/github-logo.png)](https://github.com/DarkHollow/) at
     the University of Alicante (Spain). You can contact me at [Github](https://github.com/DarkHollow/), [e-mail](mailto: rcanovas.corp@gmail.com) or [Twitter](https://twitter.com/RobCanovas).
 

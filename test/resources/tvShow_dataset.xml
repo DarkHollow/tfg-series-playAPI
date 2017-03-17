@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
-  <Serie id="1" tvdbId="78804" seriesName="Doctor Who (2005)"
+  <TvShow id="1" tvdbId="78804" name="Doctor Who (2005)"
     firstAired="2005-03-26"
-    overview="Doctor Who es una puesta al día de la serie de televisión del
+    overview="Doctor Who es una puesta al día de la tvShow de televisión del
               mismo título que, emitida por la BBC entre 1963 y 1989, llegó a
               convertirse en una de las más longevas de la historia de la
               pequeña pantalla. En ella acompañamos en sus aventuras a El
@@ -21,7 +21,7 @@
     actors="Matt Smith, David Tennant, Peter Capaldi, Jenna Coleman"
     imdbRating="8.8" trailer="https://www.youtube.com/watch?v=kTTbfCMCQd8" />
 
-  <Serie id="2" tvdbId="81189" seriesName="Breaking Bad"
+  <TvShow id="2" tvdbId="81189" name="Breaking Bad"
     firstAired="2008-01-20"
     overview="Walter White es un esforzado profesor de química de preparatoria
               (secundaria, high school), padre de Walter White Jr, un joven

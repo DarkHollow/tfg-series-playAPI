@@ -29,7 +29,7 @@ public class TvShowRequestDAO {
     jpa.em().persist(request);
     jpa.em().flush();
     jpa.em().refresh(request);
-    Logger.debug("Persistencia - request añadida: usuario " + request.usuario.id + ", tvdbId " + request.tvdbId);
+    Logger.debug("Persistencia - request añadida: user " + request.user.id + ", tvdbId " + request.tvdbId);
     return request;
   }
 

@@ -1,8 +1,8 @@
 package service;
 
-import models.Usuario;
-import models.dao.UsuarioDAO;
-import models.service.UsuarioService;
+import models.User;
+import models.dao.UserDAO;
+import models.service.UserService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
@@ -18,11 +18,11 @@ import java.io.FileInputStream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-public class UsuarioServiceTest {
+public class UserServiceTest {
   private static Database db;
   private static JPAApi jpa;
   private JndiDatabaseTester databaseTester;
-  private static UsuarioService usuarioService;
+  private static UserService userService;
 
   @BeforeClass
   static public void initDatabase() {
@@ -34,15 +34,15 @@ public class UsuarioServiceTest {
       connection.createStatement().execute("SET MODE MySQL;");
     });
     jpa = JPA.createFor("memoryPersistenceUnit");
-    UsuarioDAO usuarioDAO = new UsuarioDAO(jpa);
-    usuarioService = new UsuarioService(usuarioDAO);
+    UserDAO userDAO = new UserDAO(jpa);
+    userService = new UserService(userDAO);
   }
 
   @Before
   public void initData() throws Exception {
     databaseTester = new JndiDatabaseTester("DefaultDS");
     IDataSet initialDataSet = new FlatXmlDataSetBuilder().build(new
-      FileInputStream("test/resources/usuarios_dataset.xml"));
+      FileInputStream("test/resources/user_dataset.xml"));
     databaseTester.setDataSet(initialDataSet);
 
     // Set up - CLEAN_INSERT: primero delete all y despues insert
@@ -67,21 +67,21 @@ public class UsuarioServiceTest {
 
   // testeamos buscar por id -> found
   @Test
-  public void testUsuarioServiceFindFound() {
-    Usuario usuario = jpa.withTransaction(() -> usuarioService.find(1));
+  public void testUserServiceFindFound() {
+    User user = jpa.withTransaction(() -> userService.find(1));
 
-    assertEquals(1, (int) usuario.id);
-    assertEquals("email1", usuario.email);
-    assertEquals("password1", usuario.password);
-    assertEquals("salt1", usuario.salt);
+    assertEquals(1, (int) user.id);
+    assertEquals("email1", user.email);
+    assertEquals("password1", user.password);
+    assertEquals("salt1", user.salt);
   }
 
   // testeamos buscar por id -> found
   @Test
-  public void testUsuarioServiceFindNotFound() {
-    Usuario usuario = jpa.withTransaction(() -> usuarioService.find(0));
+  public void testUserServiceFindNotFound() {
+    User user = jpa.withTransaction(() -> userService.find(0));
 
-    assertNull(usuario);
+    assertNull(user);
   }
 
 }

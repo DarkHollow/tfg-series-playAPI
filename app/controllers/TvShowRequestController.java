@@ -54,7 +54,9 @@ public class TvShowRequestController extends Controller {
 
       // si la lista no está vacía, comprobamos series en local
       for (TvShow tvShow : tvShows) {
-        if (tvShowService.findByTvdbId(tvShow.tvdbId) != null) {
+        TvShow localTvShow = tvShowService.findByTvdbId(tvShow.tvdbId);
+        if (localTvShow != null) {
+          tvShow.id = localTvShow.id;
           tvShow.local = true;
         }
       }

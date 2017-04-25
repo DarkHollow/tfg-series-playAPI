@@ -6,6 +6,8 @@ import models.User;
 import models.dao.TvShowRequestDAO;
 import play.Logger;
 
+import java.util.List;
+
 public class TvShowRequestService {
 
   private final TvShowService tvShowService;
@@ -17,6 +19,11 @@ public class TvShowRequestService {
     this.tvShowService = tvShowService;
     this.userService = userService;
     this.rqDAO = rqDAO;
+  }
+
+  // buscar peticiones por id de TVDB
+  public List<TvShowRequest> findTvShowRequests(Integer tvdbId) {
+    return rqDAO.findTvShowRequestsByTvdbId(tvdbId);
   }
 
   // POST petición TV Show

@@ -41,6 +41,11 @@ public class TvShowRequestDAO {
     return jpa.em().find(TvShowRequest.class, id);
   }
 
+  // buscar por id de TVDB
+  public List<TvShowRequest> findTvShowRequestsByTvdbId(Integer tvdbId) {
+    return jpa.em().createQuery("SELECT r FROM " + TABLE + " r WHERE tvdbId = " + tvdbId + "ORDER BY r.id", TvShowRequest.class).getResultList();
+  }
+
   // Read de obtener todas las requests
   public List<TvShowRequest> all() {
     return jpa.em().createQuery("SELECT r FROM " + TABLE + " r ORDER BY r.id", TvShowRequest.class).getResultList();

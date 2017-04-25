@@ -19,7 +19,7 @@ public class TvShow {
   @JsonView(TvShowViews.SearchTvShow.class)
   public Integer id;
 
-  @JsonView(TvShowViews.InternalFullTvShow.class)
+  @JsonView(TvShowViews.SearchTvShowTvdbId.class)
   public Integer tvdbId;
 
   @Column(length = 100)

@@ -52,12 +52,16 @@ public class TvShowRequestController extends Controller {
         return notFound(result);
       }
 
+      // asignacion de campos TRANSIENT
       // si la lista no está vacía, comprobamos series en local
       for (TvShow tvShow : tvShows) {
         TvShow localTvShow = tvShowService.findByTvdbId(tvShow.tvdbId);
         if (localTvShow != null) {
           tvShow.id = localTvShow.id;
           tvShow.local = true;
+        } else {
+          // si no está en local, comprobamos si está solicitada
+          tvShow.requested = !tvShowRequestService.findTvShowRequests(tvShow.tvdbId).isEmpty();
         }
       }
 

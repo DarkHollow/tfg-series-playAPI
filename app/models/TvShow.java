@@ -78,6 +78,10 @@ public class TvShow {
   @JsonView(TvShowViews.SearchTVDB.class)
   public Boolean local;
 
+  @Transient
+  @JsonView(TvShowViews.SearchTVDB.class)
+  public Boolean requested;
+
   // constructor vacio
   public TvShow() {}
 

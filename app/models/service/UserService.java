@@ -19,4 +19,9 @@ public class UserService {
     return userDAO.find(id);
   }
 
+  // buscar por email
+  public User findByEmail(String email) {
+    return userDAO.findByEmail(email);
+  }
+
 }

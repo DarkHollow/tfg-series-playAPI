@@ -75,10 +75,28 @@ public class UserServiceTest {
     assertEquals("password1", user.password);
   }
 
-  // testeamos buscar por id -> found
+  // testeamos buscar por id -> not found
   @Test
   public void testUserServiceFindNotFound() {
     User user = jpa.withTransaction(() -> userService.find(0));
+
+    assertNull(user);
+  }
+
+  // testeamos buscar por email -> found
+  @Test
+  public void testUserServiceFindByEmailFound() {
+    User user = jpa.withTransaction(() -> userService.findByEmail("email1"));
+
+    assertEquals(1, (int) user.id);
+    assertEquals("email1", user.email);
+    assertEquals("password1", user.password);
+  }
+
+  // testeamos buscar por email -> not found
+  @Test
+  public void testUserServiceFindByEmailNotFound() {
+    User user = jpa.withTransaction(() -> userService.findByEmail("email2"));
 
     assertNull(user);
   }

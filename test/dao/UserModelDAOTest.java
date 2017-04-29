@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 public class UserModelDAOTest {
@@ -97,6 +98,25 @@ public class UserModelDAOTest {
     User user = jpa.withTransaction(() -> userDAO.find(0));
 
     assertNull(user);
+  }
+
+  // testeamos buscar email -> found
+  @Test
+  public void testUserDAOFindByEmailFound() {
+    final UserDAO userDAO = new UserDAO(jpa);
+    User userEncontrado = jpa.withTransaction(() -> userDAO.findByEmail("email1"));
+
+    assertNotNull(userEncontrado);
+    assertEquals("email1", userEncontrado.email);
+  }
+
+  // testeamos buscar email -> not found
+  @Test
+  public void testUserDAOFindByEmailNotFound() {
+    final UserDAO userDAO = new UserDAO(jpa);
+    User userEncontrado = jpa.withTransaction(() -> userDAO.findByEmail("email2"));
+
+    assertNull(userEncontrado);
   }
 
   // testeamos buscar por campo coincidendo exacto (email)

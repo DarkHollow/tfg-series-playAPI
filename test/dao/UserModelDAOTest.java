@@ -67,14 +67,13 @@ public class UserModelDAOTest {
   public void testUserDAOCreate() {
     final UserDAO userDAO = new UserDAO(jpa);
 
-    User user1 = new User("user1@email.com", "contraseña1", "salt", "nombre1");
+    User user1 = new User("user1@email.com", "contraseña1", "nombre1");
 
     User user2 = jpa.withTransaction(() -> userDAO.create(user1));
 
     //assertEquals(user1.id, user2.id);
     assertEquals(user1.email, user2.email);
     assertEquals(user1.password, user2.password);
-    assertEquals(user1.salt, user2.salt);
     assertEquals(user1.name, user2.name);
     assertEquals(user1.registrationDate, user2.registrationDate);
   }
@@ -88,7 +87,6 @@ public class UserModelDAOTest {
     assertEquals(1, (int) user.id);
     assertEquals("email1", user.email);
     assertEquals("password1", user.password);
-    assertEquals("salt1", user.salt);
 
   }
 

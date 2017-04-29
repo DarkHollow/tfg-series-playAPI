@@ -73,7 +73,6 @@ public class UserServiceTest {
     assertEquals(1, (int) user.id);
     assertEquals("email1", user.email);
     assertEquals("password1", user.password);
-    assertEquals("salt1", user.salt);
   }
 
   // testeamos buscar por id -> found

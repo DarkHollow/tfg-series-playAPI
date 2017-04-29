@@ -43,11 +43,13 @@ public class SecurityPassword {
   private static final int SALT_INDEX = 3;
   private static final int PBKDF2_INDEX = 4;
 
-  public static String createHash(String password) throws CannotPerformOperationException {
+  public SecurityPassword() {}
+
+  public String createHash(String password) throws CannotPerformOperationException {
     return createHash(password.toCharArray());
   }
 
-  private static String createHash(char[] password) throws CannotPerformOperationException {
+  private String createHash(char[] password) throws CannotPerformOperationException {
     // generar una salt aleatoria
     SecureRandom sr = new SecureRandom();
     byte[] salt = new byte[SALT_BYTE_SIZE];
@@ -67,12 +69,12 @@ public class SecurityPassword {
             Base64.encodeBase64String(hash);
   }
 
-  public static boolean verifyPassword(String password, String correctHash)
+  public boolean verifyPassword(String password, String correctHash)
           throws CannotPerformOperationException, InvalidHashException {
     return verifyPassword(password.toCharArray(), correctHash);
   }
 
-  private static boolean verifyPassword(char[] password, String correctHash)
+  private boolean verifyPassword(char[] password, String correctHash)
           throws CannotPerformOperationException, InvalidHashException {
 
     // Decode el hash en sus partes
@@ -133,7 +135,7 @@ public class SecurityPassword {
   }
 
   // compara dos arrays en length constant time
-  private static boolean slowEquals(byte[] a, byte[] b) {
+  private boolean slowEquals(byte[] a, byte[] b) {
     int diff = a.length ^ b.length;
     for (int i = 0; i < a.length && i < b.length; i++) {
       diff |= a[i] ^ b[i];
@@ -141,7 +143,7 @@ public class SecurityPassword {
     return diff == 0;
   }
 
-  private static byte[] pbkdf2(char[] password, byte[] salt, int iterations, int bytes)
+  private byte[] pbkdf2(char[] password, byte[] salt, int iterations, int bytes)
           throws CannotPerformOperationException {
     try {
       PBEKeySpec spec = new PBEKeySpec(password, salt, iterations, bytes * 8);

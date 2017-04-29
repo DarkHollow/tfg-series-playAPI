@@ -22,10 +22,6 @@ public class User {
   @Column(nullable = false)
   public String password;
 
-  @JsonIgnore
-  @Column(nullable = false)
-  public String salt;
-
   @Column(length = 20)
   public String name;
 
@@ -40,10 +36,9 @@ public class User {
   public User() {}
 
   // constructor por parámetros
-  public User(String email, String password, String salt, String name) {
+  public User(String email, String password, String name) {
     this.email = email;
     this.password = password;
-    this.salt = salt;
     this.name = name;
   }
 
@@ -51,7 +46,6 @@ public class User {
   public User(User user) {
     email = user.email;
     password = user.password;
-    salt = user.salt;
     name = user.name;
   }
 

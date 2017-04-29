@@ -17,6 +17,7 @@ import play.db.Database;
 import play.db.Databases;
 import play.db.jpa.JPA;
 import play.db.jpa.JPAApi;
+import utils.SecurityPassword;
 
 import java.io.FileInputStream;
 
@@ -44,7 +45,8 @@ public class TvShowRequestServiceTest {
     TvShowDAO tvShowDAO = new TvShowDAO(jpa);
     TvShowService tvShowService = new TvShowService(tvShowDAO);
     UserDAO userDAO = new UserDAO(jpa);
-    UserService userService = new UserService(userDAO);
+    SecurityPassword sr = new SecurityPassword();
+    UserService userService = new UserService(userDAO, sr);
     TvShowRequestDAO tvShowRequestDAO = new TvShowRequestDAO(jpa);
     tvShowRequestService = new TvShowRequestService(tvShowService, userService, tvShowRequestDAO);
 

@@ -21,14 +21,11 @@ import java.util.List;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static play.test.Helpers.*;
 
 public class TvdbServiceTest {
   private static Database db;
   private static JPAApi jpa;
   private JndiDatabaseTester databaseTester;
-
-  private final static int PORT = 3333;
 
   @Before
   public void initData() throws Exception {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
   <User id="1" email="email1" password="password1"
-    salt="salt1" name="nombre1" registrationDate="2017-02-26" />
+        name="nombre1" registrationDate="2017-02-26" />
 
   <TvShow id="1" tvdbId="78804" name="Doctor Who (2005)"
          firstAired="2005-03-26"

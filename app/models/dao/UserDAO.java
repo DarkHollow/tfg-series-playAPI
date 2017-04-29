@@ -39,6 +39,16 @@ public class UserDAO {
     return jpa.em().find(User.class, id);
   }
 
+  // buscar por email
+  public User findByEmail(String email) {
+    TypedQuery<User> query = jpa.em().createQuery("SELECT u FROM " + TABLE + " u WHERE u.email = :email", User.class);
+    try {
+      return query.setParameter("email", email).getSingleResult();
+    } catch (NoResultException e) {
+      return null;
+    }
+  }
+
   // buscar por campo exacto
   public List<User> findByExact(String field, String value) {
     TypedQuery<User> query = jpa.em().createQuery("SELECT u FROM " + TABLE + " u WHERE " + field + " = :value", User.class);

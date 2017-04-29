@@ -8,15 +8,16 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.*;
+import play.Logger;
 import play.db.Database;
 import play.db.Databases;
 import play.db.jpa.JPA;
 import play.db.jpa.JPAApi;
+import utils.SecurityPassword;
 
 import java.io.FileInputStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 public class UserServiceTest {
   private static Database db;
@@ -35,7 +36,8 @@ public class UserServiceTest {
     });
     jpa = JPA.createFor("memoryPersistenceUnit");
     UserDAO userDAO = new UserDAO(jpa);
-    userService = new UserService(userDAO);
+    SecurityPassword securityPassword = new SecurityPassword();
+    userService = new UserService(userDAO, securityPassword);
   }
 
   @Before
@@ -65,6 +67,38 @@ public class UserServiceTest {
     db.shutdown();
   }
 
+  // testeamos crear usuario (registro) -> ok
+  @Test
+  public void testUserServiceCreateOk() {
+
+    jpa.withTransaction(() -> {
+      User user = null;
+      try {
+        user = userService.create("newEmail", "password", "name");
+      } catch (Exception ex) {
+        Logger.error(ex.getMessage());
+        fail("No debería haber dado excepción");
+      }
+      assertNotNull(user);
+    });
+  }
+
+  // testeamos crear usuario (registro) -> fail, email ya registrado (javax.persistence.PersistenceException)
+  @Test
+  public void testUserServiceCreateFail() {
+    jpa.withTransaction(() -> {
+      User user = null;
+      try {
+        user = userService.create("email1", "password", "name");
+        fail("Debería haber dado javax.persistence.PersistenceException");
+      } catch (Exception ex) {
+        Logger.error(ex.getMessage());
+        assertEquals(javax.persistence.PersistenceException.class, ex.getClass());
+      }
+      assertNull(user);
+    });
+  }
+
   // testeamos buscar por id -> found
   @Test
   public void testUserServiceFindFound() {
@@ -73,13 +107,30 @@ public class UserServiceTest {
     assertEquals(1, (int) user.id);
     assertEquals("email1", user.email);
     assertEquals("password1", user.password);
-    assertEquals("salt1", user.salt);
   }
 
-  // testeamos buscar por id -> found
+  // testeamos buscar por id -> not found
   @Test
   public void testUserServiceFindNotFound() {
     User user = jpa.withTransaction(() -> userService.find(0));
+
+    assertNull(user);
+  }
+
+  // testeamos buscar por email -> found
+  @Test
+  public void testUserServiceFindByEmailFound() {
+    User user = jpa.withTransaction(() -> userService.findByEmail("email1"));
+
+    assertEquals(1, (int) user.id);
+    assertEquals("email1", user.email);
+    assertEquals("password1", user.password);
+  }
+
+  // testeamos buscar por email -> not found
+  @Test
+  public void testUserServiceFindByEmailNotFound() {
+    User user = jpa.withTransaction(() -> userService.findByEmail("email2"));
 
     assertNull(user);
   }

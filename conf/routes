@@ -26,8 +26,8 @@ GET     /api/                       controllers.RootController.index
 # TV Shows ------------------------
 
 ## all TV Shows (future pagination?)
-GET     /api/tvshows/                controllers.Default.redirect(to = "../tvShows")
-GET     /api/tvshows                 controllers.TvShowController.all
+GET     /api/tvshows/               controllers.Default.redirect(to = "../tvShows")
+GET     /api/tvshows                controllers.TvShowController.all
 
 ## TV Show by id
 GET     /api/tvshow/:id/            controllers.TvShowController.tvShowById(id: Integer)
@@ -47,6 +47,11 @@ POST    /api/tvshow/request         controllers.TvShowRequestController.requestT
 # API Search ---------------------
 
 # TV Shows search by LIKE
-GET     /api/search/tvshows/:q/      controllers.TvShowController.searchTvShowNameLike(q: String)
-GET     /api/search/tvshows/:q       controllers.TvShowController.searchTvShowNameLike(q: String)
+GET     /api/search/tvshows/:q/     controllers.TvShowController.searchTvShowNameLike(q: String)
+GET     /api/search/tvshows/:q      controllers.TvShowController.searchTvShowNameLike(q: String)
 
+
+# Users
+
+POST    /api/user/                  controllers.UserController.register()
+POST    /api/user                   controllers.UserController.register()

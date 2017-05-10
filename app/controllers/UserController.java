@@ -116,4 +116,90 @@ public class UserController extends Controller {
     }
   }
 
+  @Transactional(readOnly = true)
+  public Result login() {
+    ObjectNode result = Json.newObject();
+    User user = null;
+
+    String email;
+    String password;
+
+    // obtenemos datos de la petición post
+    DynamicForm requestForm = formFactory.form().bindFromRequest();
+
+    try {
+      email = String.valueOf(requestForm.get("email"));
+      password = String.valueOf(requestForm.get("password"));
+    } catch (Exception ex) {
+      result.put("error", "email/password null or not string");
+      result.put("type", "bad request");
+      result.put("message", "Campos incorrectos, contacte con un administrador");
+      return badRequest(result);
+    }
+
+    // comprobamos si los datos están vacíos y si el email es válido y si existe
+    if (email != null && !email.isEmpty() && password != null && !password.isEmpty()) {
+      if (password.length() >= 6) {
+        // comprobamos email y contraseña
+        try {
+          user = userService.verifyEmailAndPassword(email, password);
+        } catch (Password.CannotPerformOperationException | Password.InvalidHashException ex) {
+          Logger.error(ex.getMessage());
+          result.put("error", "exception checking hash");
+          result.put("type", "internal server error");
+          result.put("message", "No hemos podido identificar al usuario. Pruebe de nuevo más tarde");
+        } catch (UserService.UserException e) {
+          result.put("error", "incorrect email or password");
+          result.put("type", "bad request");
+          result.put("message", "El correo electrónico o la contraseña no son correctos");
+          return badRequest(result);
+        }
+      } else {
+        result.put("error", "incorrect password");
+        result.put("type", "bad request");
+        result.put("message", "La contraseña no tiene la longitud permitida");
+        return badRequest(result);
+      }
+
+      // intentamos crear token
+      String token = sa.createJWT(user);
+
+      if (token == null) {
+        result.put("error","fail creating JWT");
+        result.put("type", "internal server error");
+        result.put("message", "No hemos podido identificar al usuario. Pruebe de nuevo más tarde");
+        return internalServerError(result);
+      } else {
+        // si se ha identificado bien
+        result.put("ok", "user logged");
+        result.put("type", "ok");
+        result.put("message", "Usuario identificado con éxito");
+        response().setHeader("Authorization", "Bearer " + token);
+        return ok(result);
+      }
+    } else {
+      result.put("error", "empty field or fields");
+      result.put("type", "bad request");
+      result.put("message", "Ningún campo puede estar vacío");
+      return badRequest(result);
+    }
+  }
+
+  public Result verifySession() {
+    ObjectNode result = Json.newObject();
+
+    if (sa.verifyJWT(Http.Context.current())) {
+      // si el token es válido
+      result.put("ok", "session active");
+      result.put("type", "ok");
+      result.put("message", "Sesión activa");
+      return ok(result);
+    } else {
+      result.put("error", "session inactive");
+      result.put("type", "unauthorized");
+      result.put("message", "Sesión inactiva");
+      return unauthorized(result);
+    }
+  }
+
 }

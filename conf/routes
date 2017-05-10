@@ -55,3 +55,9 @@ GET     /api/search/tvshows/:q      controllers.TvShowController.searchTvShowNam
 
 POST    /api/user/                  controllers.UserController.register()
 POST    /api/user                   controllers.UserController.register()
+
+POST    /api/user/session/          controllers.UserController.login()
+POST    /api/user/session           controllers.UserController.login()
+
+GET    /api/user/session/           controllers.UserController.verifySession()
+GET    /api/user/session            controllers.UserController.verifySession()

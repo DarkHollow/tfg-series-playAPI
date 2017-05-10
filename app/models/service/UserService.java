@@ -60,4 +60,22 @@ public class UserService {
     return userDAO.findByEmail(email);
   }
 
+  // login
+  public User verifyEmailAndPassword(String email, String password)
+          throws Password.CannotPerformOperationException,
+          Password.InvalidHashException, UserException {
+
+    // primero buscamos al usuario para ver si existe
+    User user = findByEmail(email);
+    if (user != null) {
+      // una vez encontrado, comprobamos la contraseña
+      if (!sp.verifyPassword(password, user.password)) {
+        throw new UserException("La contraseña es incorrecta");
+      }
+    } else {
+      throw new UserException("El usuario no existe");
+    }
+
+    return user;
+  }
 }

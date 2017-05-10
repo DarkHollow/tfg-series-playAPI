@@ -10,8 +10,9 @@ import play.data.validation.Constraints;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
-import utils.SecurityPassword;
+import utils.Security.*;
 
 import javax.inject.Inject;
 
@@ -19,11 +20,13 @@ public class UserController extends Controller {
 
   private final UserService userService;
   private final FormFactory formFactory;
+  private final Auth sa;
 
   @Inject
-  public UserController(UserService userService, FormFactory formFactory) {
+  public UserController(UserService userService, FormFactory formFactory, Auth sa) {
     this.userService = userService;
     this.formFactory = formFactory;
+    this.sa = sa;
   }
 
   @Transactional
@@ -62,9 +65,9 @@ public class UserController extends Controller {
             return badRequest(result);
           }
         } else {
-          result.put("error", "password need to be between 6 and 14 character long");
+          result.put("error", "password not well generated");
           result.put("type", "bad request");
-          result.put("message", "La contraseña debe contener entre 6 y 14 caracteres");
+          result.put("message", "La contraseña no se ha generado bien");
           return badRequest(result);
         }
       } else {
@@ -79,7 +82,7 @@ public class UserController extends Controller {
 
       try {
         user = userService.create(email, password, name);
-      } catch (SecurityPassword.CannotPerformOperationException | SecurityPassword.InvalidHashException ex) {
+      } catch (Password.CannotPerformOperationException | Password.InvalidHashException ex) {
         Logger.error(ex.getMessage());
         result.put("error", "exception creating hash");
         result.put("type", "internal server error");

@@ -13,7 +13,7 @@ import play.db.Database;
 import play.db.Databases;
 import play.db.jpa.JPA;
 import play.db.jpa.JPAApi;
-import utils.SecurityPassword;
+import utils.Security.Password;
 
 import java.io.FileInputStream;
 
@@ -36,7 +36,7 @@ public class UserServiceTest {
     });
     jpa = JPA.createFor("memoryPersistenceUnit");
     UserDAO userDAO = new UserDAO(jpa);
-    SecurityPassword securityPassword = new SecurityPassword();
+    Password securityPassword = new Password();
     userService = new UserService(userDAO, securityPassword);
   }
 

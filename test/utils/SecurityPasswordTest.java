@@ -2,6 +2,7 @@ package utils;
 
 import org.junit.Test;
 import play.Logger;
+import utils.Security.Password;
 
 import static org.junit.Assert.*;
 
@@ -16,7 +17,7 @@ public class SecurityPasswordTest {
   private final String INVALID_SIZE_HASH = "sha1:64000:18:4lQrF5gzo3z+l6tsmdAuODQRmo6hGt0N:1wGzUmfWiwhASDFASDFASDF2DUrPUhactIUJ";
   private final String BAD_PASSWORD = "111111";
 
-  private SecurityPassword securityPassword = new SecurityPassword();
+  private Password securityPassword = new Password();
 
   // testeamos verify -> contraseña correcta
   @Test
@@ -57,7 +58,7 @@ public class SecurityPasswordTest {
       securityPassword.verifyPassword(GOOD_PASSWORD, INVALID_SECTIONS_HASH);
       fail("Debería haber lanzado InvalidHashException");
     } catch (Exception ex) {
-      assertEquals(SecurityPassword.InvalidHashException.class, ex.getClass());
+      assertEquals(Password.InvalidHashException.class, ex.getClass());
       assertEquals(EX_MESSAGE, ex.getMessage());
     }
 
@@ -72,7 +73,7 @@ public class SecurityPasswordTest {
       securityPassword.verifyPassword(GOOD_PASSWORD, INVALID_TYPE_HASH);
       fail("Debería haber lanzado CannotPerformOperationException");
     } catch (Exception ex) {
-      assertEquals(SecurityPassword.CannotPerformOperationException.class, ex.getClass());
+      assertEquals(Password.CannotPerformOperationException.class, ex.getClass());
       assertEquals(EX_MESSAGE, ex.getMessage());
     }
 
@@ -87,7 +88,7 @@ public class SecurityPasswordTest {
       securityPassword.verifyPassword(GOOD_PASSWORD, INVALID_ITERATION_HASH);
       fail("Debería haber lanzado InvalidHashException");
     } catch (Exception ex) {
-      assertEquals(SecurityPassword.InvalidHashException.class, ex.getClass());
+      assertEquals(Password.InvalidHashException.class, ex.getClass());
       assertEquals(EX_MESSAGE, ex.getMessage());
     }
 
@@ -102,7 +103,7 @@ public class SecurityPasswordTest {
       securityPassword.verifyPassword(GOOD_PASSWORD, INVALID_ITERATION_NUMBER_HASH);
       fail("Debería haber lanzado InvalidHashException");
     } catch (Exception ex) {
-      assertEquals(SecurityPassword.InvalidHashException.class, ex.getClass());
+      assertEquals(Password.InvalidHashException.class, ex.getClass());
       assertEquals(EX_MESSAGE, ex.getMessage());
     }
 
@@ -117,7 +118,7 @@ public class SecurityPasswordTest {
       securityPassword.verifyPassword(GOOD_PASSWORD, INVALID_SECTION_SIZE_HASH);
       fail("Debería haber lanzado InvalidHashException");
     } catch (Exception ex) {
-      assertEquals(SecurityPassword.InvalidHashException.class, ex.getClass());
+      assertEquals(Password.InvalidHashException.class, ex.getClass());
       assertEquals(EX_MESSAGE, ex.getMessage());
     }
 
@@ -132,7 +133,7 @@ public class SecurityPasswordTest {
       securityPassword.verifyPassword(GOOD_PASSWORD, INVALID_SIZE_HASH);
       fail("Debería haber lanzado InvalidHashException");
     } catch (Exception ex) {
-      assertEquals(SecurityPassword.InvalidHashException.class, ex.getClass());
+      assertEquals(Password.InvalidHashException.class, ex.getClass());
       assertEquals(EX_MESSAGE, ex.getMessage());
     }
 

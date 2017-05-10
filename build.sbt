@@ -13,6 +13,7 @@ libraryDependencies ++= Seq(
   "mysql" % "mysql-connector-java" % "5.1.40",
   "org.dbunit" % "dbunit" % "2.5.3",
   "org.mockito" % "mockito-core" % "2.7.5",
+  "com.auth0" % "java-jwt" % "3.1.0",
   javaJdbc,
   cache,
   javaWs,

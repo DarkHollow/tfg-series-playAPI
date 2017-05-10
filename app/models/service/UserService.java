@@ -4,29 +4,35 @@ import com.google.inject.Inject;
 import models.User;
 import models.dao.UserDAO;
 import play.Logger;
-import utils.SecurityPassword;
+import utils.Security.Password;
 
 import java.util.Date;
 
 public class UserService {
 
   private final UserDAO userDAO;
-  private final SecurityPassword securityPassword;
+  private final Password sp;
+
+  static public class UserException extends Exception {
+    UserException(String message) {
+      super(message);
+    }
+  }
 
   @Inject
-  public UserService(UserDAO userDAO, SecurityPassword sr) {
+  public UserService(UserDAO userDAO, Password sp) {
     this.userDAO = userDAO;
-    this.securityPassword = sr;
+    this.sp = sp;
   }
 
   // registro de usuario nuevo
   public User create(String email, String password, String name)
-          throws SecurityPassword.CannotPerformOperationException,
-          SecurityPassword.InvalidHashException,
+          throws Password.CannotPerformOperationException,
+          Password.InvalidHashException,
           javax.persistence.PersistenceException {
 
     // creamos hash
-    String hash = securityPassword.createHash(password);
+    String hash = sp.createHash(password);
 
     // creamos usuario
     User user = new User();
@@ -54,4 +60,22 @@ public class UserService {
     return userDAO.findByEmail(email);
   }
 
+  // login
+  public User verifyEmailAndPassword(String email, String password)
+          throws Password.CannotPerformOperationException,
+          Password.InvalidHashException, UserException {
+
+    // primero buscamos al usuario para ver si existe
+    User user = findByEmail(email);
+    if (user != null) {
+      // una vez encontrado, comprobamos la contraseña
+      if (!sp.verifyPassword(password, user.password)) {
+        throw new UserException("La contraseña es incorrecta");
+      }
+    } else {
+      throw new UserException("El usuario no existe");
+    }
+
+    return user;
+  }
 }

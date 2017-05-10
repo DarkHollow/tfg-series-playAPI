@@ -1,4 +1,4 @@
-package utils;
+package utils.Security;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 
-public class SecurityPassword {
+public class Password {
 
   static public class InvalidHashException extends Exception {
     InvalidHashException(String message) {
@@ -43,7 +43,7 @@ public class SecurityPassword {
   private static final int SALT_INDEX = 3;
   private static final int PBKDF2_INDEX = 4;
 
-  public SecurityPassword() {}
+  public Password() {}
 
   public String createHash(String password) throws CannotPerformOperationException {
     return createHash(password.toCharArray());

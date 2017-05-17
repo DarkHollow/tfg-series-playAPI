@@ -95,7 +95,7 @@ public class Auth extends Security.Authenticator {
       String token = rawToken.substring(7);
 
       try {
-        Algorithm algorithm = Algorithm.HMAC256("prueba");
+        Algorithm algorithm = Algorithm.HMAC256(SECRET);
         JWTVerifier verifier = JWT.require(algorithm)
                 .withIssuer("TrendingSeries")
                 .build();

@@ -174,7 +174,7 @@ public class UserController extends Controller {
         result.put("ok", "user logged");
         result.put("type", "ok");
         result.put("message", "Usuario identificado con éxito");
-        response().setHeader("Authorization", "Bearer " + token);
+        result.put("Authorization", token);
         return ok(result);
       }
     } else {

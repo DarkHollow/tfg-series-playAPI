@@ -2,11 +2,11 @@ package controllers;
 
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.html.administration.admin;
+import views.html.administration.index;
 
 public class AdminController extends Controller {
 
   public Result index() {
-    return ok(admin.render("hola mundo"));
+    return ok(index.render("Hola mundo"));
   }
 }

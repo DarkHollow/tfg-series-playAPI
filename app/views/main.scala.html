@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String, route: String)(content: Html)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -45,7 +45,7 @@
             <!-- Main navbar -->
             <div class="navbar navbar-inverse navbar-transparent">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="admin">Trending Series<!--<img src="assets/images/logo_light.png" alt="">--></a>
+                    <a class="navbar-brand" href="./">Trending Series<!--<img src="assets/images/logo_light.png" alt="">--></a>
 
                     <ul class="nav navbar-nav pull-right visible-xs-block">
                         <li><a data-toggle="collapse" data-target="#navbar-mobile"><i class="icon-grid3"></i></a></li>
@@ -99,7 +99,7 @@
 
                             <li class="dropdown dropdown-user">
                                 <a class="dropdown-toggle" data-toggle="dropdown">
-                                    <img src="assets/images/placeholder.jpg" alt="">
+                                    <img src="../assets/images/placeholder.jpg" alt="">
                                     <span>Roberto</span>
                                     <i class="caret"></i>
                                 </a>
@@ -123,8 +123,14 @@
 
                 <div class="heading-elements">
                     <ul class="breadcrumb heading-text">
-                        <li><a href="admin"><i class="icon-home2 position-left"></i> Home</a></li>
-                        <li class="active">Dashboard</li>
+                        <li><a href="./"><i class="icon-home2 position-left"></i> Home</a></li>
+                        <li class="active">
+                            @{if (route == "dashboard") {
+                                <span>Dashboard</span>
+                            } else if (route == "tvShows") {
+                                <span>Series</span>
+                            }}
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -139,7 +145,13 @@
 
                 <div class="navbar-collapse collapse" id="navbar-second-toggle">
                     <ul class="nav navbar-nav navbar-nav-material">
-                        <li class="active"><a href="admin">Dashboard</a></li>
+                        @{if (route == "dashboard") {
+                            <li class="active"><a href="./">Dashboard</a></li>
+                            <li><a href="./tvShows">Series</a></li>
+                        } else if (route == "tvShows") {
+                            <li><a href="./">Dashboard</a></li>
+                            <li class="active"><a href="./tvShows">Series</a></li>
+                        }}
                     </ul>
                 </div>
             </div>

@@ -67,3 +67,6 @@ GET    /api/user/session            controllers.UserController.verifySession()
 
 GET     /admin/                     controllers.AdminController.index()
 GET     /admin                      controllers.AdminController.index()
+
+GET     /admin/tvShows              controllers.AdminController.tvShows()
+GET     /admin/tvShows/             controllers.AdminController.tvShows()

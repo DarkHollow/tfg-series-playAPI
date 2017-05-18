@@ -61,3 +61,9 @@ POST    /api/user/session           controllers.UserController.login()
 
 GET    /api/user/session/           controllers.UserController.verifySession()
 GET    /api/user/session            controllers.UserController.verifySession()
+
+
+# Admin
+
+GET     /admin/                     controllers.AdminController.index()
+GET     /admin                      controllers.AdminController.index()

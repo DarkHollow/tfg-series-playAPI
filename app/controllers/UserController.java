@@ -143,6 +143,26 @@ public class UserController extends Controller {
         // comprobamos email y contraseña
         try {
           user = userService.verifyEmailAndPassword(email, password);
+
+          // intentamos crear token
+          String token = sa.createJWT(user);
+
+          if (token == null) {
+            result.put("error","fail creating JWT");
+            result.put("type", "internal server error");
+            result.put("message", "No hemos podido identificar al usuario. Pruebe de nuevo más tarde");
+            return internalServerError(result);
+          } else {
+            // si se ha identificado bien
+            result.put("ok", "user logged");
+            result.put("type", "ok");
+            result.put("message", "Usuario identificado con éxito");
+            result.put("Authorization", token);
+            result.put("userId", user.id);
+            result.put("userName", user.name);
+            return ok(result);
+          }
+
         } catch (Password.CannotPerformOperationException | Password.InvalidHashException ex) {
           Logger.error(ex.getMessage());
           result.put("error", "exception checking hash");
@@ -160,29 +180,15 @@ public class UserController extends Controller {
         result.put("message", "La contraseña no tiene la longitud permitida");
         return badRequest(result);
       }
-
-      // intentamos crear token
-      String token = sa.createJWT(user);
-
-      if (token == null) {
-        result.put("error","fail creating JWT");
-        result.put("type", "internal server error");
-        result.put("message", "No hemos podido identificar al usuario. Pruebe de nuevo más tarde");
-        return internalServerError(result);
-      } else {
-        // si se ha identificado bien
-        result.put("ok", "user logged");
-        result.put("type", "ok");
-        result.put("message", "Usuario identificado con éxito");
-        result.put("Authorization", token);
-        return ok(result);
-      }
     } else {
       result.put("error", "empty field or fields");
       result.put("type", "bad request");
       result.put("message", "Ningún campo puede estar vacío");
       return badRequest(result);
     }
+
+    // comprobar esta salida
+    return badRequest("pendiente");
   }
 
   public Result verifySession() {

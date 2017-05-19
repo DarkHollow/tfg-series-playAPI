@@ -1,13 +1,60 @@
-@(title: String, route: String)
+@import java.util
+@(title: String, route: String, tvShowRequests: util.List[TvShow])
 
 @main(title, route) {
 
     <div class="panel">
         <div class="panel-heading">
-            <h6 class="panel-title">Series</h6>
+            <h6 class="panel-title">Peticiones de series nuevas: <span class="badge badge-primary">@tvShowRequests.size()</span></h6>
         </div>
-        <div class="panel-body">
-            <p>Listado de series</p>
+        <div class="panel-body" style="padding-top: 0;">
+            <!-- TABLA -->
+            <table class="table datatable-basic table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID de TVDB</th>
+                        <th>Título</th>
+                        <th>Banner</th>
+                        <th>Fecha de estreno</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for(tvShow <- tvShowRequests) {
+                        <tr>
+                            <td><a data-popup="tooltip" title data-placement="left" data-original-title="Ver en TVDB" target="_blank" href="http://thetvdb.com/?tab=series&id=@tvShow.tvdbId">@tvShow.tvdbId</a></td>
+                            <td>@tvShow.name</td>
+                            <td>
+                                @if(tvShow.banner != "") {
+                                    <img class="img-responsive center-block" style="max-height: 70px;" src="http://thetvdb.com/banners/@tvShow.banner" />
+                                } else {
+
+                                }
+                            </td>
+                            <td>@tvShow.firstAired.format("dd-MM-yyyy")</td>
+                            <td class="text-center">
+                                <ul class="icons-list">
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                            <i class="icon-menu9"></i>
+                                        </a>
+
+                                        <ul class="dropdown-menu dropdown-menu-right">
+                                            <!--<li><a href="#"><i class="icon-file-pdf"></i> Export to .pdf</a></li>
+                                            <li><a href="#"><i class="icon-file-excel"></i> Export to .csv</a></li>
+                                            <li><a href="#"><i class="icon-file-word"></i> Export to .doc</a></li>-->
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+
+            <!-- /style combinations -->
+            <!-- FIN TABLA -->
         </div>
     </div>
 

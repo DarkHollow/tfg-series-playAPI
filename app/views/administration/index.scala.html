@@ -1,4 +1,4 @@
-@(title: String, route: String)
+@(title: String, route: String, tvShowCount: Integer, tvShowRequetCount: Integer)
 
 @main(title, route) {
 
@@ -8,6 +8,42 @@
         </div>
         <div class="panel-body">
             <p>Este es el panel de administración de Trending Series</p>
+        </div>
+    </div>
+
+    <div class="panel col-xs-6">
+        <div class="panel-heading">
+            <h6 class="panel-title">Series</h6>
+        </div>
+        <div class="panel-body" style="padding-top: 0;">
+            <ul class="menu-list dd-menu">
+                <li class="media">
+                    <a href="#" class="dd-parent-a">
+                        <div class="media-left media-middle">
+                            <span class="btn border-blue text-blue btn-flat btn-rounded btn-icon btn-xs">
+                                <i class="icon-tv"></i>
+                            </span>
+                        </div>
+                        <div class="media-body">
+                            Series en total: @tvShowCount
+                            <div class="media-annotation">Series que habitan nuetra base de datos</div>
+                        </div>
+                    </a>
+                </li>
+                <li class="media">
+                    <a href="#" class="dd-parent-a">
+                        <div class="media-left media-middle">
+                            <span class="btn border-green text-green btn-flat btn-rounded btn-icon btn-xs">
+                                <i class="icon-add"></i>
+                            </span>
+                        </div>
+                        <div class="media-body">
+                            Peticiones de series: @tvShowRequetCount
+                            <div class="media-annotation">Series solicitadas por los usuarios</div>
+                        </div>
+                    </a>
+                </li>
+            </ul>
         </div>
     </div>
 

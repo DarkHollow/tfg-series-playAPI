@@ -2,12 +2,6 @@
 @(title: String, route: String, tvShowRequests: util.List[TvShowRequest])
 
 @adminMain(title, route) {
-
-    <div id="loadingTable" class="alert alert-info alert-styled-left">
-        <button type="button" class="close" data-dismiss="alert"><span>&times;</span><span class="sr-only">Cerrar</span></button>
-        Cargando
-    </div>
-
     <div class="panel">
         <div class="panel-heading">
             <h6 class="panel-title">Peticiones de series nuevas: <span class="badge badge-primary">@tvShowRequests.size()</span></h6>
@@ -36,69 +30,73 @@
     <script>
         // tooltips
         $('body').tooltip({
-           selector: '.tooltipId'
+            selector: '.tooltipId'
         });
 
-        $(document).ready(function() {
-          $('#loadingTable').show();
+        $(document).ready(function () {
+            $('#loadingTable').show();
 
-          /*swal({
-              title: 'Titulo',
-              text: 'Textoooo',
-              type: 'info',
-              showCancelButton: false,
-              closeOnConfirm: false,
-              showLoaderOnConfirm: true
-          }, function() {*/
-              getData();
+            swal({
+             title: 'Cargar datos',
+             text: 'A continuación se va a cargar los datos de las series que han pedido los usuarios. Dependiendo del número de peticiones esto podría tardar mucho tiempo.',
+             type: 'info',
+             confirmButtonText: 'Cargar datos',
+             cancelButtonText: 'Cancelar',
+             showCancelButton: true,
+             closeOnConfirm: false,
+             showLoaderOnConfirm: true
+             }, function() {
+                var promises = [];
+                @for(request <- tvShowRequests) {
+                    promise = $.ajax({
+                        url: 'http://localhost:9000/api/tvdbshow/' + @request.tvdbId,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (response) {
+                            var row = '';
+                            row +=
+                                '<tr>' +
+                                '<td><a class="tooltipId" data-popup="tooltip" title="Ver en TVDB" data-placement="left" target="_blank" href="http://thetvdb.com/?tab=series&id=' + response.tvdbId + '">' + response.tvdbId + '</a></td>' +
+                                '<td>' + response.name + '</td>' +
+                                '<td>';
 
-              /*swal("Hola");
-          });
+                            if (response.banner !== "") {
+                                row += '<img class="img-responsive center-block" style="max-height: 70px;" src="http://thetvdb.com/banners/' + response.banner + '" />';
+                            } else {
+                                row += '<img class="img-responsive center-block" style="max-height: 70px;" src="@routes.Assets.versioned("images/placeholderBanner.png")" />';
+                            }
 
-          $('#loadingTable').fadeOut(150);*/
-          $('#loadingTable').hide();
-        });
-
-        function getData() {
-            @for(request <- tvShowRequests) {
-            $.ajax({
-                url: 'http://localhost:9000/api/tvdbshow/' + @request.tvdbId,
-                type: 'GET',
-                dataType: 'json',
-                success: function (response) {
-                    var row = '';
-                    row +=
-                            '<tr>' +
-                            '<td><a class="tooltipId" data-popup="tooltip" title="Ver en TVDB" data-placement="left" target="_blank" href="http://thetvdb.com/?tab=series&id=' + response.tvdbId + '">' + response.tvdbId + '</a></td>' +
-                            '<td>' + response.name + '</td>' +
-                            '<td>';
-
-                    if (response.banner !== "") {
-                        row += '<img class="img-responsive center-block" style="max-height: 70px;" src="http://thetvdb.com/banners/' + response.banner + '" />';
-                    } else {
-                        row += '<img class="img-responsive center-block" style="max-height: 70px;" src="@routes.Assets.versioned("images/placeholderBanner.png")" />';
-                    }
-
-                    row +=
-                            '</td>' +
-                            '<td>' + response.firstAired + '</td>' +
-                            '<td class="text-center">' +
-                            '<ul class="icons-list">' +
-                            '<li class="dropdown">' +
-                            '<a href="#" class="dropdown-toggle" data-toggle="dropdown">' +
-                            '<i class="icon-menu9"></i>' +
-                            '</a>' +
-                            '<ul class="dropdown-menu dropdown-menu-right">' +
-                            '</ul>' +
-                            '</li>' +
-                            '</ul>' +
-                            '</td>' +
-                            '</tr>';
-                    // añadir a la tabla
-                    $('#requests_table').DataTable().row.add($(row)).draw();
+                            row +=
+                                '</td>' +
+                                '<td>' + response.firstAired + '</td>' +
+                                '<td class="text-center">' +
+                                '<ul class="icons-list">' +
+                                '<li class="dropdown">' +
+                                '<a href="#" class="dropdown-toggle" data-toggle="dropdown">' +
+                                '<i class="icon-menu9"></i>' +
+                                '</a>' +
+                                '<ul class="dropdown-menu dropdown-menu-right">' +
+                                '</ul>' +
+                                '</li>' +
+                                '</ul>' +
+                                '</td>' +
+                                '</tr>';
+                            // añadir a la tabla
+                            $('#requests_table').DataTable().row.add($(row)).draw();
+                        }
+                    });
+                    promises.push(promise);
                 }
+
+                $.when.apply(null, promises).done(function() {
+                    $('#loadingTable').hide();
+                    swal(
+                      'Datos cargados',
+                      'Todas las series han sido cargadas correctamente',
+                      'success'
+                    );
+                });
             });
-            }
-        }
+        });
     </script>
 }

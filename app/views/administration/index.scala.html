@@ -1,6 +1,6 @@
 @(title: String, route: String, tvShowCount: Integer, tvShowRequetCount: Integer)
 
-@main(title, route) {
+@adminMain(title, route) {
 
     <div class="panel">
         <div class="panel-heading">
@@ -11,9 +11,16 @@
         </div>
     </div>
 
+    <!-- info alert -->
+    <div class="alert alert-info alert-styled-left">
+        <button type="button" class="close" data-dismiss="alert"><span>&times;</span><span class="sr-only">Cerrar</span></button>
+        ¡Nuevas peticiones de series! @tvShowRequetCount @if(tvShowRequetCount==1){ petición debe ser revisada. } else { peticiones deben ser revisadas. }
+    </div>
+    <!-- /info alert -->
+
     <div class="panel col-xs-6">
         <div class="panel-heading">
-            <h6 class="panel-title">Series</h6>
+            <h6 class="panel-title"><a href="@routes.AdminController.tvShows()"><i class="icon-tv position-left"></i> <span class="media-middle">Series</span></a></h6>
         </div>
         <div class="panel-body" style="padding-top: 0;">
             <ul class="menu-list dd-menu">
@@ -26,12 +33,12 @@
                         </div>
                         <div class="media-body">
                             Series en total: @tvShowCount
-                            <div class="media-annotation">Series que habitan nuetra base de datos</div>
+                            <div class="media-annotation">Series que habitan nuestra base de datos</div>
                         </div>
                     </a>
                 </li>
                 <li class="media">
-                    <a href="#" class="dd-parent-a">
+                    <a href="@routes.AdminController.tvShows()" class="dd-parent-a">
                         <div class="media-left media-middle">
                             <span class="btn border-green text-green btn-flat btn-rounded btn-icon btn-xs">
                                 <i class="icon-add"></i>

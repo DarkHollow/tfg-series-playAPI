@@ -1,7 +1,12 @@
 @import java.util
-@(title: String, route: String, tvShowRequests: util.List[TvShow])
+@(title: String, route: String, tvShowRequests: util.List[TvShowRequest])
 
 @adminMain(title, route) {
+
+    <div id="loadingTable" class="alert alert-info alert-styled-left">
+        <button type="button" class="close" data-dismiss="alert"><span>&times;</span><span class="sr-only">Cerrar</span></button>
+        Cargando
+    </div>
 
     <div class="panel">
         <div class="panel-heading">
@@ -9,7 +14,7 @@
         </div>
         <div class="panel-body" style="padding-top: 0;">
             <!-- TABLA -->
-            <table class="table datatable-basic table-bordered table-striped table-hover">
+            <table id="requests_table" class="table datatable-basic table-bordered table-striped table-hover">
                 <thead>
                     <tr>
                         <th>ID de TVDB</th>
@@ -19,38 +24,7 @@
                         <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @for(tvShow <- tvShowRequests) {
-                        <tr>
-                            <td><a data-popup="tooltip" title data-placement="left" data-original-title="Ver en TVDB" target="_blank" href="http://thetvdb.com/?tab=series&id=@tvShow.tvdbId">@tvShow.tvdbId</a></td>
-                            <td>@tvShow.name</td>
-                            <td>
-                                @if(tvShow.banner != "") {
-                                    <img class="img-responsive center-block" style="max-height: 70px;" src="http://thetvdb.com/banners/@tvShow.banner" />
-                                } else {
 
-                                }
-                            </td>
-                            <td>@tvShow.firstAired.format("dd-MM-yyyy")</td>
-                            <td class="text-center">
-                                <ul class="icons-list">
-                                    <li class="dropdown">
-                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                            <i class="icon-menu9"></i>
-                                        </a>
-
-                                        <ul class="dropdown-menu dropdown-menu-right">
-                                            <!--<li><a href="#"><i class="icon-file-pdf"></i> Export to .pdf</a></li>
-                                            <li><a href="#"><i class="icon-file-excel"></i> Export to .csv</a></li>
-                                            <li><a href="#"><i class="icon-file-word"></i> Export to .doc</a></li>-->
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </td>
-                        </tr>
-                    }
-
-                </tbody>
             </table>
 
             <!-- /style combinations -->
@@ -58,4 +32,73 @@
         </div>
     </div>
 
+    <script type="text/javascript" src="@routes.Assets.versioned("javascripts/plugins/notifications/sweet_alert.min.js")"></script>
+    <script>
+        // tooltips
+        $('body').tooltip({
+           selector: '.tooltipId'
+        });
+
+        $(document).ready(function() {
+          $('#loadingTable').show();
+
+          /*swal({
+              title: 'Titulo',
+              text: 'Textoooo',
+              type: 'info',
+              showCancelButton: false,
+              closeOnConfirm: false,
+              showLoaderOnConfirm: true
+          }, function() {*/
+              getData();
+
+              /*swal("Hola");
+          });
+
+          $('#loadingTable').fadeOut(150);*/
+          $('#loadingTable').hide();
+        });
+
+        function getData() {
+            @for(request <- tvShowRequests) {
+            $.ajax({
+                url: 'http://localhost:9000/api/tvdbshow/' + @request.tvdbId,
+                type: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    var row = '';
+                    row +=
+                            '<tr>' +
+                            '<td><a class="tooltipId" data-popup="tooltip" title="Ver en TVDB" data-placement="left" target="_blank" href="http://thetvdb.com/?tab=series&id=' + response.tvdbId + '">' + response.tvdbId + '</a></td>' +
+                            '<td>' + response.name + '</td>' +
+                            '<td>';
+
+                    if (response.banner !== "") {
+                        row += '<img class="img-responsive center-block" style="max-height: 70px;" src="http://thetvdb.com/banners/' + response.banner + '" />';
+                    } else {
+                        row += '<img class="img-responsive center-block" style="max-height: 70px;" src="@routes.Assets.versioned("images/placeholderBanner.png")" />';
+                    }
+
+                    row +=
+                            '</td>' +
+                            '<td>' + response.firstAired + '</td>' +
+                            '<td class="text-center">' +
+                            '<ul class="icons-list">' +
+                            '<li class="dropdown">' +
+                            '<a href="#" class="dropdown-toggle" data-toggle="dropdown">' +
+                            '<i class="icon-menu9"></i>' +
+                            '</a>' +
+                            '<ul class="dropdown-menu dropdown-menu-right">' +
+                            '</ul>' +
+                            '</li>' +
+                            '</ul>' +
+                            '</td>' +
+                            '</tr>';
+                    // añadir a la tabla
+                    $('#requests_table').DataTable().row.add($(row)).draw();
+                }
+            });
+            }
+        }
+    </script>
 }

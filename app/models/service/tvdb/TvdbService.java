@@ -26,11 +26,6 @@ public class TvdbService {
     this.tvdbConnection = tvdbConnection;
   }
 
-  // devolver instancia
-  public TvdbConnection getTvdbConnection() {
-    return tvdbConnection;
-  }
-
   private JsonNode tvdbGetRequest(String query) {
     JsonNode result = null;
     int MAXTRIES = 2; // maximos intentos de refrescar token
@@ -44,9 +39,7 @@ public class TvdbService {
                 .get()
                 .thenApply(WSResponse::asJson);
 
-        result = stage.toCompletableFuture().get(5, TimeUnit.SECONDS);
-
-        System.out.println(result);
+        result = stage.toCompletableFuture().get(10, TimeUnit.SECONDS);
 
         if (result != null && !(++count == MAXTRIES)) {
           if (result.has("data")) {
@@ -89,13 +82,19 @@ public class TvdbService {
       tvShow.name = jsonTvShow.get("seriesName").asText();             // nombre de la tvShow
       tvShow.banner = jsonTvShow.get("banner").asText();               // banner de la tvShow
       tvShow.local = false;
+      JsonNode fecha = jsonTvShow.get("firstAired");
 
-      try {
-        df.applyPattern("yyyy-MM-dd");
-        tvShow.firstAired = df.parse(jsonTvShow.get("firstAired").asText()); // fecha estreno
-      } catch (ParseException e) {
-        Logger.debug("No se ha podido parsear la fecha de estreno");
+      // parsear fecha
+      while (true) {
+        try {
+          df.applyPattern("yyyy-MM-dd");
+          tvShow.firstAired = df.parse(fecha.asText()); // fecha estreno
+          break;
+        } catch (Exception e) {
+          Logger.debug("Reintentando parsear fecha de estreno");
+        }
       }
+
     } else {
       Logger.debug("TvShow no encontrada en TVDB");
     }

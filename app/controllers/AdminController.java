@@ -45,28 +45,9 @@ public class AdminController extends Controller {
     return ok(index.render("Trending Series Administration - Dashboard", "dashboard", tvShowCount, tvShowRequestCount));
   }
 
-  private List<TvShow> get() {
-    // obtener listado de peticiones de serie
-    List<TvShowRequest> tvShowRequests = jpa.withTransaction(tvShowRequestService::all);
-    // obtener datos de TVDB de cada serie pedida
-    List<TvShow> tvShows = new ArrayList<>();
-    if (!tvShowRequests.isEmpty()) {
-      // recorremos el array de peticiones pidiendo los datos a TVDB
-      for (TvShowRequest tvShowRequest : tvShowRequests) {
-        TvShow tvShow = tvdbService.findOnTvdbByTvdbId(tvShowRequest.tvdbId);
-        if (tvShow != null) {
-          tvShows.add(tvShow);
-          Logger.debug("" + tvShows.size());
-        }
-      }
-    }
-
-    return tvShows;
-  }
-
-  @Transactional
-  public CompletionStage<Result> tvShows() {
-    return CompletableFuture.supplyAsync(this::get)
-            .thenApply(tvShows -> ok(views.html.administration.tvShows.render("Trending Series Administration - Series", "tvShows", tvShows)));
+  @Transactional(readOnly = true)
+  public Result tvShows() {
+    List<TvShowRequest> tvShowRequests = tvShowRequestService.all();
+    return ok(views.html.administration.tvShows.render("Trending Series Administration - Series", "tvShows", tvShowRequests));
   }
 }

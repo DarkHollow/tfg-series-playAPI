@@ -167,7 +167,7 @@ public class TvShowServiceTest {
     assertEquals("Doctor Who (2005)", tvShowsEncontrados.get(0).name);
   }
 
-  // testeamos obtener todas las tvshows
+  // testeamos obtener todas las tvShows
   @Test
   public void testTvShowServiceAll() {
     TvShowDAO tvShowDAO = new TvShowDAO(jpa);

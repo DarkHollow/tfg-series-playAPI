@@ -1,6 +1,7 @@
 package models.service;
 
 import com.google.inject.Inject;
+import models.TvShow;
 import models.TvShowRequest;
 import models.User;
 import models.dao.TvShowRequestDAO;
@@ -20,6 +21,9 @@ public class TvShowRequestService {
     this.userService = userService;
     this.rqDAO = rqDAO;
   }
+
+  // obtener todas las peticiones
+  public List<TvShowRequest> all() { return rqDAO.all(); }
 
   // buscar peticiones por id de TVDB
   public List<TvShowRequest> findTvShowRequests(Integer tvdbId) {

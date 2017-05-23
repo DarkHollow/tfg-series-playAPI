@@ -9,8 +9,7 @@ import play.libs.ws.WSResponse;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 
@@ -27,29 +26,50 @@ public class TvdbService {
     this.tvdbConnection = tvdbConnection;
   }
 
-  // devolver instancia
-  public TvdbConnection getTvdbConnection() {
-    return tvdbConnection;
+  private JsonNode tvdbGetRequest(String query) {
+    JsonNode result = null;
+    int MAXTRIES = 2; // maximos intentos de refrescar token
+    int count = 0;
+
+    while (true) {
+      try {
+        CompletionStage<JsonNode> stage = ws.url(query)
+                .setHeader("Authorization", "Bearer " + tvdbConnection.getToken())
+                .setHeader("Accept-Language", "es")
+                .get()
+                .thenApply(WSResponse::asJson);
+
+        result = stage.toCompletableFuture().get(10, TimeUnit.SECONDS);
+
+        if (result != null && !(++count == MAXTRIES)) {
+          if (result.has("data")) {
+            break;
+          } else if (result.has("Error") && Objects.equals(result.get("Error").asText(), "Not authorized")) {
+            System.out.println("Sin autorizacion, refrescando token...");
+            tvdbConnection.refreshToken();
+          } else {
+            System.out.println("TVDB error que desconocemos");
+          }
+        } else {
+          System.out.println("Respuesta es null o llevamos 2 intentos");
+          break;
+        }
+      } catch (Exception ex) {
+        System.out.println("TVDB exception: " + ex.getMessage());
+        break;
+      }
+    }
+
+    return result;
   }
 
   // buscar por tvdbId (solo un resultado posible)
   public TvShow findOnTvdbByTvdbId(Integer tvdbId) {
     TvShow tvShow = null;
     JsonNode respuesta = null;
+    String query = "https://api.thetvdb.com/series/" + tvdbId.toString();
 
-    try {
-      CompletionStage<JsonNode> stage = ws.url("https://api.thetvdb.com/series/" + tvdbId.toString())
-              .setHeader("Authorization", "Bearer " + tvdbConnection.getToken())
-              .setHeader("Accept-Language", "es")
-              .get()
-              .thenApply(WSResponse::asJson);
-
-      respuesta = stage.toCompletableFuture().get(5, TimeUnit.SECONDS);
-
-      System.out.println(respuesta);
-    } catch (Exception ex) {
-      System.out.println(ex.getMessage());
-    }
+    respuesta = tvdbGetRequest(query);
 
     // comprobamos si ha encontrado el tv show en Tvdb
     if (respuesta != null && respuesta.has("data")) {
@@ -59,16 +79,22 @@ public class TvdbService {
       // inicializamos el tv show
       tvShow =  new TvShow();
       tvShow.tvdbId = Integer.parseInt(jsonTvShow.get("id").asText()); // id de tvdbConnection
-      tvShow.name = jsonTvShow.get("seriesName").asText();       // nombre de la tvShow
+      tvShow.name = jsonTvShow.get("seriesName").asText();             // nombre de la tvShow
       tvShow.banner = jsonTvShow.get("banner").asText();               // banner de la tvShow
       tvShow.local = false;
+      JsonNode fecha = jsonTvShow.get("firstAired");
 
-      try {
-        df.applyPattern("yyyy-MM-dd");
-        tvShow.firstAired = df.parse(jsonTvShow.get("firstAired").asText()); // fecha estreno
-      } catch (ParseException e) {
-        Logger.debug("No se ha podido parsear la fecha de estreno");
+      // parsear fecha
+      while (true) {
+        try {
+          df.applyPattern("yyyy-MM-dd");
+          tvShow.firstAired = df.parse(fecha.asText()); // fecha estreno
+          break;
+        } catch (Exception e) {
+          Logger.debug("Reintentando parsear fecha de estreno");
+        }
       }
+
     } else {
       Logger.debug("TvShow no encontrada en TVDB");
     }
@@ -81,21 +107,9 @@ public class TvdbService {
     // buscamos el TV Show en tvdbConnection
     JsonNode respuesta = null;
     List<TvShow> tvShows = new ArrayList<>();
+    String query = "https://api.thetvdb.com/search/series?" + field + "=" + value;
 
-    try {
-      CompletionStage<JsonNode> stage = ws.url("https://api.thetvdb.com/search/series")
-              .setHeader("Authorization", "Bearer " + tvdbConnection.getToken())
-              .setHeader("Accept-Language", "es")
-              .setQueryParameter(field, value)
-              .get()
-              .thenApply(WSResponse::asJson);
-
-      respuesta = stage.toCompletableFuture().get(5, TimeUnit.SECONDS);
-
-      System.out.println(respuesta);
-    } catch (Exception ex) {
-      System.out.println(ex.getMessage());
-    }
+    respuesta = tvdbGetRequest(query);
 
     // recorremos tv shows encontrados en TVDB
     if (respuesta != null && respuesta.has("data")) {

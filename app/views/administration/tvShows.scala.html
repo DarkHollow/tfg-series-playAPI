@@ -72,7 +72,7 @@
             var promises = [];
             @for(request <- tvShowRequests) {
             promise = $.ajax({
-                url: 'http://localhost:9000/api/tvdbshow/' + @request.tvdbId,
+                url: 'http://localhost:9000/api/tvshows/tvdb/' + @request.tvdbId,
                 type: 'GET',
                 dataType: 'json',
                 success: function (response) {

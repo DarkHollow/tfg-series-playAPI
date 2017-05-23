@@ -29,9 +29,12 @@ public class TvdbController extends Controller {
     if (tvShow != null) {
       try {
         JsonNode jsonNode = Json.parse(new ObjectMapper()
-                .writerWithView(TvShowViews.SearchTVDB.class)
+                .writerWithView(TvShowViews.SearchTvShowTvdbId.class)
                 .writeValueAsString(tvShow));
-        return ok(jsonNode);
+        // quitamos campos no relevantes
+        ObjectNode object = (ObjectNode) jsonNode;
+        object.remove("id");
+        return ok(object);
 
       } catch (Exception ex) {
         // si hubiese un error, devolver error interno

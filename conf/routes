@@ -33,9 +33,10 @@ GET     /api/tvshows                controllers.TvShowController.all
 GET     /api/tvshow/:id/            controllers.TvShowController.tvShowById(id: Integer)
 GET     /api/tvshow/:id             controllers.TvShowController.tvShowById(id: Integer)
 
-## TVDB
-GET     /api/tvdbshow/:id/          controllers.TvdbController.tvShowById(id: Integer)
-GET     /api/tvdbshow/:id           controllers.TvdbController.tvShowById(id: Integer)
+## TV Show on TVDB by tvdbId
+
+GET     /api/tvshows/tvdb/:tvdbId/  controllers.TvdbController.tvShowById(tvdbId: Integer)
+GET     /api/tvshows/tvdb/:tvdbId   controllers.TvdbController.tvShowById(tvdbId: Integer)
 
 # TV Show request ----------------
 

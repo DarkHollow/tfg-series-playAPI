@@ -188,31 +188,31 @@ paths:
           description: JSON response with 500 Internal Server error
           schema:
             $ref: '#/definitions/InternalServerError'
-    /tvshow/tvdb/{tvdbId}:
-      get:
-        tags:
-          - TV Show
-        description: >-
-          Returns all information about a particular TV Show on TVDB by tvdbId
-        parameters:
-          - name: tvdbId
-            in: path
-            required: true
-            description: tvdbId of the TV Show
-            type: integer
-        responses:
-          '200':
-            description: JSON response with the information of the TV Show by TVDB
-            schema:
-              $ref: '#/definitions/TvShowTvdb'
-          '404':
-            description: JSON response with 404 Not Found error
-            schema:
-              $ref: '#/definitions/NotFound'
-          '500':
-            description: JSON response with 500 Internal Server error
-            schema:
-              $ref: '#/definitions/InternalServerError'
+  /tvshows/tvdb/{tvdbId}:
+    get:
+      tags:
+        - TV Show
+      description: >-
+        Returns all information about a particular TV Show on TVDB by tvdbId
+      parameters:
+        - name: tvdbId
+          in: path
+          required: true
+          description: tvdbId of the TV Show
+          type: integer
+      responses:
+        '200':
+          description: JSON response with the information of the TV Show by TVDB
+          schema:
+            $ref: '#/definitions/TvShowTvdb'
+        '404':
+          description: JSON response with 404 Not Found error
+          schema:
+            $ref: '#/definitions/NotFound'
+        '500':
+          description: JSON response with 500 Internal Server error
+          schema:
+            $ref: '#/definitions/InternalServerError'
   /tvshow/request:
     post:
       tags:

@@ -18919,8 +18919,35 @@ thead .htCollapseButton:after {
  *
  * ---------------------------------------------------------------------------- */
 .login-cover {
-  background: url('../images/login_cover.jpg') no-repeat;
+  background: url('../images/backgrounds/gridWeb.jpg') no-repeat;
   background-size: cover;
+}
+.login-cover-cover {
+  background-color: rgba(48,48,48,0.8);
+}
+.form-control-login {
+  background-color: transparent;
+  color: rgba(255,255,255,0.8);
+  border: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.5);
+  border-radius: 0;
+  padding-bottom: 7px;
+}
+.form-control-login:focus {
+  padding-bottom: 6px;
+  border-color: rgba(255,149,0,1);
+  border-width: 2px;
+}
+.form-control-login::selection {
+  background: rgba(255,149,0,0.5);
+}
+.text-white-07 {
+  color: rgba(255,255,255,0.7) !important;
+}
+.footer-trending {
+  background-color: rgba(0,0,0,0.5);
+  border-top: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.15) !important;
 }
 .login-container .page-container {
   padding-top: 40px;

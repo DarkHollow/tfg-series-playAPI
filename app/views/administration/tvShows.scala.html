@@ -38,15 +38,9 @@
             selector: '.tooltipId'
         });
 
-        // data-actions
-        $('.panel [data-action=reload]').click(function (e) {
-            requestsTableClear();
-            requestsTableLoad();
-        });
-
         // on page ready
         $(document).ready(function () {
-          requestsTableLoad();
+            requestsTableLoad();
         });
 
         // clear requests data

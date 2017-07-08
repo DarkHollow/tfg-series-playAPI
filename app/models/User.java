@@ -29,6 +29,9 @@ public class User {
   @Temporal(TemporalType.DATE)
   public Date registrationDate;
 
+  @Column(length = 1)
+  public String rol;
+
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   public List<TvShowRequest> requestedTvShows;
 
@@ -40,6 +43,7 @@ public class User {
     this.email = email;
     this.password = password;
     this.name = name;
+    this.rol = "u";
   }
 
   // constructor copia
@@ -47,13 +51,19 @@ public class User {
     email = user.email;
     password = user.password;
     name = user.name;
+    rol = user.rol;
   }
 
   // toString - solo info importante
   @Override
   public String toString() {
     return "User [id=" + id + ", email=" + email + ", name="
-            + name + ", registrationDate=" + registrationDate + "]";
+            + name + ", rol=" + rol + ", registrationDate=" + registrationDate + "]";
+  }
+
+  // es administrador ?
+  public Boolean isAdmin() {
+    return (rol.equals("a"));
   }
 
 }

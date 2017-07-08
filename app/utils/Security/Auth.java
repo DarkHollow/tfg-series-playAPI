@@ -30,7 +30,6 @@ public class Auth extends Security.Authenticator {
 
   @Override
   public String getUsername(Http.Context context) {
-    System.out.println("\nComprobando token usuario...");
     String rawToken = getTokenFromHeader(context);
     String path = context.request().path();
 
@@ -50,16 +49,13 @@ public class Auth extends Security.Authenticator {
           User user = userService.findByEmail(emailClaim.asString());
           if (user != null && user.rol.equals(rolClaim.asString())) {
             // si el contenido solicitado es tipo admin
-            System.out.println("Path: " + path);
             if (path.contains("/admin")) {
-              System.out.println("El contenido solicitado es admin");
               // el rol debe ser admin
               if (rolClaim.asString().equals("a")) {
                 return user.email;
               }
             // si no es tipo admin el contenido solicitado, el rol no importa
             } else {
-              System.out.println("El contenido solicitado NO es admin");
               return user.email;
             }
           }
@@ -72,9 +68,6 @@ public class Auth extends Security.Authenticator {
         Logger.debug("jwt - verifier.verify(token) ha generado JWTVerificationException");
         return null;
       }
-    } else {
-      System.out.println(rawToken);
-      System.out.println("Sin token !");
     }
 
     return null;

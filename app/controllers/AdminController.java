@@ -1,39 +1,38 @@
 package controllers;
 
 import com.google.inject.Inject;
-import models.TvShow;
 import models.TvShowRequest;
 import models.service.TvShowRequestService;
 import models.service.TvShowService;
-import models.service.tvdb.TvdbService;
-import play.Logger;
-import play.db.jpa.JPAApi;
+import models.service.UserService;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
-import views.html.administration.*;
+import play.mvc.Security;
+import utils.Security.Auth;
+import views.html.administration.index;
+import views.html.administration.login;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 
 public class AdminController extends Controller {
 
   private final TvShowService tvShowService;
   private final TvShowRequestService tvShowRequestService;
-  private final TvdbService tvdbService;
-  private final JPAApi jpa;
+  private final UserService userService;
+  private final Auth auth;
 
   @Inject
-  public AdminController(TvShowService tvShowService, TvShowRequestService tvShowRequestService, TvdbService tvdbService, JPAApi jpa) {
+  public AdminController(TvShowService tvShowService, TvShowRequestService tvShowRequestService, UserService userService, Auth auth) {
     this.tvShowService = tvShowService;
     this.tvShowRequestService = tvShowRequestService;
-    this.tvdbService = tvdbService;
-    this.jpa = jpa;
+    this.userService = userService;
+    this.auth = auth;
   }
 
   @Transactional(readOnly = true)
+  @Security.Authenticated(Auth.class)
   public Result index() {
     // sumario datos
 
@@ -46,8 +45,28 @@ public class AdminController extends Controller {
   }
 
   @Transactional(readOnly = true)
+  @Security.Authenticated(Auth.class)
   public Result tvShows() {
     List<TvShowRequest> tvShowRequests = tvShowRequestService.all();
     return ok(views.html.administration.tvShows.render("Trending Series Administration - Series", "tvShows", tvShowRequests));
   }
+
+  public Result loginView() {
+    // llamar al método manualmente
+    String email = auth.getUsername(Http.Context.current());
+    // si está identificado, comprobar si es admin
+    if (email != null) {
+      if (userService.findByEmail(email).isAdmin()) {
+        // si es admin, redirigir a admin, si no, no autorizado
+        return redirect(routes.AdminController.index());
+      } else {
+        // si no es admin, no autorizado
+        return unauthorized();
+      }
+    }
+
+    // si no está identificado, mostrar login
+    return ok(login.render("Trending Series Administration - Login"));
+  }
+
 }

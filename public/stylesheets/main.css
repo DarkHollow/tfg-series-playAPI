@@ -1,0 +1,51 @@
+@font-face {
+    font-family: 'Blacklisted';
+    src: url('../stylesheets/extras/Blacklisted.ttf');
+}
+
+.blacklisted {
+    font-family: 'Blacklisted', 'Roboto', serif;
+}
+
+.main-title {
+    font-size: 40px;
+}
+
+.response-message {
+    color: red;
+}
+
+.validation-error-label-trending,
+.validation-valid-label-trending {
+    margin-top: 7px;
+    margin-bottom: 7px;
+    display: block;
+    color: #F44336;
+    position: relative;
+    padding-left: 26px;
+}
+.validation-valid-label-trending {
+    color: #4CAF50;
+}
+.validation-error-label-trending:before,
+.validation-valid-label-trending:before {
+    font-family: 'icomoon';
+    position: absolute;
+    top: 2px;
+    left: 0;
+    display: inline-block;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 16px;
+}
+.validation-error-label-trending:empty,
+.validation-valid-label-trending:empty {
+    display: none;
+}
+.validation-error-label-trending:before {
+    content: '\ed63';
+}
+.validation-valid-label-trending:before {
+    content: '\ee73';
+}

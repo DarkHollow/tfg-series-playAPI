@@ -160,6 +160,7 @@ public class UserController extends Controller {
             result.put("Authorization", token);
             result.put("userId", user.id);
             result.put("userName", user.name);
+            result.put("userRol", user.rol);
             return ok(result);
           }
 

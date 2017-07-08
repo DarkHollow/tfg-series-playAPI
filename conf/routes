@@ -2,8 +2,6 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# An example controller showing a sample home page
-GET     /                           controllers.HomeController.index
 # An example controller showing how to use dependency injection
 GET     /count                      controllers.CountController.count
 # An example controller showing how to write asynchronous code
@@ -70,8 +68,14 @@ GET    /api/user/session            controllers.UserController.verifySession()
 
 # Admin
 
+## Homepage redirects to admin
+GET     /                           controllers.Default.redirect(to = "admin/")
+
+GET     /admin/login/               controllers.AdminController.loginView()
+GET     /admin/login                controllers.AdminController.loginView()
+
 GET     /admin/                     controllers.AdminController.index()
 GET     /admin                      controllers.AdminController.index()
 
-GET     /admin/tvShows              controllers.AdminController.tvShows()
 GET     /admin/tvShows/             controllers.AdminController.tvShows()
+GET     /admin/tvShows              controllers.AdminController.tvShows()

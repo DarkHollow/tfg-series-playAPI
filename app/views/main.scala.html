@@ -3,12 +3,92 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>@title</title>
+
+        <!-- Global stylesheets -->
+        <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900" rel="stylesheet" type="text/css">
+        <link href="@routes.Assets.versioned("stylesheets/icons/icomoon/styles.css")" rel="stylesheet" type="text/css">
+        <link href="@routes.Assets.versioned("stylesheets/bootstrap.css")" rel="stylesheet" type="text/css">
+        <link href="@routes.Assets.versioned("stylesheets/core.css")" rel="stylesheet" type="text/css">
+        <link href="@routes.Assets.versioned("stylesheets/components.css")" rel="stylesheet" type="text/css">
+        <link href="@routes.Assets.versioned("stylesheets/colors.css")" rel="stylesheet" type="text/css">
         <link href="@routes.Assets.versioned("stylesheets/main.css")" rel="stylesheet" type="text/css">
-        <link href="@routes.Assets.versioned("images/favicon.png")" rel="shortcut icon" type="image/png">
-        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/hello.js")"></script>
+        <!-- /global stylesheets -->
+
+        <!-- Core JS files -->
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/plugins/loaders/pace.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/core/libraries/jquery.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/core/libraries/bootstrap.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/plugins/loaders/blockui.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/plugins/ui/nicescroll.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/plugins/ui/drilldown.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/plugins/ui/fab.min.js")"></script>
+        <!-- /core JS files -->
+
+        <!-- Theme JS files -->
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/plugins/tables/datatables/datatables.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/plugins/forms/selects/select2.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/plugins/forms/selects/bootstrap_multiselect.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/plugins/ui/moment/moment.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/plugins/forms/styling/uniform.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/plugins/forms/validation/validate.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/plugins/sha512.min.js")"></script>
+
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/core/app.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/pages/main.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/pages/dashboard.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/pages/tvShows.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/pages/login.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/pages/login_validation.js")"></script>
+        <!-- /theme JS files -->
     </head>
-    <body>
-        @content
+
+    <body class="navbar-bottom login-container login-cover">
+
+        <!-- Page container -->
+        <div class="page-container login-cover-cover">
+
+            <!-- Page content -->
+            <div class="page-content">
+
+                <!-- Main content -->
+                <div class="content-wrapper">
+
+                    @content
+
+                </div>
+                <!-- /main content -->
+
+            </div>
+            <!-- /page content -->
+
+        </div>
+        <!-- /page container -->
+
+
+        <!-- Footer -->
+        <div class="navbar navbar-default navbar-fixed-bottom footer footer-trending">
+            <ul class="nav navbar-nav visible-xs-block">
+                <li><a class="text-center collapsed" data-toggle="collapse" data-target="#footer"><i class="icon-circle-up2"></i></a></li>
+            </ul>
+
+            <div class="navbar-collapse collapse" id="footer">
+                <div class="navbar-text text-white-07">
+                            &copy; 2017. <a href="#" class="text-orange-trending">Trending Series Administration</a> coded by <a href="https://darkhollow.github.io" class="text-orange-trending" target="_blank">Roberto Cánovas</a>
+                </div>
+
+                <div class="navbar-right text-white-07">
+                    <ul class="nav navbar-nav">
+                        <li><a class="text-orange-trending" href="#">About</a></li>
+                        <li><a class="text-orange-trending" href="#">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- /footer -->
+
     </body>
 </html>

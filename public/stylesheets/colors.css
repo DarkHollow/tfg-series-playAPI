@@ -418,6 +418,24 @@
   border-color: #EF6C00;
   color: #fff;
 }
+.bg-orange-trending {
+  background-color: rgba(255,149,0,1);
+  border-color: rgba(255,149,0,1);
+  font-size: 16px;
+  color: #000;
+}
+.bg-orange-trending:hover, .bg-orange-trending:active {
+  color: #000 !important;
+}
+.text-orange-trending {
+  color: rgba(255, 149, 0, 1);
+}
+.text-orange-trending, .text-orange-trending:visited {
+  color: rgba(255, 149, 0, 1) !important;
+}
+.text-orange-trending:hover, .text-orange-trending:active {
+  color: #EF6C00 !important;
+}
 .bg-brown {
   background-color: #795548;
   border-color: #795548;

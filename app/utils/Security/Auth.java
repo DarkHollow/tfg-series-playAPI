@@ -30,7 +30,9 @@ public class Auth extends Security.Authenticator {
 
   @Override
   public String getUsername(Http.Context context) {
+    System.out.println("\nComprobando token usuario...");
     String rawToken = getTokenFromHeader(context);
+    String path = context.request().path();
 
     if (rawToken != null && rawToken.length() > 6) {
       String token = rawToken.substring(7);
@@ -42,11 +44,24 @@ public class Auth extends Security.Authenticator {
                 .build();
         DecodedJWT jwt = verifier.verify(token);
         Claim emailClaim = jwt.getClaim("email");
+        Claim rolClaim = jwt.getClaim("rol");
 
         if (!emailClaim.isNull() && !emailClaim.asString().equals("")) {
           User user = userService.findByEmail(emailClaim.asString());
-          if (user != null) {
-            return user.email;
+          if (user != null && user.rol.equals(rolClaim.asString())) {
+            // si el contenido solicitado es tipo admin
+            System.out.println("Path: " + path);
+            if (path.contains("/admin")) {
+              System.out.println("El contenido solicitado es admin");
+              // el rol debe ser admin
+              if (rolClaim.asString().equals("a")) {
+                return user.email;
+              }
+            // si no es tipo admin el contenido solicitado, el rol no importa
+            } else {
+              System.out.println("El contenido solicitado NO es admin");
+              return user.email;
+            }
           }
         }
 
@@ -57,6 +72,9 @@ public class Auth extends Security.Authenticator {
         Logger.debug("jwt - verifier.verify(token) ha generado JWTVerificationException");
         return null;
       }
+    } else {
+      System.out.println(rawToken);
+      System.out.println("Sin token !");
     }
 
     return null;
@@ -64,6 +82,13 @@ public class Auth extends Security.Authenticator {
 
   @Override
   public Result onUnauthorized(Http.Context context) {
+    String path = context.request().path();
+
+    // si el path contiene /admin y no está indentificado como tal, enviar a login
+    if (path.contains("/admin")) {
+      return redirect(controllers.routes.AdminController.loginView());
+    }
+
     return super.onUnauthorized(context);
   }
 
@@ -75,6 +100,7 @@ public class Auth extends Security.Authenticator {
       token = JWT.create()
               .withIssuer(ISSUER)
               .withClaim("email", user.email)
+              .withClaim("rol", user.rol)
               .sign(algorithm);
     } catch (UnsupportedEncodingException ex) {
       Logger.error("jwt - JWT.create() ha generado UnsupportedEncodingException");

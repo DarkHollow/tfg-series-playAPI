@@ -1,0 +1,152 @@
+@(title: String)
+
+@main(title) {
+
+    <!-- Advanced login -->
+    <form id="formLogin" action="@routes.UserController.login()" class="form-validate login-form">
+        <div class="text-center">
+            <div class="blacklisted text-white"><h1 class="main-title">Trending <span class="text-orange-400">Series</span></h1></div>
+            <h5 class="content-group-lg text-white">Administración <small class="display-block text-white-07">Introduce tus credenciales</small></h5>
+        </div>
+
+        <div class="form-group has-feedback has-feedback-left">
+            <input name="email" placeholder="Correo electrónico" type="email" class="form-control form-control-login input-lg" required>
+            <div class="form-control-feedback">
+                <i class="icon-envelop text-muted"></i>
+            </div>
+        </div>
+
+        <div class="form-group has-feedback has-feedback-left">
+            <input name="password" placeholder="Contraseña" type="password" class="form-control form-control-login input-lg" required>
+            <div class="form-control-feedback">
+                <i class="icon-lock2 text-muted"></i>
+            </div>
+        </div>
+
+        <!--<div class="form-group login-options">
+            <div class="row">
+                <div class="col-sm-6">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" class="styled">
+                        Remember
+                    </label>
+                </div>
+
+                <div class="col-sm-6 text-right">
+                    <a href="login_password_recover.html">Forgot password?</a>
+                </div>
+            </div>
+        </div>-->
+
+        <div class="form-group">
+            <button id="submitButton" type="submit" class="btn bg-orange-trending btn-block btn-lg">Entrar</button>
+        </div>
+        <p class="response-message"></p>
+
+        <!--<span class="help-block text-center">By continuing, you're confirming that you've read and agree to our <a href="#">Terms and Conditions</a> and <a href="#">Cookie Policy</a></span>-->
+    </form>
+    <!-- /advanced login -->
+
+    <script type="text/javascript">
+        // javascript necesario en plantilla
+
+        $(document).ready(function() {
+
+            $("form#formLogin").submit(function(event) {
+                login(event);
+            });
+        });
+
+        function login(event) {
+            // paramos el submit por defecto
+            event.preventDefault();
+            $('.response-message').empty();
+
+            submitButton = $("#submitButton");
+            submitButton.attr('disabled', 'disabled');
+            submitButton.block({
+                message: '<i class="icon-spinner9 spinner"></i>',
+                overlayCSS: {
+                    backgroundColor: '#fff',
+                    opacity: 0.8,
+                    cursor: 'wait'
+                },
+                css: {
+                    border: 0,
+                    padding: 0,
+                    backgroundColor: 'none'
+                }
+            });
+
+            route = $('#formLogin').attr('action');
+            email = $("input[name='email']").val();
+            password = $("input[name='password']").val();
+            passwordSha512 = sha512(password);
+
+            data = JSON.stringify({"email": email, "password": passwordSha512.toString()});
+
+            var promises = [];
+            var promise = $.ajax({
+                url: route,
+                type: 'POST',
+                data: data,
+                dataType: 'json',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                success: function(response) {
+                    if (response.ok) {
+                        console.log(response.ok);
+                        // comprobamos si el usuario es admin
+                        if (response.userRol === 'a') {
+                            // guardamos token
+                            window.localStorage.setItem('jwt', response.Authorization);
+                            window.localStorage.setItem('userId', response.userId.toString());
+                            window.localStorage.setItem('userName', response.userName);
+                            // redirigir con token a index de admin
+                            getRouteLogin('@routes.AdminController.index()');
+                        } else {
+                            // no es administrador !
+                            $('.response-message').text('El usuario debe ser un administrador.');
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr.responseJSON.message);
+                    $('.response-message').text(xhr.responseJSON.message);
+                }
+            });
+
+            promises.push(promise);
+
+            $.when.apply(null, promises).done(function() {
+                submitButton.unblock();
+                submitButton.removeAttr('disabled');
+            }).fail(function() {
+                submitButton.unblock();
+                submitButton.removeAttr('disabled');
+            });
+        }
+
+        function getRouteLogin(route) {
+            $.ajax({
+                url: route,
+                type: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
+                },
+                dataType: 'html',
+                success: function(data) {
+                  document.documentElement.innerHTML = data;
+                  window.history.pushState( {'html': data}, '', route );
+                  showUserName();
+                },
+                error: function() {
+                    console.log('error');
+                }
+            });
+        }
+
+    </script>
+}

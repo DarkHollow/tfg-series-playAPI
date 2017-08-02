@@ -56,7 +56,6 @@ public class TvShowRequestService {
     return rqDAO.getRejected();
   }
 
-
   // buscar peticiones por id de TVDB
   public List<TvShowRequest> findTvShowRequests(Integer tvdbId) { return rqDAO.findTvShowRequestsByTvdbId(tvdbId); }
 
@@ -86,6 +85,17 @@ public class TvShowRequestService {
     }
 
     return result;
+  }
+
+  // rechazar peticion
+  public Boolean reject(Integer id) {
+    TvShowRequest tvShowRequest = rqDAO.find(id);
+    if (tvShowRequest != null) {
+      tvShowRequest.status = TvShowRequest.Status.Rejected;
+      return true;
+    } else {
+      return false;
+    }
   }
 
   // delete por id

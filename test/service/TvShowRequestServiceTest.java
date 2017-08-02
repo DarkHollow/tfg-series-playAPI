@@ -137,4 +137,13 @@ public class TvShowRequestServiceTest {
     });
   }
 
+  // testeamos rechazar una peticion
+  @Test
+  public void testTvShowRequestReject() {
+    jpa.withTransaction(() -> {
+      tvShowRequestService.reject(1);
+      assertEquals(TvShowRequest.Status.Rejected, tvShowRequestService.findById(1).status);
+    });
+  }
+
 }

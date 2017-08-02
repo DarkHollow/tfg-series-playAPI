@@ -49,3 +49,15 @@
 .validation-valid-label-trending:before {
     content: '\ee73';
 }
+
+.padTop0 {
+    padding-top: 0;
+}
+
+.check-list li {
+    padding-bottom: 3px;
+}
+
+.check-list li:last-child {
+    padding-bottom: 0;
+}

@@ -19,6 +19,9 @@ public class TvShow {
   @JsonView(TvShowViews.SearchTvShow.class)
   public Integer id;
 
+  @JsonView(TvShowViews.InternalFullTvShow.class)
+  public String imdbId;
+
   @JsonView(TvShowViews.SearchTvShowTvdbId.class)
   public Integer tvdbId;
 
@@ -48,7 +51,7 @@ public class TvShow {
   public String network;
 
   @JsonView(TvShowViews.FullTvShow.class)
-  public Integer runtime;
+  public String runtime;
 
   @JsonView(TvShowViews.FullTvShow.class)
   @ElementCollection
@@ -62,18 +65,6 @@ public class TvShow {
   @JsonView(TvShowViews.FullTvShow.class)
   public Status status;
 
-  @JsonView(TvShowViews.FullTvShow.class)
-  public String writer;
-
-  @JsonView(TvShowViews.FullTvShow.class)
-  public String actors;
-
-  @JsonView(TvShowViews.FullTvShow.class)
-  public Float imdbRating;
-
-  @JsonView(TvShowViews.FullTvShow.class)
-  public String trailer;
-
   @Transient
   @JsonView(TvShowViews.SearchTVDB.class)
   public Boolean local;
@@ -86,13 +77,12 @@ public class TvShow {
   public TvShow() {}
 
   // contructor por campos
-  public TvShow(Integer tvdbId, String name, Date firstAired,
-                String overview, String banner, String poster, String fanart,
-                String network, Integer runtime, Set<String> genre,
-                String rating, Status status, String writer, String actors,
-                Float imdbRating, String trailer) {
+  public TvShow(Integer tvdbId, String imdbId, String name, Date firstAired, String overview, String banner,
+                String poster, String fanart, String network, String runtime, Set<String> genre, String rating,
+                Status status, String writer, String actors, Float imdbRating, String trailer) {
 
     this.tvdbId = tvdbId;
+    this.imdbId = imdbId;
     this.name = name;
     this.firstAired = firstAired;
     this.overview = overview;
@@ -104,16 +94,13 @@ public class TvShow {
     this.genre = genre;
     this.rating = rating;
     this.status = status;
-    this.writer = writer;
-    this.actors = actors;
-    this.imdbRating = imdbRating;
-    this.trailer = trailer;
     local = false;
   }
 
   // contructor copia
   public TvShow(TvShow tvShow) {
     this.tvdbId = tvShow.tvdbId;
+    this.imdbId = tvShow.imdbId;
     this.name = tvShow.name;
     this.firstAired = tvShow.firstAired;
     this.overview = tvShow.overview;
@@ -125,10 +112,6 @@ public class TvShow {
     this.genre = tvShow.genre;
     this.rating = tvShow.rating;
     this.status = tvShow.status;
-    this.writer = tvShow.writer;
-    this.actors = tvShow.actors;
-    this.imdbRating = tvShow.imdbRating;
-    this.trailer = tvShow.trailer;
     this.local = false;
   }
 

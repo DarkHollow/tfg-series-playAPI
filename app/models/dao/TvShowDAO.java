@@ -6,6 +6,7 @@ import play.Logger;
 import play.db.jpa.JPAApi;
 
 import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
@@ -43,9 +44,13 @@ public class TvShowDAO {
   public TvShow findByTvdbId(Integer tvdbId) {
     TypedQuery<TvShow> query = jpa.em().createQuery("SELECT t FROM " + TABLE + " t WHERE t.tvdbId = :value", TvShow.class);
     try {
-      return query.setParameter("value", tvdbId).getSingleResult();
+      query.setParameter("value", tvdbId);
+      return query.getSingleResult();
     } catch (NoResultException e) {
       return null;
+    } catch (NonUniqueResultException e) {
+      Logger.error("Serie con tvdbId=" + tvdbId.toString() + " está persistida más de una vez");
+      return query.getResultList().get(0);
     }
   }
 

@@ -8,6 +8,8 @@ import java.util.Date;
 @Entity
 @Table(name = "tvShowRequest", uniqueConstraints = @UniqueConstraint(columnNames = {"tvdbId", "userId"}))
 public class TvShowRequest {
+  public enum Status { Requested, Processing, Persisted, Rejected }
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   public Integer id;
@@ -22,6 +24,9 @@ public class TvShowRequest {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   @Temporal(TemporalType.DATE)
   public Date requestDate;
+
+  @Enumerated(EnumType.STRING)
+  public Status status;
 
   // constructor vacío
   public TvShowRequest() {}

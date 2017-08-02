@@ -65,7 +65,15 @@ public class TvdbConnection {
     try {
       JsonNode respuesta = stage.toCompletableFuture().get(15, TimeUnit.SECONDS);
       token = respuesta.get("token").asText();
-      Logger.info("Token actualizado");
+      if (token == null || token.equals("")) {
+        // si no nos deja intentamos hacer login de nuevo
+        loginTVDB();
+      }
+      if (token == null || token.equals("")) {
+        Logger.info("Token actualizado");
+      } else {
+        Logger.error("no se ha podido resfrescar token de TvdbConnection");
+      }
     } catch (Exception ex) {
       Logger.error("Excepción: no se ha podido resfrescar token de TvdbConnection");
       System.out.println(ex.getMessage());

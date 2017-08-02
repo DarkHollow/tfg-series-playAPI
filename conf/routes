@@ -24,7 +24,7 @@ GET     /api/                       controllers.RootController.index
 # TV Shows ------------------------
 
 ## all TV Shows (future pagination?)
-GET     /api/tvshows/               controllers.Default.redirect(to = "../tvShows")
+GET     /api/tvshows/               controllers.Default.redirect(to = "../tvShowRequests")
 GET     /api/tvshows                controllers.TvShowController.all
 
 ## TV Show by id
@@ -43,8 +43,16 @@ GET     /api/search/TVDB/:q/        controllers.TvShowRequestController.searchTv
 GET     /api/search/TVDB/:q         controllers.TvShowRequestController.searchTvShowTVDBbyName(q: String)
 
 ## TV Show request
-POST    /api/tvshow/request/        controllers.TvShowRequestController.requestTvShow
-POST    /api/tvshow/request         controllers.TvShowRequestController.requestTvShow
+POST    /api/tvshows/requests/      controllers.TvShowRequestController.requestTvShow
+POST    /api/tvshows/requests       controllers.TvShowRequestController.requestTvShow
+
+### TV Show request acceptance (admin)
+PUT     /admin/tvshows/requests/    controllers.TvShowRequestController.acceptTvShowRequest()
+PUT     /admin/tvshows/requests     controllers.TvShowRequestController.acceptTvShowRequest()
+
+### TV Show request rejection (admin)
+PATCH     /admin/tvshows/requests/    controllers.TvShowRequestController.rejectTvShowRequest()
+PATCH     /admin/tvshows/requests     controllers.TvShowRequestController.rejectTvShowRequest()
 
 
 # API Search ---------------------
@@ -62,8 +70,8 @@ POST    /api/user                   controllers.UserController.register()
 POST    /api/user/session/          controllers.UserController.login()
 POST    /api/user/session           controllers.UserController.login()
 
-GET    /api/user/session/           controllers.UserController.verifySession()
-GET    /api/user/session            controllers.UserController.verifySession()
+GET     /api/user/session/          controllers.UserController.verifySession()
+GET     /api/user/session           controllers.UserController.verifySession()
 
 
 # Admin
@@ -77,5 +85,5 @@ GET     /admin/login                controllers.AdminController.loginView()
 GET     /admin/                     controllers.AdminController.index()
 GET     /admin                      controllers.AdminController.index()
 
-GET     /admin/tvShows/             controllers.AdminController.tvShows()
-GET     /admin/tvShows              controllers.AdminController.tvShows()
+GET     /admin/tvShowRequests/      controllers.AdminController.tvShowRequests()
+GET     /admin/tvShowRequests       controllers.AdminController.tvShowRequests()

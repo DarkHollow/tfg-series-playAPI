@@ -1,21 +1,26 @@
 package controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import json.TvShowViews;
 import models.TvShow;
+import models.TvShowRequest;
 import models.service.TvShowRequestService;
 import models.service.TvShowService;
 import models.service.UserService;
 import models.service.tvdb.TvdbService;
+import play.Logger;
 import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Security;
+import utils.Security.Auth;
 
 import java.util.List;
 
@@ -133,6 +138,182 @@ public class TvShowRequestController extends Controller {
         result.put("error", "TV Show doesn't exist on TVDB");
         return notFound(result);
       }
+    } else {
+      // peticion erronea ? tvdbId es null
+      result.put("error", "tvdbId/userId can't be null");
+      return badRequest(result);
+    }
+  }
+
+  // Peticion PUT Request TV Show aceptada
+  // aceptar request y obtener datos de TV Show
+  @Transactional
+  @Security.Authenticated(Auth.class)
+  public Result acceptTvShowRequest() {
+    ObjectNode result = Json.newObject();
+    Integer requestId;
+
+    // obtenemos datos de la petición post
+    DynamicForm requestForm = formFactory.form().bindFromRequest();
+
+    try {
+      requestId = Integer.valueOf(requestForm.get("requestId"));
+    } catch (Exception ex) {
+      result.put("error", "requestId null or not number");
+      return badRequest(result);
+    }
+
+    // obtenemos request
+    if (requestId != null) {
+      TvShowRequest request = tvShowRequestService.findById(requestId);
+
+      if (request != null) {
+        // comprobamos que la request no esté en otro estado que 'Requested' por asincronía
+        if (request.status.equals(TvShowRequest.Status.Requested)) {
+          // ponemos la request en proceso
+          request.status = TvShowRequest.Status.Processing;
+
+          Integer tvdbId = request.tvdbId;
+
+          // comprobamos que no tenemos el tv show por cualquier casualidad del mundo en la bbdd
+          if (tvShowService.findByTvdbId(tvdbId) == null) {
+            // obtenemos tv show
+            TvShow tvShow = tvdbService.getTvShowTVDB(tvdbId);
+            if (tvShow != null) {
+
+              // persistimos serie nueva y respuesta ok
+              tvShow = tvShowService.create(tvShow);
+              result.put("ok", "Serie persistida");
+
+              // descargamos las imagenes del TV Show
+              // obtenemos banner
+              tvShow.banner = tvdbService.getBanner(tvShow);
+              if (tvShow.banner != null) {
+                tvShow.banner = tvShow.banner.replace("public", "assets");
+                // banner obtenido
+                result.put("banner", true);
+              } else {
+                // no se ha podido obtener el banner
+                Logger.info(tvShow.name + " - no se ha podido obtener el banner");
+                result.put("banner", false);
+              }
+
+              // obtenemos poster
+              tvShow.poster = tvdbService.getImage(tvShow, "poster");
+              if (tvShow.poster != null) {
+                tvShow.poster = tvShow.poster.replace("public", "assets");
+                // poster obtenido
+                result.put("poster", true);
+              } else {
+                // no se ha podido obtener el poster
+                Logger.info(tvShow.name + " - no se ha podido obtener el poster");
+                result.put("poster", false);
+              }
+
+              // obtenemos fanart
+              tvShow.fanart = tvdbService.getImage(tvShow, "fanart");
+              if (tvShow.fanart != null) {
+                tvShow.fanart = tvShow.fanart.replace("public", "assets");
+                // fanart obtenido
+                result.put("fanart", true);
+              } else {
+                // no se ha podido obtener el fanart
+                Logger.info(tvShow.name + " - no se ha podido obtener el fanart");
+                result.put("fanart", false);
+              }
+
+              // poner request como persistida
+              request.status = TvShowRequest.Status.Persisted;
+
+              // respuesta ok - devolvemos datos obtenidos
+              try {
+                JsonNode jsonNode = Json.parse(new ObjectMapper()
+                        .writerWithView(TvShowViews.FullTvShow.class)
+                        .writeValueAsString(tvShow));
+                result.set("tvShow", jsonNode);
+                return ok(result);
+              } catch (JsonProcessingException e) {
+                Logger.error("Error parseando datos serie a JSON");
+                // si da error parseando devolvemos el ok y si hemos obtenido las imagenes
+                return ok(result);
+              }
+
+            } else {
+              // no podemos obtener serie de TVDB
+              request.status = TvShowRequest.Status.Requested;
+              result.put("error", "Imposible conectar con el servicio externo");
+              return internalServerError(result);
+            }
+          } else {
+            // error - ya tenemos el tv show!
+            request.status = TvShowRequest.Status.Persisted;
+            result.put("error", "La serie se encuentra ya en nuestra BBDD");
+            return badRequest(result);
+          }
+        } else {
+          // estado no es Requested
+          result.put("error", "La serie está en estado: " + request.status.toString());
+          return badRequest(result);
+        }
+      } else {
+        // la request no existe ?
+        result.put("error", "request cannot be find");
+        return badRequest(result);
+      }
+
+    } else {
+      // peticion erronea ? tvdbId es null
+      result.put("error", "tvdbId/userId can't be null");
+      return badRequest(result);
+    }
+  }
+
+  // Peticion PATCH Request TV Show rechazada
+  // rechazar request
+  @Transactional
+  @Security.Authenticated(Auth.class)
+  public Result rejectTvShowRequest() {
+    ObjectNode result = Json.newObject();
+    Integer requestId;
+
+    // obtenemos datos de la petición post
+    DynamicForm requestForm = formFactory.form().bindFromRequest();
+
+    try {
+      requestId = Integer.valueOf(requestForm.get("requestId"));
+    } catch (Exception ex) {
+      result.put("error", "requestId null or not number");
+      return badRequest(result);
+    }
+
+    // obtenemos request
+    if (requestId != null) {
+      TvShowRequest request = tvShowRequestService.findById(requestId);
+
+      if (request != null) {
+        // comprobamos que la request no esté en otro estado que 'Requested' por asincronía
+        if (request.status.equals(TvShowRequest.Status.Requested)) {
+          // ponemos la request a rejected
+          if (tvShowRequestService.reject(request.id)) {
+            // peticion rechazada
+            result.put("ok", "Serie rechazada con éxito");
+            return ok(result);
+          } else {
+            // peticion no se ha podido rechazar
+            result.put("error", "La petición no se ha podido rechazar en estos momentos");
+            return badRequest(result);
+          }
+        } else {
+          // estado no es Requested
+          result.put("error", "La serie está en estado: " + request.status.toString());
+          return badRequest(result);
+        }
+      } else {
+        // la request no existe ?
+        result.put("error", "request cannot be find");
+        return badRequest(result);
+      }
+
     } else {
       // peticion erronea ? tvdbId es null
       result.put("error", "tvdbId/userId can't be null");

@@ -35,6 +35,7 @@ function showUserName() {
   $('.helloUserName').text('Hola, ' + window.localStorage.getItem('userName'));
 }
 
+// navegación !
 function getRoute(route) {
   $.ajax({
     url: route,
@@ -51,6 +52,13 @@ function getRoute(route) {
     },
     error: function() {
       console.log('error');
+      swal({
+        title: 'Conexión perdida',
+        text: 'Por alguna razón no se puede contactar con el servidor, prueba dentro de un rato.',
+        type: 'error',
+        closeOnConfirm: true,
+        confirmButtonText: 'Cerrar'
+      });
     },
     complete: function() {
       showUserName();
@@ -62,3 +70,20 @@ function getRoute(route) {
 function logoutAdmin() {
   window.localStorage.clear();
 }
+
+// vista tvShowRequests
+// actualizar lista de peticiones
+$(document).on('click', '[data-action=get-list]', function() {
+  //requestsTableClear();
+  //requestsTableLoad();
+  // ^ no sirve con borrar tabla y cargarla, necesitamos obtener de nuevo la lista de peticiones
+  // asi que redireccionamos
+  var route = $(this).attr('href');
+
+  // si no tenemos ruta porque somos un boton en un archivo js lo obtengo de uno de la plantilla
+  if (route === undefined || route === null) {
+    route = $(".panel [data-action='get-list']").attr('href');
+  }
+  getRoute(route);
+  return false;
+});

@@ -70,8 +70,8 @@ public class TvShowServiceTest {
   public void testTvShowServiceCreate() {
     TvShowDAO tvShowDAO = new TvShowDAO(jpa);
     TvShowService tvShowService = new TvShowService(tvShowDAO);
-    TvShow tvShow1 = new TvShow(3, "Stranger Things", new Date(), "Descripción",
-      "banner.jpg", "poster.jpg", "fanart.jpg", "Network", 45, null, "TV-14",
+    TvShow tvShow1 = new TvShow(3, "tvdbId", "Stranger Things", new Date(), "Descripción",
+      "banner.jpg", "poster.jpg", "fanart.jpg", "Network", "45", null, "TV-14",
       TvShow.Status.Continuing, "Guionista", "Actor 1, Actor2", (float)9.0, "url_trailer");
 
     TvShow tvShow2 = jpa.withTransaction(() -> {

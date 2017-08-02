@@ -39,16 +39,18 @@ public class AdminController extends Controller {
     // series en nuestra base de datos
     Integer tvShowCount = tvShowService.all().size();
     // peticiones nuevas series
-    Integer tvShowRequestCount = tvShowRequestService.all().size();
-
-    return ok(index.render("Trending Series Administration - Dashboard", "dashboard", tvShowCount, tvShowRequestCount));
+    Integer requestsCount = tvShowRequestService.all().size();
+    Integer pendingRequestsCount = tvShowRequestService.getPending().size();
+    Integer persistedRequestsCount = tvShowRequestService.getPersisted().size();
+    Integer rejectedRequestsCount = tvShowRequestService.getRejected().size();
+    return ok(index.render("Trending Series Administration - Dashboard", "dashboard", tvShowCount, requestsCount, pendingRequestsCount, persistedRequestsCount, rejectedRequestsCount));
   }
 
   @Transactional(readOnly = true)
   @Security.Authenticated(Auth.class)
-  public Result tvShows() {
-    List<TvShowRequest> tvShowRequests = tvShowRequestService.all();
-    return ok(views.html.administration.tvShows.render("Trending Series Administration - Series", "tvShows", tvShowRequests));
+  public Result tvShowRequests() {
+    List<TvShowRequest> tvShowRequests = tvShowRequestService.getPending();
+    return ok(views.html.administration.tvShowRequests.render("Trending Series Administration - Series", "tvShowRequests", tvShowRequests));
   }
 
   public Result loginView() {

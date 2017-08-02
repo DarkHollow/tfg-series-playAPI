@@ -63,7 +63,7 @@ function logoutAdmin() {
   window.localStorage.clear();
 }
 
-// tvShows
+// vista tvShowRequests
 // actualizar lista de peticiones
 $(document).on('click', '[data-action=get-list]', function() {
   //requestsTableClear();

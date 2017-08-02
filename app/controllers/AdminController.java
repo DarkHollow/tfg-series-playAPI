@@ -5,7 +5,6 @@ import models.TvShowRequest;
 import models.service.TvShowRequestService;
 import models.service.TvShowService;
 import models.service.UserService;
-import play.Logger;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Http;
@@ -49,9 +48,9 @@ public class AdminController extends Controller {
 
   @Transactional(readOnly = true)
   @Security.Authenticated(Auth.class)
-  public Result tvShows() {
+  public Result tvShowRequests() {
     List<TvShowRequest> tvShowRequests = tvShowRequestService.getPending();
-    return ok(views.html.administration.tvShows.render("Trending Series Administration - Series", "tvShows", tvShowRequests));
+    return ok(views.html.administration.tvShowRequests.render("Trending Series Administration - Series", "tvShowRequests", tvShowRequests));
   }
 
   public Result loginView() {

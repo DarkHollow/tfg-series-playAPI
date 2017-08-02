@@ -46,6 +46,9 @@ GET     /api/search/TVDB/:q         controllers.TvShowRequestController.searchTv
 POST    /api/tvshow/request/        controllers.TvShowRequestController.requestTvShow
 POST    /api/tvshow/request         controllers.TvShowRequestController.requestTvShow
 
+### TV Show request acceptance (admin)
+POST    /admin/tvshow/acceptRequest   controllers.TvShowRequestController.acceptTvShowRequest()
+
 
 # API Search ---------------------
 
@@ -62,8 +65,8 @@ POST    /api/user                   controllers.UserController.register()
 POST    /api/user/session/          controllers.UserController.login()
 POST    /api/user/session           controllers.UserController.login()
 
-GET    /api/user/session/           controllers.UserController.verifySession()
-GET    /api/user/session            controllers.UserController.verifySession()
+GET     /api/user/session/          controllers.UserController.verifySession()
+GET     /api/user/session           controllers.UserController.verifySession()
 
 
 # Admin

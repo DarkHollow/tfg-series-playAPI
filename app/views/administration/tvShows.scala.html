@@ -7,11 +7,12 @@
             <h6 class="panel-title">Peticiones de series nuevas: <span class="badge badge-primary">@tvShowRequests.size()</span></h6>
             <div class="heading-elements">
                 <ul class="icons-list">
-                    <li><a data-action="reload" data-popup="tooltip" title="Recargar"></a></li>
+                    <li><a href="@routes.AdminController.tvShows()" data-action="get-list" class="tooltips" data-popup="tooltip" title="Recargar lista de peticiones"><i class="icon-database-refresh"></i></a></li>
+                    <li><a href="#" data-action="get-tvdb-data" class="tooltips" data-popup="tooltip" title="Obtener datos"><i class="icon-download"></i></a></li>
                 </ul>
             </div>
         </div>
-        <div class="panel-body" style="padding-top: 0;">
+        <div class="panel-body padTop0">
             <!-- TABLA -->
             <table id="requests_table" class="table datatable-basic table-bordered table-striped table-hover">
                 <thead>
@@ -20,7 +21,7 @@
                         <th>Título</th>
                         <th>Banner</th>
                         <th>Fecha de estreno</th>
-                        <th class="text-center">Acciones</th>
+                        <th>Estado</th>
                     </tr>
                 </thead>
 
@@ -33,10 +34,17 @@
 
     <script type="text/javascript" src="@routes.Assets.versioned("javascripts/plugins/notifications/sweet_alert.min.js")"></script>
     <script>
+
         // tooltips
         $('body').tooltip({
-            selector: '.tooltipId'
+            selector: '.tooltips'
         });
+
+        // ocultar tooltip
+        $(document).on('click', '[data-popup="tooltip"]', function(e) {
+            $('[data-popup="tooltip"]').tooltip('hide');
+        });
+
 
         // on page ready
         $(document).ready(function () {
@@ -65,49 +73,59 @@
             });
             var promises = [];
             @for(request <- tvShowRequests) {
-            promise = $.ajax({
-                url: 'http://localhost:9000/api/tvshows/tvdb/' + @request.tvdbId,
-                type: 'GET',
-                dataType: 'json',
-                success: function (response) {
-                    var row = '';
-                    row +=
-                            '<tr>' +
-                            '<td><a class="tooltipId" data-popup="tooltip" title="Ver en TVDB" data-placement="left" target="_blank" href="http://thetvdb.com/?tab=series&id=' + response.tvdbId + '">' + response.tvdbId + '</a></td>' +
-                            '<td>' + response.name + '</td>' +
-                            '<td>';
+                promise = $.ajax({
+                    url: 'http://localhost:9000/api/tvshows/tvdb/' + @request.tvdbId,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        var row = '';
+                        row +=
+                                '<tr>' +
+                                    '<td><a class="tooltips" data-popup="tooltip" title="Ver en TVDB" data-placement="left" target="_blank" href="http://thetvdb.com/?tab=series&id=' + response.tvdbId + '">' + response.tvdbId + '</a></td>' +
+                                    '<td>' + response.name + '</td>' +
+                                '<td>';
 
-                    if (response.banner !== "") {
-                        row += '<img class="img-responsive center-block" style="max-height: 70px;" src="http://thetvdb.com/banners/' + response.banner + '" />';
-                    } else {
-                        row += '<img class="img-responsive center-block" style="max-height: 70px;" src="@routes.Assets.versioned("images/placeholderBanner.png")" />';
-                    }
+                        if (response.banner !== "") {
+                            row += '<img class="img-responsive center-block" style="max-height: 70px;" src="http://thetvdb.com/banners/' + response.banner + '" />';
+                        } else {
+                            row += '<img class="img-responsive center-block" style="max-height: 70px;" src="@routes.Assets.versioned("images/placeholderBanner.png")" />';
+                        }
 
-                    row +=
-                            '</td>' +
-                            '<td>' + response.firstAired + '</td>' +
-                            '<td class="text-center">' +
-                            '<ul class="icons-list">' +
-                            '<li class="dropdown">' +
-                            '<a href="#" class="dropdown-toggle" data-toggle="dropdown">' +
-                            '<i class="icon-menu9"></i>' +
-                            '</a>' +
-                            '<ul class="dropdown-menu dropdown-menu-right">' +
-                            '</ul>' +
-                            '</li>' +
-                            '</ul>' +
-                            '</td>' +
+                        row +=
+                                '</td>' +
+                                '<td>' + response.firstAired + '</td>';
+
+                        let status;
+                        if (@request.status.equals(TvShowRequest.Status.Requested)) {
+                            status = '<ul class="icons-list">' +
+                                    '<li class="dropdown">' +
+                                    '<a href="#" class="dropdown-toggle tooltips" data-toggle="dropdown" data-popup="tooltip" title="Acciones">' +
+                                    '<i class="icon-menu9"></i>' +
+                                    '</a>' +
+                                    '<ul class="dropdown-menu dropdown-menu-right">' +
+                                    '<li><a data-action="accept-tvShow" href="@request.id"> <i class="icon-checkmark4 text-green"></i> Aceptar</a></li>' +
+                                    '<li><a data-action="reject-tvShow" href="@request.id"> <i class="icon-cross2 text-danger"></i> Rechazar</a></li>' +
+                                    '</ul>' +
+                                    '</li>' +
+                                    '</ul>';
+                        } else {
+                            status = '<i class="icon-spinner9 spinner"></i>';
+                        }
+                        row +=
+                            '<td style="text-align: center;" id="status-@request.id">' + status + '</td>' +
                             '</tr>';
-                    // añadir a la tabla
-                    $('#requests_table').DataTable().row.add($(row)).draw();
-                }
-            });
-            promises.push(promise);
+
+                        // añadir fila a la tabla
+                        $('#requests_table').DataTable().row.add($(row)).draw();
+                    }
+                });
+                promises.push(promise);
             }
 
             $.when.apply(null, promises).done(function() {
                 $('#requests_table_panel').unblock();
             });
         }
+
     </script>
 }

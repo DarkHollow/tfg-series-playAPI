@@ -40,6 +40,9 @@ public class TvdbService {
     int MAXTRIES = 2; // maximos intentos de refrescar token
     int count = 0;
 
+    // encodear como URI
+    query = query.replaceAll(" ", "%20");
+
     while (true) {
       try {
         CompletionStage<JsonNode> stage = ws.url(query)

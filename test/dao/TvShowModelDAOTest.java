@@ -68,14 +68,15 @@ public class TvShowModelDAOTest {
   public void testTvShowDAOCreate() {
     final TvShowDAO tvShowDAO = new TvShowDAO(jpa);
 
-    TvShow tvShow1 = new TvShow(3, "Stranger Things", new Date(), "Descripción",
-      "banner.jpg", "poster.jpg", "fanart.jpg", "Network", 45, null, "TV-14",
+    TvShow tvShow1 = new TvShow(3, "imdbId", "Stranger Things", new Date(), "Descripción",
+      "banner.jpg", "poster.jpg", "fanart.jpg", "Network", "45", null, "TV-14",
       TvShow.Status.Continuing, "Guionista", "Actor 1, Actor2", (float)9.0, "url_trailer");
 
     TvShow tvShow2 = jpa.withTransaction(() -> tvShowDAO.create(tvShow1));
 
     //assertEquals(tvShow1.id, tvShow2.id);
     assertEquals(tvShow1.tvdbId, tvShow2.tvdbId);
+    assertEquals(tvShow1.imdbId, tvShow2.imdbId);
     assertEquals(tvShow1.name, tvShow2.name);
     assertEquals(tvShow1.firstAired, tvShow2.firstAired);
     assertEquals(tvShow1.overview, tvShow2.overview);
@@ -86,10 +87,6 @@ public class TvShowModelDAOTest {
     assertEquals(tvShow1.runtime, tvShow2.runtime);
     assertEquals(tvShow1.rating, tvShow2.rating);
     assertEquals(tvShow1.status, tvShow2.status);
-    assertEquals(tvShow1.writer, tvShow2.writer);
-    assertEquals(tvShow1.actors, tvShow2.actors);
-    assertEquals(tvShow1.imdbRating, tvShow2.imdbRating);
-    assertEquals(tvShow1.trailer, tvShow2.trailer);
   }
 
   // testeamos buscar por id -> found

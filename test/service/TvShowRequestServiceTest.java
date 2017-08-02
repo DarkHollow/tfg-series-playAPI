@@ -1,5 +1,7 @@
 package service;
 
+import models.TvShow;
+import models.TvShowRequest;
 import models.dao.TvShowDAO;
 import models.dao.TvShowRequestDAO;
 import models.dao.UserDAO;
@@ -13,6 +15,7 @@ import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.theories.suppliers.TestedOn;
 import play.db.Database;
 import play.db.Databases;
 import play.db.jpa.JPA;
@@ -20,7 +23,9 @@ import play.db.jpa.JPAApi;
 import utils.Security.Password;
 
 import java.io.FileInputStream;
+import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -90,6 +95,46 @@ public class TvShowRequestServiceTest {
   public void testTvShowRequestRequestTvShowInexistentUserNotOk() {
     Boolean request = jpa.withTransaction(() -> tvShowRequestService.requestTvShow(296762, 2));
     assertFalse(request);
+  }
+
+  // testeamos a borrar una peticion y que funcione
+  @Test
+  public void testTvShowRequestDeleteRequestByIdOk() {
+    Boolean result = jpa.withTransaction(() -> tvShowRequestService.delete(1));
+    assertTrue(result);
+  }
+
+  // testeamos a borrar una peticion y que no funcione
+  @Test
+  public void testTvShowRequestDeleteRequestByIdNotOk() {
+    Boolean result = jpa.withTransaction(() -> tvShowRequestService.delete(2));
+    assertFalse(result);
+  }
+
+  // testeamos a pedir las peticiones 'pending': de tipo requested y processing
+  @Test
+  public void testTvShowRequestGetPending() {
+    // borramos las peticiones que ya hay y añadimos dos: una requested y otra processing
+    jpa.withTransaction(() -> {
+      List<TvShowRequest> requests = tvShowRequestService.all();
+
+      // borramos
+      for (TvShowRequest request : requests) {
+        tvShowRequestService.delete(request.id);
+      }
+
+      // añadimos
+      tvShowRequestService.requestTvShow(222222, 1);
+      tvShowRequestService.requestTvShow(333333, 1);
+      requests.clear();
+      requests = tvShowRequestService.all();
+
+      // cambiamos estado
+      requests.get(requests.size() - 2).status = TvShowRequest.Status.Requested;
+      requests.get(requests.size() - 1).status = TvShowRequest.Status.Processing;
+
+      assertEquals( 2, requests.size());
+    });
   }
 
 }

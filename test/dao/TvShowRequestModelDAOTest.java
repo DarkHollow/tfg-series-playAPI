@@ -73,11 +73,13 @@ public class TvShowRequestModelDAOTest {
     User user = jpa.withTransaction(() -> userDAO.find(1));
 
     TvShowRequest request1 = new TvShowRequest(222222, user);
+    request1.status = TvShowRequest.Status.Requested;
     TvShowRequest request2 = jpa.withTransaction(() -> tvShowRequestDAO.create(request1));
 
     assertEquals(request1.tvdbId, request2.tvdbId);
     assertEquals(request1.user.id, request2.user.id);
     assertEquals(request1.requestDate, request2.requestDate);
+    assertEquals(request1.status, request2.status);
   }
 
   // testeamos buscar una request
@@ -104,7 +106,7 @@ public class TvShowRequestModelDAOTest {
     assertEquals(1, requestsEncontrados.size());
   }
 
-  // testeamos delete request
+  // testeamos delete request OK
   @Test
   public void testTvShowRequestDAODelete() {
     TvShowRequest request = jpa.withTransaction(() -> {

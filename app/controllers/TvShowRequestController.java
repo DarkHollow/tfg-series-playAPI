@@ -145,7 +145,7 @@ public class TvShowRequestController extends Controller {
     }
   }
 
-  // Peticion POST Request TV Show aceptada
+  // Peticion PUT Request TV Show aceptada
   // aceptar request y obtener datos de TV Show
   @Transactional
   @Security.Authenticated(Auth.class)
@@ -248,6 +248,59 @@ public class TvShowRequestController extends Controller {
             // error - ya tenemos el tv show!
             request.status = TvShowRequest.Status.Persisted;
             result.put("error", "La serie se encuentra ya en nuestra BBDD");
+            return badRequest(result);
+          }
+        } else {
+          // estado no es Requested
+          result.put("error", "La serie está en estado: " + request.status.toString());
+          return badRequest(result);
+        }
+      } else {
+        // la request no existe ?
+        result.put("error", "request cannot be find");
+        return badRequest(result);
+      }
+
+    } else {
+      // peticion erronea ? tvdbId es null
+      result.put("error", "tvdbId/userId can't be null");
+      return badRequest(result);
+    }
+  }
+
+  // Peticion PATCH Request TV Show rechazada
+  // rechazar request
+  @Transactional
+  @Security.Authenticated(Auth.class)
+  public Result rejectTvShowRequest() {
+    ObjectNode result = Json.newObject();
+    Integer requestId;
+
+    // obtenemos datos de la petición post
+    DynamicForm requestForm = formFactory.form().bindFromRequest();
+
+    try {
+      requestId = Integer.valueOf(requestForm.get("requestId"));
+    } catch (Exception ex) {
+      result.put("error", "requestId null or not number");
+      return badRequest(result);
+    }
+
+    // obtenemos request
+    if (requestId != null) {
+      TvShowRequest request = tvShowRequestService.findById(requestId);
+
+      if (request != null) {
+        // comprobamos que la request no esté en otro estado que 'Requested' por asincronía
+        if (request.status.equals(TvShowRequest.Status.Requested)) {
+          // ponemos la request a rejected
+          if (tvShowRequestService.reject(request.id)) {
+            // peticion rechazada
+            result.put("ok", "Serie rechazada con éxito");
+            return ok(result);
+          } else {
+            // peticion no se ha podido rechazar
+            result.put("error", "La petición no se ha podido rechazar en estos momentos");
             return badRequest(result);
           }
         } else {

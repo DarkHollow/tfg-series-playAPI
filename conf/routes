@@ -50,6 +50,10 @@ POST    /api/tvshows/requests       controllers.TvShowRequestController.requestT
 PUT     /admin/tvshows/requests/    controllers.TvShowRequestController.acceptTvShowRequest()
 PUT     /admin/tvshows/requests     controllers.TvShowRequestController.acceptTvShowRequest()
 
+### TV Show request rejection (admin)
+PATCH     /admin/tvshows/requests/    controllers.TvShowRequestController.rejectTvShowRequest()
+PATCH     /admin/tvshows/requests     controllers.TvShowRequestController.rejectTvShowRequest()
+
 
 # API Search ---------------------
 

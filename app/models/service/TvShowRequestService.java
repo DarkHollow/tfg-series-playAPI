@@ -1,12 +1,12 @@
 package models.service;
 
 import com.google.inject.Inject;
-import models.TvShow;
 import models.TvShowRequest;
 import models.User;
 import models.dao.TvShowRequestDAO;
 import play.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TvShowRequestService {
@@ -22,13 +22,43 @@ public class TvShowRequestService {
     this.rqDAO = rqDAO;
   }
 
+  // obtener peticion por id
+  public TvShowRequest findById(Integer id) { return rqDAO.find(id); }
+
   // obtener todas las peticiones
   public List<TvShowRequest> all() { return rqDAO.all(); }
 
-  // buscar peticiones por id de TVDB
-  public List<TvShowRequest> findTvShowRequests(Integer tvdbId) {
-    return rqDAO.findTvShowRequestsByTvdbId(tvdbId);
+  // obtener peticiones de tipo Requested
+  public List<TvShowRequest> getRequested() {
+    return rqDAO.getRequested();
   }
+
+  // obtener peticiones de tipo Processing
+  public List<TvShowRequest> getProcessing() {
+    return rqDAO.getProcessing();
+  }
+
+  // obtener peticiones pendientes: Requested + Processing
+  public List<TvShowRequest> getPending() {
+    List<TvShowRequest> requests = new ArrayList<>();
+    requests.addAll(getRequested());
+    requests.addAll(getProcessing());
+    return requests;
+  }
+
+  // obtener peticiones de tipo Persisted
+  public List<TvShowRequest> getPersisted() {
+    return rqDAO.getPersisted();
+  }
+
+  // obtener peticiones de tipo Rejected
+  public List<TvShowRequest> getRejected() {
+    return rqDAO.getRejected();
+  }
+
+
+  // buscar peticiones por id de TVDB
+  public List<TvShowRequest> findTvShowRequests(Integer tvdbId) { return rqDAO.findTvShowRequestsByTvdbId(tvdbId); }
 
   // POST petición TV Show
   public Boolean requestTvShow(Integer tvdbId, Integer userId) {
@@ -41,6 +71,7 @@ public class TvShowRequestService {
       if (user != null) {
         // hacemos la peticion
         TvShowRequest request = new TvShowRequest(tvdbId, user);
+        request.status = TvShowRequest.Status.Requested;
         try {
           request = rqDAO.create(request);
 
@@ -55,6 +86,17 @@ public class TvShowRequestService {
     }
 
     return result;
+  }
+
+  // delete por id
+  public Boolean delete(Integer id) {
+    TvShowRequest tvShowRequest = rqDAO.find(id);
+    if (tvShowRequest != null) {
+      rqDAO.delete(tvShowRequest);
+      return true;
+    } else {
+      return false;
+    }
   }
 
 }

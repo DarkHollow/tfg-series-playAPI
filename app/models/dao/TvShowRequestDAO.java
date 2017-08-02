@@ -51,6 +51,26 @@ public class TvShowRequestDAO {
     return jpa.em().createQuery("SELECT r FROM " + TABLE + " r ORDER BY r.id", TvShowRequest.class).getResultList();
   }
 
+  // Read de obtener todas las requests solicitadas
+  public List<TvShowRequest> getRequested() {
+    return jpa.em().createQuery("SELECT r FROM " + TABLE + " r WHERE r.status = 'Requested' ORDER BY r.requestDate", TvShowRequest.class).getResultList();
+  }
+
+  // Read de obtener todas las requests que se están procesando
+  public List<TvShowRequest> getProcessing() {
+    return jpa.em().createQuery("SELECT r FROM " + TABLE + " r WHERE r.status = 'Processing' ORDER BY r.requestDate", TvShowRequest.class).getResultList();
+  }
+
+  // Read de obtener todas las requests persistidas
+  public List<TvShowRequest> getPersisted() {
+    return jpa.em().createQuery("SELECT r FROM " + TABLE + " r WHERE r.status = 'Persisted' ORDER BY r.requestDate", TvShowRequest.class).getResultList();
+  }
+
+  // Read de obtener todas las requests rechazadas
+  public List<TvShowRequest> getRejected() {
+    return jpa.em().createQuery("SELECT r FROM " + TABLE + " r WHERE r.status = 'Rejected' ORDER BY r.requestDate", TvShowRequest.class).getResultList();
+  }
+
   // Delete
   public void delete(TvShowRequest request) {
     jpa.em().remove(request);

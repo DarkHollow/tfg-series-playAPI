@@ -49,8 +49,8 @@ $(document).on('click', '[data-action=accept-tvShow]', function(e) {
         var promises2 = [];
         var data = JSON.stringify({"requestId": requestId});
         let promise2 = $.ajax({
-          url: 'http://localhost:9000/admin/tvshow/acceptRequest',
-          type: 'POST',
+          url: 'http://localhost:9000/admin/tvshows/requests',
+          type: 'PUT',
           data: data,
           dataType: 'json',
           headers: {

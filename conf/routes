@@ -43,12 +43,12 @@ GET     /api/search/TVDB/:q/        controllers.TvShowRequestController.searchTv
 GET     /api/search/TVDB/:q         controllers.TvShowRequestController.searchTvShowTVDBbyName(q: String)
 
 ## TV Show request
-POST    /api/tvshow/request/        controllers.TvShowRequestController.requestTvShow
-POST    /api/tvshow/request         controllers.TvShowRequestController.requestTvShow
+POST    /api/tvshows/requests/      controllers.TvShowRequestController.requestTvShow
+POST    /api/tvshows/requests       controllers.TvShowRequestController.requestTvShow
 
 ### TV Show request acceptance (admin)
-POST    /admin/tvshow/acceptRequest/  controllers.TvShowRequestController.acceptTvShowRequest()
-POST    /admin/tvshow/acceptRequest   controllers.TvShowRequestController.acceptTvShowRequest()
+PUT     /admin/tvshows/requests/    controllers.TvShowRequestController.acceptTvShowRequest()
+PUT     /admin/tvshows/requests     controllers.TvShowRequestController.acceptTvShowRequest()
 
 
 # API Search ---------------------

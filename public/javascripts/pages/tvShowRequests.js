@@ -144,6 +144,9 @@ $(document).on('click', '[data-action=accept-tvShow]', function(e) {
         $.when.apply(null, promises2).done(function() {
           $('#requests_table_panel').unblock();
         });
+      } else {
+        // se ha cancelado el popup
+        $('#requests_table_panel').unblock();
       }
 
     });

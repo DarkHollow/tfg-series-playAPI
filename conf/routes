@@ -47,6 +47,7 @@ POST    /api/tvshow/request/        controllers.TvShowRequestController.requestT
 POST    /api/tvshow/request         controllers.TvShowRequestController.requestTvShow
 
 ### TV Show request acceptance (admin)
+POST    /admin/tvshow/acceptRequest/  controllers.TvShowRequestController.acceptTvShowRequest()
 POST    /admin/tvshow/acceptRequest   controllers.TvShowRequestController.acceptTvShowRequest()
 
 

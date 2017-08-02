@@ -35,6 +35,7 @@ function showUserName() {
   $('.helloUserName').text('Hola, ' + window.localStorage.getItem('userName'));
 }
 
+// navegación !
 function getRoute(route) {
   $.ajax({
     url: route,
@@ -51,6 +52,13 @@ function getRoute(route) {
     },
     error: function() {
       console.log('error');
+      swal({
+        title: 'Conexión perdida',
+        text: 'Por alguna razón no se puede contactar con el servidor, prueba dentro de un rato.',
+        type: 'error',
+        closeOnConfirm: true,
+        confirmButtonText: 'Cerrar'
+      });
     },
     complete: function() {
       showUserName();

@@ -62,3 +62,20 @@ function getRoute(route) {
 function logoutAdmin() {
   window.localStorage.clear();
 }
+
+// tvShows
+// actualizar lista de peticiones
+$(document).on('click', '[data-action=get-list]', function() {
+  //requestsTableClear();
+  //requestsTableLoad();
+  // ^ no sirve con borrar tabla y cargarla, necesitamos obtener de nuevo la lista de peticiones
+  // asi que redireccionamos
+  var route = $(this).attr('href');
+
+  // si no tenemos ruta porque somos un boton en un archivo js lo obtengo de uno de la plantilla
+  if (route === undefined || route === null) {
+    route = $(".panel [data-action='get-list']").attr('href');
+  }
+  getRoute(route);
+  return false;
+});

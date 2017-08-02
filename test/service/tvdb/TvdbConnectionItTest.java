@@ -2,6 +2,7 @@ package service.tvdb;
 
 import models.service.tvdb.TvdbConnection;
 import org.junit.Test;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import play.Logger;
 import play.api.Play;
 
@@ -17,7 +18,7 @@ public class TvdbConnectionItTest {
   // NOTE: hacemos ambos en uno ya que es con una fake app y se borraria el estado
   @Test
   public void testCheckTokenAndRefresh() {
-    running(testServer(3333, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
+    running(testServer(3333, fakeApplication(inMemoryDatabase())), new HtmlUnitDriver(), browser -> {
       browser.goTo("http://localhost:3333");
 
       // LOGIN

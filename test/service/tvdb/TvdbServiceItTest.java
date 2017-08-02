@@ -10,6 +10,7 @@ import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import play.api.Play;
 import play.db.Database;
 import play.db.Databases;
@@ -74,7 +75,7 @@ public class TvdbServiceItTest {
   // testeamos buscar en TVDB por id y que encuentre
   @Test
   public void testTvdbServiceFindByTvdbIdOk() {
-    running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
+    running(testServer(PORT, fakeApplication(inMemoryDatabase())), new HtmlUnitDriver(), browser -> {
       browser.goTo("http://localhost:" + PORT);
 
       TvdbService tvdbService = new TvdbService(ws, df, Play.current().injector().instanceOf(TvdbConnection.class));
@@ -89,7 +90,7 @@ public class TvdbServiceItTest {
   // testeamos buscar en TVDB por id y que no encuentre
   @Test
   public void testTvdbServiceFindByTvdbIdNotOk() {
-    running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
+    running(testServer(PORT, fakeApplication(inMemoryDatabase())), new HtmlUnitDriver(), browser -> {
       browser.goTo("http://localhost:" + PORT);
 
       TvdbService tvdbService = new TvdbService(ws, df, Play.current().injector().instanceOf(TvdbConnection.class));
@@ -104,7 +105,7 @@ public class TvdbServiceItTest {
   // testeamos buscar en TVDB por nombre
   @Test
   public void testTvdbServiceFindByName() {
-    running(testServer(PORT, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
+    running(testServer(PORT, fakeApplication(inMemoryDatabase())), new HtmlUnitDriver(), browser -> {
       browser.goTo("http://localhost:" + PORT);
 
       TvdbService tvdbService = new TvdbService(ws, df, Play.current().injector().instanceOf(TvdbConnection.class));

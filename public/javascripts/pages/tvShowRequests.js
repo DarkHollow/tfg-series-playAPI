@@ -7,6 +7,20 @@ $(document).on('click', '.panel [data-action=get-tvdb-data]', function(e) {
   requestsTableLoad();
 });
 
+// mostrar datos peticiones aceptadas
+$(document).on('click', '.panel [data-action=load-persisted-requests]', function(e) {
+  e.preventDefault();
+  persistedRequestsTableClear();
+  persistedRequestsTableLoad();
+});
+
+// mostrar datos peticiones rechazadas
+$(document).on('click', '.panel [data-action=load-rejected-requests]', function(e) {
+  e.preventDefault();
+  rejectedRequestsTableClear();
+  rejectedRequestsTableLoad();
+});
+
 // aceptar serie
 $(document).on('click', '[data-action=accept-tvShow]', function(e) {
   console.log('aceptar');
@@ -283,6 +297,49 @@ $(document).on('click', '[data-action=reject-tvShow]', function(e) {
     });
 });
 
+// cargar datos de una serie rechazada (boton descargar datos)
+$(document).on('click', '[data-action=get-tvShow-data]', function(e) {
+  console.log('cargar datos de serie rechazada');
+  e.preventDefault();
+  let requestId = $(this).attr('data-id');
+  let tvdbId = $(this).attr('data-tvdbid');
+  $('#actions-' + requestId).html('<i class="icon-spinner9 spinner"></i>');
+
+  // pedir datos serie a tvdb
+  var promises = [];
+  promise = $.ajax({
+    url: 'http://localhost:9000/api/tvshows/tvdb/' + tvdbId,
+    type: 'GET',
+    dataType: 'json',
+    success: function (response) {
+      let name = response.name;
+      let firstAired = response.firstAired;
+      let banner;
+
+      if (response.banner !== "") {
+        banner = '<img class="img-responsive center-block" style="max-height: 65px;" src="http://thetvdb.com/banners/' + response.banner + '" />';
+      }
+
+      // poner datos
+      $('#name-' + requestId).html(name);
+      $('#banner-' + requestId).html(banner);
+      $('#firstAired-' + requestId).html(firstAired);
+    },
+    error: function (response) {
+
+    }
+  });
+  promises.push(promise);
+
+  $.when.apply(null, promises).done(function() {
+    $('#actions-' + requestId).html('<i class="icon-checkmark4 text-green"></i>');
+  });
+
+  $.when.apply(null, promises).error(function() {
+    $('#actions-' + requestId).html('<i class="icon-cross2 text-danger"></i>');
+  });
+});
+
 $(function() {
 
   // Table setup
@@ -291,11 +348,6 @@ $(function() {
   // Setting datatable defaults
   $.extend( $.fn.dataTable.defaults, {
     autoWidth: false,
-    columnDefs: [{
-      orderable: false,
-      width: '100px',
-      targets: [ 4 ]
-    }],
     dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
     language: {
       search: '<span>Filtrar:</span> _INPUT_',
@@ -310,34 +362,6 @@ $(function() {
       $(this).find('tbody tr').slice(-3).find('.dropdown, .btn-group').removeClass('dropup');
     }
   });
-
-
-  // Basic datatable
-  $('.datatable-basic').DataTable();
-
-
-  // Alternative pagination
-  $('.datatable-pagination').DataTable({
-    pagingType: "simple",
-    language: {
-      paginate: {'next': 'Siguiente &rarr;', 'previous': '&larr; Anterior'}
-    }
-  });
-
-
-  // Datatable with saving state
-  $('.datatable-save-state').DataTable({
-    stateSave: true
-  });
-
-
-  // Scrollable datatable
-  $('.datatable-scroll-y').DataTable({
-    autoWidth: true,
-    scrollY: 300
-  });
-
-
 
   // External table additions
   // ------------------------------

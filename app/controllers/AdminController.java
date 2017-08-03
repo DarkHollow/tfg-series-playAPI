@@ -49,8 +49,10 @@ public class AdminController extends Controller {
   @Transactional(readOnly = true)
   @Security.Authenticated(Auth.class)
   public Result tvShowRequests() {
-    List<TvShowRequest> tvShowRequests = tvShowRequestService.getPending();
-    return ok(views.html.administration.tvShowRequests.render("Trending Series Administration - Series", "tvShowRequests", tvShowRequests));
+    List<TvShowRequest> pendingRequests = tvShowRequestService.getPending();
+    List<TvShowRequest> persistedRequests = tvShowRequestService.getPersisted();
+    List<TvShowRequest> rejectedRequests = tvShowRequestService.getRejected();
+    return ok(views.html.administration.tvShowRequests.render("Trending Series Administration - Series", "tvShowRequests", pendingRequests, persistedRequests, rejectedRequests));
   }
 
   public Result loginView() {

@@ -112,8 +112,23 @@ public class TvdbService {
 
     try {
       JsonNode images = tvdbGetRequest(imageQuery, "es").withArray("data");
+      String fileName = null;
 
-      String fileName = images.get(0).get("fileName").asText();
+      if (images.size() > 0) {
+        // seleccionamos la imagen mas votada
+        Integer bestRating = 0;
+
+        for (JsonNode image: images) {
+          Integer imageRating = image.get("ratingsInfo").get("average").asInt();
+          if (imageRating > bestRating) {
+            fileName = image.get("fileName").asText();
+            bestRating = imageRating;
+          }
+        }
+      } else {
+        // no se han encontrado imagenes
+        return null;
+      }
 
       // descargar imagen
       URL downloadURL = new URL("http://thetvdb.com/banners/" + fileName);

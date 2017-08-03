@@ -1,12 +1,19 @@
 @import java.util
-@(title: String, route: String, tvShowRequests: util.List[TvShowRequest])
+@(title: String, route: String, pendingRequests: util.List[TvShowRequest], requestedRequests: util.List[TvShowRequest], rejectedRequests: util.List[TvShowRequest])
 
 @adminMain(title, route) {
-    <div class="panel" id="requests_table_panel">
+
+    <!-- Panel y tabla de peticiones pendientes (requeted y processing) -->
+    @if(pendingRequests.size() == 0) {
+        <div class="panel panel-collapsed" id="requests_table_panel">
+    } else {
+        <div class="panel" id="requests_table_panel">
+    }
         <div class="panel-heading">
-            <h6 class="panel-title">Peticiones de series nuevas: <span class="badge badge-primary">@tvShowRequests.size()</span></h6>
+            <h6 class="panel-title">Peticiones de series nuevas: <span class="badge badge-warning">@pendingRequests.size()</span></h6>
             <div class="heading-elements">
                 <ul class="icons-list">
+                    <li><a data-action="collapse" class="tooltips" data-popup="tooltip" title="Expandir/Contraer"></a></li>
                     <li><a href="@routes.AdminController.tvShowRequests()" data-action="get-list" class="tooltips" data-popup="tooltip" title="Recargar lista de peticiones"><i class="icon-database-refresh"></i></a></li>
                     <li><a href="#" data-action="get-tvdb-data" class="tooltips" data-popup="tooltip" title="Obtener datos"><i class="icon-download"></i></a></li>
                 </ul>
@@ -14,24 +21,87 @@
         </div>
         <div class="panel-body padTop0">
             <!-- TABLA -->
-            <table id="requests_table" class="table datatable-basic table-bordered table-striped table-hover">
+            <table id="requests_table" class="table datatable-pending table-bordered table-striped table-hover">
                 <thead>
                     <tr>
                         <th>ID de TVDB</th>
                         <th>Título</th>
                         <th>Banner</th>
-                        <th>Fecha de estreno</th>
+                        <th>Estreno</th>
+                        <th>Solicitante</th>
+                        <th>F. solicitud</th>
                         <th>Estado</th>
                     </tr>
                 </thead>
-
             </table>
 
             <!-- /style combinations -->
             <!-- FIN TABLA -->
         </div>
     </div>
+    <!-- Fin panel y tabla de peticiones pendientes -->
 
+    <!-- Panel y tabla de peticiones aceptadas -->
+    <div class="panel panel-collapsed" id="persisted_requests_table_panel">
+        <div class="panel-heading">
+            <h6 class="panel-title">Peticiones aceptadas: <span class="badge badge-primary">@requestedRequests.size()</span></h6>
+            <div class="heading-elements">
+                <ul class="icons-list">
+                    <li><a data-action="collapse" class="tooltips" data-popup="tooltip" title="Expandir/Contraer"></a></li>
+                    <li><a href="@routes.AdminController.tvShowRequests()" data-action="get-list" class="tooltips" data-popup="tooltip" title="Recargar lista de peticiones"><i class="icon-database-refresh"></i></a></li>
+                    <li><a href="#" data-action="load-persisted-requests" class="tooltips" data-popup="tooltip" title="Obtener datos"><i class="icon-download"></i></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="panel-body padTop0">
+            <!-- TABLA -->
+            <table id="persisted_requests_table" class="table datatable-persisted table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID de TVDB</th>
+                        <th>Solicitante</th>
+                        <th>Fecha solicitud</th>
+                    </tr>
+                </thead>
+            </table>
+            <!-- FIN TABLA -->
+        </div>
+    </div>
+    <!-- Fin panel y tabla de peticiones aceptadas -->
+
+    <!-- Panel y tabla de peticiones rechazadas -->
+    <div class="panel panel-collapsed" id="rejected_requests_table_panel">
+        <div class="panel-heading">
+            <h6 class="panel-title">Peticiones rechazadas: <span class="badge badge-danger">@rejectedRequests.size()</span></h6>
+            <div class="heading-elements">
+                <ul class="icons-list">
+                    <li><a data-action="collapse" class="tooltips" data-popup="tooltip" title="Expandir/Contraer"></a></li>
+                    <li><a href="@routes.AdminController.tvShowRequests()" data-action="get-list" class="tooltips" data-popup="tooltip" title="Recargar lista de peticiones"><i class="icon-database-refresh"></i></a></li>
+                    <li><a href="#" data-action="load-rejected-requests" class="tooltips" data-popup="tooltip" title="Obtener datos"><i class="icon-download"></i></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="panel-body padTop0">
+            <!-- TABLA -->
+            <table id="rejected_requests_table" class="table datatable-rejected table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID de TVDB</th>
+                        <th>Título</th>
+                        <th>Banner</th>
+                        <th>Estreno</th>
+                        <th>Solicitante</th>
+                        <th>Fecha solicitud</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+            </table>
+            <!-- FIN TABLA -->
+        </div>
+    </div>
+    <!-- Fin panel y tabla de peticiones rechazadas -->
+
+    <script type="text/javascript" src="@routes.Assets.versioned("javascripts/core/app.js")"></script>
     <script>
 
         // tooltips
@@ -44,9 +114,36 @@
             $('[data-popup="tooltip"]').tooltip('hide');
         });
 
-
         // on page ready
         $(document).ready(function () {
+
+            // Settings Tablas
+
+            // pending datatable
+            $('.datatable-pending').DataTable({
+                columnDefs: [{
+                    orderable: false,
+                    targets: [ 2, 6 ]
+                }]
+            });
+
+            // pending datatable
+            $('.datatable-persisted').DataTable({
+                /*columnDefs: [{
+                    orderable: false,
+                    targets: [ 3 ]
+                }]*/
+            });
+
+            // pending datatable
+            $('.datatable-rejected').DataTable({
+                columnDefs: [{
+                    orderable: false,
+                    targets: [ 2, 5 ]
+                }]
+            });
+
+            // Cargar datos tabla principal
             requestsTableLoad();
         });
 
@@ -71,7 +168,7 @@
                 }
             });
             var promises = [];
-            @for(request <- tvShowRequests) {
+            @for(request <- pendingRequests) {
                 promise = $.ajax({
                     url: 'http://localhost:9000/api/tvshows/tvdb/' + @request.tvdbId,
                     type: 'GET',
@@ -85,14 +182,16 @@
                                 '<td>';
 
                         if (response.banner !== "") {
-                            row += '<img class="img-responsive center-block" style="max-height: 70px;" src="http://thetvdb.com/banners/' + response.banner + '" />';
+                            row += '<img class="img-responsive center-block" style="max-height: 65px;" src="http://thetvdb.com/banners/' + response.banner + '" />';
                         } else {
-                            row += '<img class="img-responsive center-block" style="max-height: 70px;" src="@routes.Assets.versioned("images/placeholderBanner.png")" />';
+                            row += '<img class="img-responsive center-block" style="max-height: 65px;" src="@routes.Assets.versioned("images/placeholderBanner.png")" />';
                         }
 
                         row +=
                                 '</td>' +
-                                '<td>' + response.firstAired + '</td>';
+                                '<td>' + response.firstAired + '</td>' +
+                                '<td>' + '@request.user.email' + '</td>' +
+                                '<td>' + '@request.requestDate.toString' + '</td>';
 
                         let status;
                         if (@request.status.equals(TvShowRequest.Status.Requested)) {
@@ -124,6 +223,88 @@
             $.when.apply(null, promises).done(function() {
                 $('#requests_table_panel').unblock();
             });
+        }
+
+        // PERSISTED REQUESTS
+
+        // clear persisted requests data
+        function persistedRequestsTableClear() {
+            $('#persisted_requests_table').DataTable().clear().draw();
+        }
+
+        // load persisted requests data
+        function persistedRequestsTableLoad() {
+            $('#persisted_requests_table_panel').block({
+                message: '<i class="icon-spinner9 spinner"></i>',
+                overlayCSS: {
+                    backgroundColor: '#fff',
+                    opacity: 0.8,
+                    cursor: 'wait'
+                },
+                css: {
+                    border: 0,
+                    padding: 0,
+                    backgroundColor: 'none'
+                }
+            });
+
+            @for(request <- requestedRequests) {
+                var row = '';
+                row +=
+                        '<tr>' +
+                            '<td><a class="tooltips" data-popup="tooltip" title="Ver en TVDB" data-placement="left" target="_blank" href="http://thetvdb.com/?tab=series&id=' + @request.tvdbId + '">' + @request.tvdbId + '</a></td>' +
+                            '<td>' + '@request.user.email' + '</td>' +
+                            '<td>' + '@request.requestDate.toString' + '</td>' +
+                        '</tr>';
+
+                // añadir fila a la tabla
+                $('#persisted_requests_table').DataTable().row.add($(row)).draw();
+            }
+
+                $('#persisted_requests_table_panel').unblock();
+        }
+
+        // REJECTED REQUESTS
+
+        // clear rejected requests data
+        function rejectedRequestsTableClear() {
+            $('#rejected_requests_table').DataTable().clear().draw();
+        }
+
+        // load rejected requests data
+        function rejectedRequestsTableLoad() {
+            $('#rejected_requests_table_panel').block({
+                message: '<i class="icon-spinner9 spinner"></i>',
+                overlayCSS: {
+                    backgroundColor: '#fff',
+                    opacity: 0.8,
+                    cursor: 'wait'
+                },
+                css: {
+                    border: 0,
+                    padding: 0,
+                    backgroundColor: 'none'
+                }
+            });
+
+            @for(request <- rejectedRequests) {
+                var row = '';
+                row +=
+                        '<tr>' +
+                            '<td><a class="tooltips" data-popup="tooltip" title="Ver en TVDB" data-placement="left" target="_blank" href="http://thetvdb.com/?tab=series&id=' + @request.tvdbId + '">' + @request.tvdbId + '</a></td>' +
+                            '<td id="name-@request.id"></td>' +
+                            '<td id="banner-@request.id"></td>' +
+                            '<td id="firstAired-@request.id"></td>' +
+                            '<td>' + '@request.user.email' + '</td>' +
+                            '<td>' + '@request.requestDate.toString' + '</td>' +
+                            '<td id="actions-@request.id" style="text-align: center;"><button type="button" data-id="@request.id" data-tvdbid="@request.tvdbId" data-action="get-tvShow-data" class="btn btn-labeled btn-xs bg-green-300"><b><i class="icon-download"></i></b> Descargar datos</button></td>' +
+                        '</tr>';
+
+                // añadir fila a la tabla
+                $('#rejected_requests_table').DataTable().row.add($(row)).draw();
+            }
+
+            $('#rejected_requests_table_panel').unblock();
         }
 
     </script>

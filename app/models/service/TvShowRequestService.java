@@ -57,7 +57,7 @@ public class TvShowRequestService {
   }
 
   // buscar peticiones por id de TVDB
-  public List<TvShowRequest> findTvShowRequests(Integer tvdbId) { return rqDAO.findTvShowRequestsByTvdbId(tvdbId); }
+  public TvShowRequest findTvShowRequestByTvdbId(Integer tvdbId) { return rqDAO.findTvShowRequetByTvdbId(tvdbId); }
 
   // POST petición TV Show
   public Boolean requestTvShow(Integer tvdbId, Integer userId) {

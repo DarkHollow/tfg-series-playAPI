@@ -22,6 +22,7 @@ public class TvShow {
   @JsonView(TvShowViews.InternalFullTvShow.class)
   public String imdbId;
 
+  @Column(unique = true)
   @JsonView(TvShowViews.SearchTvShowTvdbId.class)
   public Integer tvdbId;
 
@@ -71,7 +72,7 @@ public class TvShow {
 
   @Transient
   @JsonView(TvShowViews.SearchTVDB.class)
-  public Boolean requested;
+  public String requestStatus;
 
   // constructor vacio
   public TvShow() {}

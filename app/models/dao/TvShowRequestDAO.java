@@ -5,6 +5,7 @@ import models.TvShowRequest;
 import play.Logger;
 import play.db.jpa.JPAApi;
 
+import javax.persistence.NoResultException;
 import javax.validation.ConstraintViolationException;
 import java.time.Instant;
 import java.util.Date;
@@ -42,8 +43,13 @@ public class TvShowRequestDAO {
   }
 
   // buscar por id de TVDB
-  public List<TvShowRequest> findTvShowRequestsByTvdbId(Integer tvdbId) {
-    return jpa.em().createQuery("SELECT r FROM " + TABLE + " r WHERE tvdbId = " + tvdbId + "ORDER BY r.id", TvShowRequest.class).getResultList();
+  public TvShowRequest findTvShowRequetByTvdbId(Integer tvdbId) {
+    try {
+      return jpa.em().createQuery("SELECT r FROM " + TABLE + " r WHERE r.tvdbId = " + tvdbId, TvShowRequest.class).getSingleResult();
+    } catch (NoResultException ex) {
+      // no existe request con esta tvdb id
+      return null;
+    }
   }
 
   // Read de obtener todas las requests

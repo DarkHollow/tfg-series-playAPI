@@ -87,9 +87,8 @@ public class TvdbService {
   }
 
   // descargar una imagen desde una url a un directorio local definido por tvdbId y tipo
-  private String downloadImage(URL url, String path) {
+  private String downloadImage(URL url, String format, String path) {
     BufferedImage image;
-    String format = "jpg";
     try {
       // descargamos imagen
       image = ImageIO.read(url);
@@ -114,29 +113,46 @@ public class TvdbService {
       JsonNode images = tvdbGetRequest(imageQuery, "es").withArray("data");
       String fileName = null;
 
-      if (images.size() > 0) {
+      if (images.size() > 1) {
         // seleccionamos la imagen mas votada
-        Integer bestRating = 0;
+        Integer bestRating = -1;
+        Integer moreRatings = -1;
 
         for (JsonNode image: images) {
           Integer imageRating = image.get("ratingsInfo").get("average").asInt();
           if (imageRating > bestRating) {
             fileName = image.get("fileName").asText();
             bestRating = imageRating;
+          } else if (imageRating.equals(bestRating)) {
+            // si tienen la misma puntuacion, cogemos la que mas votaciones lleve
+            Integer imageRatings = image.get("ratingsInfo").get("count").asInt();
+            if (imageRatings > moreRatings) {
+              fileName = image.get("fileName").asText();
+              moreRatings = imageRatings;
+            }
           }
         }
+      } else if (images.size() == 1) {
+        // solo hay una imagen, la cogemos
+        fileName = images.get(0).get("fileName").asText();
       } else {
         // no se han encontrado imagenes
         return null;
       }
 
-      // descargar imagen
-      URL downloadURL = new URL("http://thetvdb.com/banners/" + fileName);
-      String path = "./public/images/series/" + tvShow.id.toString() + "/" + type + ".jpg";
-      String resultPath = downloadImage(downloadURL, path);
-      if (resultPath != null) {
-        Logger.info(tvShow.name + " - " + type + " descargado");
-        return resultPath;
+      if (fileName != null) {
+        // descargar imagen
+        URL downloadURL = new URL("http://thetvdb.com/banners/" + fileName);
+        String format = fileName.substring(fileName.lastIndexOf('.') + 1);
+        String path = "./public/images/series/" + tvShow.id.toString() + "/" + type + "." + format;
+        String resultPath = downloadImage(downloadURL, format, path);
+        if (resultPath != null) {
+          Logger.info(tvShow.name + " - " + type + " descargado");
+          return resultPath;
+        }
+      } else {
+        // no hay imagenes ?
+        return null;
       }
     } catch (Exception ex) {
       Logger.error(tvShow.name + " - error descargando " + type);
@@ -151,8 +167,9 @@ public class TvdbService {
     try {
       if (!tvShow.banner.isEmpty()) {
         URL downloadURL = new URL("http://thetvdb.com/banners/" + tvShow.banner);
-        String path = "./public/images/series/" + tvShow.id.toString() + "/banner.jpg";
-        String resultPath = downloadImage(downloadURL, path);
+        String format = tvShow.banner.substring(tvShow.banner.lastIndexOf('.') + 1);
+        String path = "./public/images/series/" + tvShow.id.toString() + "/banner." + format;
+        String resultPath = downloadImage(downloadURL, format, path);
         if (resultPath != null) {
           Logger.info(tvShow.name + " - banner descargado");
           return resultPath;

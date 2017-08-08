@@ -19,7 +19,7 @@ import play.mvc.Security;
 import javax.inject.Inject;
 import java.io.UnsupportedEncodingException;
 
-public abstract class Roles extends Security.Authenticator {
+public class Roles extends Security.Authenticator {
   UserService userService;
   final String SECRET = "debug";
   final String ISSUER = "TrendingSeries";

@@ -45,7 +45,6 @@ public class Roles extends Security.Authenticator {
         DecodedJWT jwt = verifier.verify(token);
         Claim emailClaim = jwt.getClaim("email");
         Claim rolClaim = jwt.getClaim("rol");
-
         // comprobamos si los claims no son null
         if (!emailClaim.isNull() && !rolClaim.isNull()) {
             // comprobamos que el usuario exista
@@ -69,7 +68,7 @@ public class Roles extends Security.Authenticator {
         return null;
       }
     }
-
+    Logger.warn("jwt roles - se ha deducido que el usuario no tiene autorización?");
     return null;
   }
 

@@ -173,6 +173,11 @@
                     url: 'http://localhost:9000/api/tvshows/tvdb/' + @request.tvdbId,
                     type: 'GET',
                     dataType: 'json',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
+                    },
                     success: function (response) {
                         var row = '';
                         row +=

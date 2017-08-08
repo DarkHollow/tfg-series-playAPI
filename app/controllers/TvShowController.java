@@ -11,6 +11,9 @@ import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Security;
+import utils.Security.Administrator;
+import utils.Security.Roles;
 
 import java.util.List;
 
@@ -27,6 +30,7 @@ public class TvShowController extends Controller {
   // JSON View TvShowView.SearchTvShow: vista que solo incluye los campos
   // relevante de una búsqueda
   @Transactional(readOnly = true)
+  @Security.Authenticated(Administrator.class)
   public Result all() {
     List<TvShow> tvShows = tvShowService.all();
 
@@ -54,6 +58,7 @@ public class TvShowController extends Controller {
 
   // devolver un TV Show por id
   @Transactional(readOnly = true)
+  @Security.Authenticated(Roles.class)
   public Result tvShowById(Integer id) {
     TvShow tvShow = tvShowService.find(id);
     if (tvShow == null) {
@@ -79,6 +84,7 @@ public class TvShowController extends Controller {
 
   // devolver la busqueda de TV Shows LIKE
   @Transactional(readOnly = true)
+  @Security.Authenticated(Roles.class)
   public Result searchTvShowNameLike(String query) {
     if (query.length() >= 3) {
       List<TvShow> tvShows = tvShowService.findBy("name", query, false);

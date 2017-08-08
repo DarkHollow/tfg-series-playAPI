@@ -48,27 +48,27 @@ public class User extends Roles {
               if (user.rol.equals(ROL)) {
                 return user.email;
               } else {
-                Logger.warn("jwt - se ha detectado token de usuario que no es usuario");
+                Logger.warn("jwt user - se ha detectado token de usuario que no es user");
                 return null;
               }
             } else {
-              Logger.warn("jwt - se ha detectado token de usuario que no existe");
+              Logger.warn("jwt user - se ha detectado token de usuario que no existe");
               return null;
             }
           } else {
-            Logger.warn("jwt - se ha detectado token con claim rol = " + rolClaim.asString());
+            Logger.warn("jwt user - se ha detectado token con claim rol = " + rolClaim.asString());
             return null;
           }
         } else {
-          Logger.warn("jwt - se ha detectado token sin claim email y/o rol");
+          Logger.warn("jwt user - se ha detectado token sin claim email y/o rol");
           return null;
         }
 
       } catch (UnsupportedEncodingException ex) {
-        Logger.error("jwt - verifier.verify(token) ha generado UnsupportedEncodingException");
+        Logger.error("jwt user - verifier.verify(token) ha generado UnsupportedEncodingException");
         return null;
       } catch (JWTVerificationException ex) {
-        Logger.debug("jwt - verifier.verify(token) ha generado JWTVerificationException");
+        Logger.debug("jwt user - verifier.verify(token) ha generado JWTVerificationException");
         return null;
       }
     }

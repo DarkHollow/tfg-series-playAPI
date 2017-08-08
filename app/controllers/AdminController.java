@@ -1,6 +1,7 @@
 package controllers;
 
 import com.google.inject.Inject;
+import models.TvShow;
 import models.TvShowRequest;
 import models.service.TvShowRequestService;
 import models.service.TvShowService;
@@ -48,11 +49,18 @@ public class AdminController extends Controller {
 
   @Transactional(readOnly = true)
   @Security.Authenticated(Administrator.class)
+  public Result tvShows() {
+    List<TvShow> tvShows = tvShowService.all();
+    return ok(views.html.administration.tvShows.render("Trending Series Administration - Series", "tvShows", tvShows));
+  }
+
+  @Transactional(readOnly = true)
+  @Security.Authenticated(Administrator.class)
   public Result tvShowRequests() {
     List<TvShowRequest> pendingRequests = tvShowRequestService.getPending();
     List<TvShowRequest> persistedRequests = tvShowRequestService.getPersisted();
     List<TvShowRequest> rejectedRequests = tvShowRequestService.getRejected();
-    return ok(views.html.administration.tvShowRequests.render("Trending Series Administration - Series", "tvShowRequests", pendingRequests, persistedRequests, rejectedRequests));
+    return ok(views.html.administration.tvShowRequests.render("Trending Series Administration - Peticiones", "tvShowRequests", pendingRequests, persistedRequests, rejectedRequests));
   }
 
   @Transactional(readOnly = true)

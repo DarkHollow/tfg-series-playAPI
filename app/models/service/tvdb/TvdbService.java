@@ -295,17 +295,20 @@ public class TvdbService {
     int i = 0, tries = 100;
     Date result = null;
 
-    while (i < tries) {
-      try {
-        df.applyPattern("yyyy-MM-dd");
-        result = df.parse(jsonDate.asText()); // fecha estreno
-        break;
-      } catch (Exception e) {
-        i++;
-        if (i != 100) {
-          Logger.info("Reintentando parsear fecha de estreno");
-        } else {
-          Logger.error("No se ha podido parsear la fecha");
+    if (!jsonDate.isNull() && !jsonDate.asText().equals("")) {
+
+      while (i < tries) {
+        try {
+          df.applyPattern("yyyy-MM-dd");
+          result = df.parse(jsonDate.asText()); // fecha estreno
+          break;
+        } catch (Exception e) {
+          i++;
+          if (i != 100) {
+            Logger.info("Reintentando parsear fecha de estreno");
+          } else {
+            Logger.error("No se ha podido parsear la fecha");
+          }
         }
       }
     }

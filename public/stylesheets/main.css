@@ -61,3 +61,30 @@
 .check-list li:last-child {
     padding-bottom: 0;
 }
+
+.td-poster {
+    padding: 0 !important;
+    width: 104px !important;
+    text-align: center;
+}
+
+.tvShowListPoster {
+    height: 150px;
+    width: 102px;
+    margin: 0;
+    padding: 0;
+}
+
+.hr-mini {
+    display: block;
+    height: 1px;
+    border: 0;
+    margin: 1em 0;
+    padding: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.btn-action {
+    width: 90%;
+    margin-left: 9px;
+}

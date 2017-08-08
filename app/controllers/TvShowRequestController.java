@@ -21,6 +21,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
 import utils.Security.Administrator;
+import utils.Security.User;
 
 import java.util.List;
 
@@ -46,6 +47,7 @@ public class TvShowRequestController extends Controller {
   // buscar TV Show en TVDB y marcar las locales
   // devolver la busqueda de TV Show LIKE
   @Transactional(readOnly = true)
+  @Security.Authenticated(User.class)
   public Result searchTvShowTVDBbyName(String query) {
     if (query.length() >= 3) {
       List<TvShow> tvShows = tvdbService.findOnTVDBby("name", query);
@@ -98,6 +100,7 @@ public class TvShowRequestController extends Controller {
   // Peticion POST TvShow nuevo
   // realizar la petición del TV Show
   @Transactional
+  @Security.Authenticated(User.class)
   public Result requestTvShow() {
     ObjectNode result = Json.newObject();
     Integer tvdbId, userId;

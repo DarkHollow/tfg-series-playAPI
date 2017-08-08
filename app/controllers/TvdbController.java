@@ -11,6 +11,8 @@ import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Security;
+import utils.Security.Administrator;
 
 public class TvdbController extends Controller {
 
@@ -23,6 +25,7 @@ public class TvdbController extends Controller {
 
   // buscar TV Show en TVDB por id
   @Transactional(readOnly = true)
+  @Security.Authenticated(Administrator.class)
   public Result tvShowById(Integer tvdbId) {
 
     TvShow tvShow = tvdbService.findOnTvdbByTvdbId(tvdbId);

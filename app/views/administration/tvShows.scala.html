@@ -1,0 +1,28 @@
+@import java.util
+@(title: String, route: String, tvShows: util.List[TvShow])
+
+@adminMain(title, route) {
+
+    <!-- Panel y tabla de peticiones pendientes (requeted y processing) -->
+    @if(tvShows.size() == 0) {
+        <div class="panel panel-collapsed" id="tvShows_table_panel">
+    } else {
+        <div class="panel" id="tvShows_table_panel">
+    }
+            <div class="panel-heading">
+                <h6 class="panel-title">Series: <span class="badge badge-info">@tvShows.size()</span></h6>
+                <div class="heading-elements">
+                    <ul class="icons-list">
+                        <li><a data-action="collapse" class="tooltips" data-popup="tooltip" title="Expandir/Contraer"></a></li>
+                        <li><a href="@routes.AdminController.tvShows()" data-action="get-list" class="tooltips" data-popup="tooltip" title="Recargar lista de series"><i class="icon-database-refresh"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="panel-body padTop0">
+
+            </div>
+        </div>
+        <!-- Fin panel y tabla de peticiones pendientes -->
+    </div>
+
+}

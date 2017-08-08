@@ -10,7 +10,7 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
-import utils.Security.Auth;
+import utils.Security.Administrator;
 import views.html.administration.index;
 import views.html.administration.login;
 
@@ -21,18 +21,18 @@ public class AdminController extends Controller {
   private final TvShowService tvShowService;
   private final TvShowRequestService tvShowRequestService;
   private final UserService userService;
-  private final Auth auth;
+  private final utils.Security.Administrator adminAuth;
 
   @Inject
-  public AdminController(TvShowService tvShowService, TvShowRequestService tvShowRequestService, UserService userService, Auth auth) {
+  public AdminController(TvShowService tvShowService, TvShowRequestService tvShowRequestService, UserService userService, utils.Security.Administrator adminAuth) {
     this.tvShowService = tvShowService;
     this.tvShowRequestService = tvShowRequestService;
     this.userService = userService;
-    this.auth = auth;
+    this.adminAuth = adminAuth;
   }
 
   @Transactional(readOnly = true)
-  @Security.Authenticated(Auth.class)
+  @Security.Authenticated(Administrator.class)
   public Result index() {
     // sumario datos
 
@@ -47,7 +47,7 @@ public class AdminController extends Controller {
   }
 
   @Transactional(readOnly = true)
-  @Security.Authenticated(Auth.class)
+  @Security.Authenticated(Administrator.class)
   public Result tvShowRequests() {
     List<TvShowRequest> pendingRequests = tvShowRequestService.getPending();
     List<TvShowRequest> persistedRequests = tvShowRequestService.getPersisted();
@@ -55,9 +55,10 @@ public class AdminController extends Controller {
     return ok(views.html.administration.tvShowRequests.render("Trending Series Administration - Series", "tvShowRequests", pendingRequests, persistedRequests, rejectedRequests));
   }
 
-  public Result loginView() {
+  @Transactional(readOnly = true)
+    public Result loginView() {
     // llamar al método manualmente
-    String email = auth.getUsername(Http.Context.current());
+    String email = adminAuth.getUsername(Http.Context.current());
     // si está identificado, comprobar si es admin
     if (email != null) {
       if (userService.findByEmail(email).isAdmin()) {

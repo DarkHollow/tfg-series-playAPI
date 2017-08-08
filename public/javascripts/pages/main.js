@@ -50,11 +50,17 @@ function getRoute(route) {
       document.title = parsed.find('title').text();
       window.history.pushState( {'html': data, 'pageTitle': parsed.find('title').text()}, '', route );
     },
-    error: function() {
+    error: function(data) {
       console.log('error');
+      var title = 'Conexión perdida';
+      var text = 'Por alguna razón no se puede contactar con el servidor, prueba dentro de un rato.';
+      if (data.status === 401) {
+        title = 'Autorización denegada';
+        text = 'No tienes autorización para esta acción';
+      }
       swal({
-        title: 'Conexión perdida',
-        text: 'Por alguna razón no se puede contactar con el servidor, prueba dentro de un rato.',
+        title: title,
+        text: text,
         type: 'error',
         closeOnConfirm: true,
         confirmButtonText: 'Cerrar'

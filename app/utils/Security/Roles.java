@@ -7,9 +7,11 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.User;
 import models.service.UserService;
 import play.Logger;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -17,13 +19,13 @@ import play.mvc.Security;
 import javax.inject.Inject;
 import java.io.UnsupportedEncodingException;
 
-public class Auth extends Security.Authenticator {
-  private UserService userService;
-  private final String SECRET = "debug";
-  private final String ISSUER = "TrendingSeries";
+public class Roles extends Security.Authenticator {
+  UserService userService;
+  final String SECRET = "debug";
+  final String ISSUER = "TrendingSeries";
 
   @Inject
-  public Auth(UserService userService) {
+  public Roles(UserService userService) {
     super();
     this.userService = userService;
   }
@@ -31,7 +33,6 @@ public class Auth extends Security.Authenticator {
   @Override
   public String getUsername(Http.Context context) {
     String rawToken = getTokenFromHeader(context);
-    String path = context.request().path();
 
     if (rawToken != null && rawToken.length() > 6) {
       String token = rawToken.substring(7);
@@ -45,27 +46,26 @@ public class Auth extends Security.Authenticator {
         Claim emailClaim = jwt.getClaim("email");
         Claim rolClaim = jwt.getClaim("rol");
 
-        if (!emailClaim.isNull() && !emailClaim.asString().equals("")) {
-          User user = userService.findByEmail(emailClaim.asString());
-          if (user != null && user.rol.equals(rolClaim.asString())) {
-            // si el contenido solicitado es tipo admin
-            if (path.contains("/admin")) {
-              // el rol debe ser admin
-              if (rolClaim.asString().equals("a")) {
-                return user.email;
-              }
-            // si no es tipo admin el contenido solicitado, el rol no importa
-            } else {
+        // comprobamos si los claims no son null
+        if (!emailClaim.isNull() && !rolClaim.isNull()) {
+            // comprobamos que el usuario exista
+            User user = userService.findByEmail(emailClaim.asString());
+            if (user != null) {
               return user.email;
+            } else {
+              Logger.warn("jwt roles - se ha detectado token de usuario que no existe");
+              return null;
             }
-          }
+        } else {
+          Logger.warn("jwt roles - se ha detectado token sin claim email y/o rol");
+          return null;
         }
 
       } catch (UnsupportedEncodingException ex) {
-        Logger.error("jwt - verifier.verify(token) ha generado UnsupportedEncodingException");
+        Logger.error("jwt roles - verifier.verify(token) ha generado UnsupportedEncodingException");
         return null;
       } catch (JWTVerificationException ex) {
-        Logger.debug("jwt - verifier.verify(token) ha generado JWTVerificationException");
+        Logger.debug("jwt roles - verifier.verify(token) ha generado JWTVerificationException");
         return null;
       }
     }
@@ -75,14 +75,11 @@ public class Auth extends Security.Authenticator {
 
   @Override
   public Result onUnauthorized(Http.Context context) {
-    String path = context.request().path();
-
-    // si el path contiene /admin y no está indentificado como tal, enviar a login
-    if (path.contains("/admin")) {
-      return redirect(controllers.routes.AdminController.loginView());
-    }
-
-    return super.onUnauthorized(context);
+    ObjectNode result = Json.newObject();
+    result.put("error", "Unauthorized");
+    result.put("type", "unauthorized");
+    result.put("message", "No estás autorizado");
+    return unauthorized(result);
   }
 
   public String createJWT(User user) {
@@ -116,9 +113,9 @@ public class Auth extends Security.Authenticator {
       try {
         Algorithm algorithm = Algorithm.HMAC256(SECRET);
         JWTVerifier verifier = JWT.require(algorithm)
-                .withIssuer("TrendingSeries")
+                .withIssuer(ISSUER)
                 .build();
-        DecodedJWT jwt = verifier.verify(token);
+        verifier.verify(token);
         result = true;
       } catch (UnsupportedEncodingException ex) {
         Logger.error("jwt - JWT.verify() ha generado UnsupportedEncodingException");
@@ -131,7 +128,7 @@ public class Auth extends Security.Authenticator {
     return result;
   }
 
-  private String getTokenFromHeader(Http.Context context) {
+  String getTokenFromHeader(Http.Context context) {
     String [] authTokenHeaderValues = context.request().headers().get("Authorization");
     if ((authTokenHeaderValues != null) && (authTokenHeaderValues.length == 1) && (authTokenHeaderValues[0] != null)) {
       return authTokenHeaderValues[0];

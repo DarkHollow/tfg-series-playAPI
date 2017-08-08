@@ -20,13 +20,13 @@ public class UserController extends Controller {
 
   private final UserService userService;
   private final FormFactory formFactory;
-  private final Auth sa;
+  private final utils.Security.Administrator adminAuth;
 
   @Inject
-  public UserController(UserService userService, FormFactory formFactory, Auth sa) {
+  public UserController(UserService userService, FormFactory formFactory, utils.Security.Administrator adminAuth) {
     this.userService = userService;
     this.formFactory = formFactory;
-    this.sa = sa;
+    this.adminAuth = adminAuth;
   }
 
   @Transactional
@@ -145,7 +145,7 @@ public class UserController extends Controller {
           user = userService.verifyEmailAndPassword(email, password);
 
           // intentamos crear token
-          String token = sa.createJWT(user);
+          String token = adminAuth.createJWT(user);
 
           if (token == null) {
             result.put("error","fail creating JWT");
@@ -195,7 +195,7 @@ public class UserController extends Controller {
   public Result verifySession() {
     ObjectNode result = Json.newObject();
 
-    if (sa.verifyJWT(Http.Context.current())) {
+    if (adminAuth.verifyJWT(Http.Context.current())) {
       // si el token es válido
       result.put("ok", "session active");
       result.put("type", "ok");

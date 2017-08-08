@@ -85,5 +85,8 @@ GET     /admin/login                controllers.AdminController.loginView()
 GET     /admin/                     controllers.AdminController.index()
 GET     /admin                      controllers.AdminController.index()
 
+GET     /admin/tvShows/             controllers.AdminController.tvShows()
+GET     /admin/tvShows              controllers.AdminController.tvShows()
+
 GET     /admin/tvShowRequests/      controllers.AdminController.tvShowRequests()
 GET     /admin/tvShowRequests       controllers.AdminController.tvShowRequests()

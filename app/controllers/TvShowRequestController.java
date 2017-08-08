@@ -20,7 +20,7 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
-import utils.Security.Auth;
+import utils.Security.Administrator;
 
 import java.util.List;
 
@@ -154,7 +154,7 @@ public class TvShowRequestController extends Controller {
   // Peticion PUT Request TV Show aceptada
   // aceptar request y obtener datos de TV Show
   @Transactional
-  @Security.Authenticated(Auth.class)
+  @Security.Authenticated(Administrator.class)
   public Result acceptTvShowRequest() {
     ObjectNode result = Json.newObject();
     Integer requestId;
@@ -277,7 +277,7 @@ public class TvShowRequestController extends Controller {
   // Peticion PATCH Request TV Show rechazada
   // rechazar request
   @Transactional
-  @Security.Authenticated(Auth.class)
+  @Security.Authenticated(Administrator.class)
   public Result rejectTvShowRequest() {
     ObjectNode result = Json.newObject();
     Integer requestId;

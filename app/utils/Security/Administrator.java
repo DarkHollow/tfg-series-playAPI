@@ -26,6 +26,7 @@ public class Administrator extends Roles {
     super(userService);
   }
 
+  @Override
   public String getUsername(Http.Context context) {
     String rawToken = getTokenFromHeader(context);
 

@@ -5,11 +5,12 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.User;
 import models.service.UserService;
 import play.Logger;
-import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -30,7 +31,47 @@ public abstract class Roles extends Security.Authenticator {
   }
 
   @Override
-  public abstract String getUsername(Http.Context context);
+  public String getUsername(Http.Context context) {
+    String rawToken = getTokenFromHeader(context);
+
+    if (rawToken != null && rawToken.length() > 6) {
+      String token = rawToken.substring(7);
+
+      try {
+        Algorithm algorithm = Algorithm.HMAC256(SECRET);
+        JWTVerifier verifier = JWT.require(algorithm)
+                .withIssuer(ISSUER)
+                .build();
+        DecodedJWT jwt = verifier.verify(token);
+        Claim emailClaim = jwt.getClaim("email");
+        Claim rolClaim = jwt.getClaim("rol");
+
+        // comprobamos si los claims no son null
+        if (!emailClaim.isNull() && !rolClaim.isNull()) {
+            // comprobamos que el usuario exista
+            User user = userService.findByEmail(emailClaim.asString());
+            if (user != null) {
+              return user.email;
+            } else {
+              Logger.warn("jwt roles - se ha detectado token de usuario que no existe");
+              return null;
+            }
+        } else {
+          Logger.warn("jwt roles - se ha detectado token sin claim email y/o rol");
+          return null;
+        }
+
+      } catch (UnsupportedEncodingException ex) {
+        Logger.error("jwt roles - verifier.verify(token) ha generado UnsupportedEncodingException");
+        return null;
+      } catch (JWTVerificationException ex) {
+        Logger.debug("jwt roles - verifier.verify(token) ha generado JWTVerificationException");
+        return null;
+      }
+    }
+
+    return null;
+  }
 
   @Override
   public Result onUnauthorized(Http.Context context) {

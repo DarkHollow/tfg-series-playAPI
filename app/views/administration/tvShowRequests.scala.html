@@ -1,7 +1,8 @@
 @import java.util
 @(title: String, route: String, pendingRequests: util.List[TvShowRequest], requestedRequests: util.List[TvShowRequest], rejectedRequests: util.List[TvShowRequest])
 
-@adminMain(title, route) {
+@administration.adminMain(title, route) {
+    <span id="host" hidden>@requestHeader.host</span>
 
     <!-- Panel y tabla de peticiones pendientes (requeted y processing) -->
     @if(pendingRequests.size() == 0) {
@@ -110,7 +111,7 @@
         });
 
         // ocultar tooltip
-        $(document).on('click', '[data-popup="tooltip"]', function(e) {
+        $(document).on('click', '[data-popup="tooltip"]', function() {
             $('[data-popup="tooltip"]').tooltip('hide');
         });
 
@@ -167,10 +168,11 @@
                     backgroundColor: 'none'
                 }
             });
+            let host = 'http://' + '@requestHeader.host';
             var promises = [];
             @for(request <- pendingRequests) {
                 promise = $.ajax({
-                    url: 'http://localhost:9000/api/tvshows/tvdb/' + @request.tvdbId,
+                    url: host + '/api/tvshows/tvdb/' + @request.tvdbId,
                     type: 'GET',
                     dataType: 'json',
                     headers: {

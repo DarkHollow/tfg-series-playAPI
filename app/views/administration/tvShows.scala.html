@@ -1,0 +1,137 @@
+@import java.util
+@(title: String, route: String, tvShows: util.List[TvShow])
+
+@administration.adminMain(title, route) {
+
+    <!-- Panel y tabla de peticiones pendientes (requeted y processing) -->
+    @if(tvShows.size() == 0) {
+        <div class="panel panel-collapsed" id="tvShows_table_panel">
+    } else {
+        <div class="panel" id="tvShows_table_panel">
+    }
+        <div class="panel-heading">
+            <h6 class="panel-title">Series: <span class="badge badge-info">@tvShows.size()</span></h6>
+            <div class="heading-elements">
+                <ul class="icons-list">
+                    <li><a data-action="collapse" class="tooltips" data-popup="tooltip" title="Expandir/Contraer"></a></li>
+                    <li><a href="@routes.AdminController.tvShows()" data-action="get-list" class="tooltips" data-popup="tooltip" title="Recargar lista de series"><i class="icon-database-refresh"></i></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="panel-body padTop0">
+            <!-- TABLA -->
+            <table id="tvShows_table" class="table datatable-tvShows table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Póster</th>
+                        <th>ID de TVDB</th>
+                        <th>Título</th>
+                        <th>Estreno</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+            </table>
+
+            <!-- /style combinations -->
+            <!-- FIN TABLA -->
+        </div>
+    </div>
+    <!-- Fin panel y tabla de peticiones pendientes -->
+
+    <script type="text/javascript" src="@routes.Assets.versioned("javascripts/core/app.js")"></script>
+    <script>
+
+        // tooltips
+        $('body').tooltip({
+            selector: '.tooltips'
+        });
+
+        // ocultar tooltip
+        $(document).on('click', '[data-popup="tooltip"]', function(e) {
+            $('[data-popup="tooltip"]').tooltip('hide');
+        });
+
+        // on page ready
+        $(document).ready(function () {
+
+            // Settings Tablas
+
+            // tvShows datatable
+            $('.datatable-tvShows').DataTable({
+                columnDefs: [{
+                    orderable: false,
+                    targets: [ 0, 5 ]
+                }]
+            });
+
+            // Cargar datos tabla principal
+            tvShowsTableLoad();
+        });
+
+        // clear tvShows data
+        function tvShowsTableClear() {
+            $('#tvShows_table').DataTable().clear().draw();
+        }
+
+        // get tvShows data
+        function tvShowsTableLoad() {
+          console.log('tvShowsTableLoad');
+            $('#tvShows_table_panel').block({
+                message: '<i class="icon-spinner9 spinner"></i>',
+                overlayCSS: {
+                    backgroundColor: '#fff',
+                    opacity: 0.8,
+                    cursor: 'wait'
+                },
+                css: {
+                    border: 0,
+                    padding: 0,
+                    backgroundColor: 'none'
+                }
+            });
+
+            @for(tvShow <- tvShows) {
+                var row = '';
+                row +=
+                    '<tr>' +
+                        '<td id="poster-@tvShow.id" class="td-poster">' + '<button type="button" data-id="@tvShow.id" data-url="@tvShow.poster" data-host=@requestHeader.host data-action="show-poster" class="btn btn-labeled btn-xs bg-info"><b><i class="icon-image2"></i></b> Mostrar</button>' + '</td>' +
+                        '<td><a class="tooltips" data-popup="tooltip" title="Ver en TVDB" data-placement="left" target="_blank" href="http://thetvdb.com/?tab=series&id=@tvShow.tvdbId">' + "@tvShow.tvdbId" + '</a></td>' +
+                        '<td>' + "@tvShow.name" + '</td>' +
+                        '<td>' + "@tvShow.firstAired.format("dd-MM-yyyy")" + '</td>' +
+                        '<td>' + "@tvShow.status.toString" + '</td>';
+
+                tvShowsActions = '<ul class="icons-list">' +
+                        '<li class="dropdown">' +
+                            '<a href="#" class="dropdown-toggle tooltips" data-toggle="dropdown" data-popup="tooltip" title="Acciones">' +
+                                '<i class="icon-menu9"></i>' +
+                            '</a>' +
+                            '<ul class="dropdown-menu dropdown-menu-right">' +
+                                '<li><button type="button" data-id="@tvShow.id" data-action="view-tvShow" class="btn btn-labeled btn-xs bg-blue-300 btn-action"><b><i class="icon-eye2"></i></b> Ver serie</button></li>' +
+                                '<li><button type="button" data-id="@tvShow.id" data-action="delete-tvShow" class="btn btn-labeled btn-xs bg-danger-300 btn-action"><b><i class="icon-cross"></i></b> Eliminar serie</button></li>' +
+                            '</ul>' +
+                        '</li>' +
+                        '</ul>';
+
+                row +=
+                        '<td style="text-align: center;" id="status-@tvShow.id">' +
+                            tvShowsActions +
+                        '</td>' +
+                    '</tr>';
+
+                // añadir fila a la tabla
+                $('#tvShows_table').DataTable().row.add($(row)).draw();
+            }
+            $('#tvShows_table_panel').unblock();
+
+        }
+
+        // PERSISTED REQUESTS
+
+        // clear persisted requests data
+        function persistedRequestsTableClear() {
+            $('#persisted_requests_table').DataTable().clear().draw();
+        }
+
+    </script>
+}

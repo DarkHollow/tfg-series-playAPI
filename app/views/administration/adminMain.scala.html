@@ -109,8 +109,10 @@
                             <li class="active">
                                 @{if (route == "dashboard") {
                                     <span>Dashboard</span>
-                                } else if (route == "tvShowRequests") {
+                                } else if (route == "tvShows") {
                                     <span>Series</span>
+                                } else if (route == "tvShowRequests") {
+                                    <span>Peticiones</span>
                                 }}
                             </li>
                         </ul>
@@ -128,11 +130,19 @@
                         <ul class="nav navbar-nav navbar-nav-material">
                             @if(route == "dashboard") {
                                 <li class="active"><a class="ajaxLink" href="@routes.AdminController.index()">Dashboard</a></li>
+                                <li><a class="ajaxLink" href="@routes.AdminController.tvShows()">Series</a></li>
                                 <li><a class="ajaxLink" href="@routes.AdminController.tvShowRequests()">Peticiones</a></li>
                             } else {
-                                @if(route == "tvShowRequests") {
+                                @if(route == "tvShows") {
                                     <li><a class="ajaxLink" href="@routes.AdminController.index()">Dashboard</a></li>
-                                    <li class="active"><a class="ajaxLink" href="@routes.AdminController.tvShowRequests()">Peticiones</a></li>
+                                    <li class="active"><a class="ajaxLink" href="@routes.AdminController.tvShows()">Series</a></li>
+                                    <li><a class="ajaxLink" href="@routes.AdminController.tvShowRequests()">Peticiones</a></li>
+                                } else {
+                                    @if(route == "tvShowRequests") {
+                                        <li><a class="ajaxLink" href="@routes.AdminController.index()">Dashboard</a></li>
+                                        <li><a class="ajaxLink" href="@routes.AdminController.tvShows()">Series</a></li>
+                                        <li class="active"><a class="ajaxLink" href="@routes.AdminController.tvShowRequests()">Peticiones</a></li>
+                                    }
                                 }
                             }
                         </ul>

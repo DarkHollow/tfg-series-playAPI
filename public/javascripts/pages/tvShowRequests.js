@@ -311,6 +311,11 @@ $(document).on('click', '[data-action=get-tvShow-data]', function(e) {
     url: 'http://localhost:9000/api/tvshows/tvdb/' + tvdbId,
     type: 'GET',
     dataType: 'json',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
+    },
     success: function (response) {
       let name = response.name;
       let firstAired = response.firstAired;
@@ -333,11 +338,10 @@ $(document).on('click', '[data-action=get-tvShow-data]', function(e) {
 
   $.when.apply(null, promises).done(function() {
     $('#actions-' + requestId).html('<i class="icon-checkmark4 text-green"></i>');
-  });
-
-  $.when.apply(null, promises).error(function() {
+  }).fail(function() {
     $('#actions-' + requestId).html('<i class="icon-cross2 text-danger"></i>');
   });
+
 });
 
 $(function() {

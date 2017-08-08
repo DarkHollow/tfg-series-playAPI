@@ -60,10 +60,11 @@ $(document).on('click', '[data-action=accept-tvShow]', function(e) {
         $('#requests_table_panel').unblock();
 
         // hacer peticion
+        let host = 'http://' + $('#host').html();
         var promises2 = [];
         var data = JSON.stringify({"requestId": requestId});
         let promise2 = $.ajax({
-          url: 'http://localhost:9000/admin/tvshows/requests',
+          url: host + '/admin/tvshows/requests',
           type: 'PUT',
           data: data,
           dataType: 'json',
@@ -205,10 +206,11 @@ $(document).on('click', '[data-action=reject-tvShow]', function(e) {
         $('#requests_table_panel').unblock();
 
         // hacer peticion
+        let host = 'http://' + $('#host').html();
         var promises2 = [];
         var data = JSON.stringify({"requestId": requestId});
         let promise2 = $.ajax({
-          url: 'http://localhost:9000/admin/tvshows/requests',
+          url: host + '/admin/tvshows/requests',
           type: 'PATCH',
           data: data,
           dataType: 'json',
@@ -219,7 +221,6 @@ $(document).on('click', '[data-action=reject-tvShow]', function(e) {
           },
           success: function (response) {
             if (response.ok !== null) {
-
               // cambiar estado
               let status = '<ul class="icons-list">' +
                 '<li class="dropdown">' +
@@ -262,6 +263,7 @@ $(document).on('click', '[data-action=reject-tvShow]', function(e) {
             }
           },
           error: function (response) {
+            console.log(response);
             console.log("error - error rechazando");
             // cambiar estado
             let status = '<ul class="icons-list">' +
@@ -306,9 +308,10 @@ $(document).on('click', '[data-action=get-tvShow-data]', function(e) {
   $('#actions-' + requestId).html('<i class="icon-spinner9 spinner"></i>');
 
   // pedir datos serie a tvdb
+  let host = 'http://' + $('#host').html();
   var promises = [];
   promise = $.ajax({
-    url: 'http://localhost:9000/api/tvshows/tvdb/' + tvdbId,
+    url: host + '/api/tvshows/tvdb/' + tvdbId,
     type: 'GET',
     dataType: 'json',
     headers: {

@@ -92,14 +92,20 @@
             });
 
             @for(tvShow <- tvShows) {
+                var poster;
+                @if(tvShow.poster != null){
+                    poster = '<button type="button" data-id="@tvShow.id" data-url="@tvShow.poster" data-host="@requestHeader.host" data-action="show-poster" class="btn btn-labeled btn-xs bg-info"><b><i class="icon-image2"></i></b> Mostrar</button>';
+                }else{
+                    poster = 'Sin poster';
+                }
                 var row = '';
                 row +=
                     '<tr>' +
-                        '<td id="poster-@tvShow.id" class="td-poster">' + '<button type="button" data-id="@tvShow.id" data-url="@tvShow.poster" data-host=@requestHeader.host data-action="show-poster" class="btn btn-labeled btn-xs bg-info"><b><i class="icon-image2"></i></b> Mostrar</button>' + '</td>' +
+                        '<td id="poster-@tvShow.id" class="td-poster">' + poster + '</td>' +
                         '<td><a class="tooltips" data-popup="tooltip" title="Ver en TVDB" data-placement="left" target="_blank" href="http://thetvdb.com/?tab=series&id=@tvShow.tvdbId">' + "@tvShow.tvdbId" + '</a></td>' +
                         '<td>' + "@tvShow.name" + '</td>' +
-                        '<td>' + "@tvShow.firstAired.format("dd-MM-yyyy")" + '</td>' +
-                        '<td>' + "@tvShow.status.toString" + '</td>';
+                        '<td>' + "@{ if (tvShow.firstAired != null) { tvShow.firstAired.format("dd-MM-yyyy") } }" + '</td>' +
+                        '<td>' + "@tvShow.status" + '</td>';
 
                 tvShowsActions = '<ul class="icons-list">' +
                         '<li class="dropdown">' +
@@ -107,7 +113,7 @@
                                 '<i class="icon-menu9"></i>' +
                             '</a>' +
                             '<ul class="dropdown-menu dropdown-menu-right">' +
-                                '<li><button type="button" data-id="@tvShow.id" data-action="view-tvShow" class="btn btn-labeled btn-xs bg-blue-300 btn-action"><b><i class="icon-eye2"></i></b> Ver serie</button></li>' +
+                                '<li><button type="button" data-id="@tvShow.id" data-action="view-tvShow" data-host="@requestHeader.host" class="btn btn-labeled btn-xs bg-blue-300 btn-action"><b><i class="icon-eye2"></i></b> Ver serie</button></li>' +
                                 '<li><button type="button" data-id="@tvShow.id" data-action="delete-tvShow" class="btn btn-labeled btn-xs bg-danger-300 btn-action"><b><i class="icon-cross"></i></b> Eliminar serie</button></li>' +
                             '</ul>' +
                         '</li>' +
@@ -124,13 +130,6 @@
             }
             $('#tvShows_table_panel').unblock();
 
-        }
-
-        // PERSISTED REQUESTS
-
-        // clear persisted requests data
-        function persistedRequestsTableClear() {
-            $('#persisted_requests_table').DataTable().clear().draw();
         }
 
     </script>

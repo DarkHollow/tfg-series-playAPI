@@ -77,6 +77,20 @@ function logoutAdmin() {
   window.localStorage.clear();
 }
 
+// vista tvShow
+// ver una serie
+$(document).on('click', '[data-action=view-tvShow]', function() {
+  var tvShowId = $(this).attr('data-id');
+  var host = $(this).attr('data-host');
+  if (host === undefined) {
+    host = $('#host').html();
+  }
+  var route = 'http://' + host + '/admin/tvShows/' + tvShowId;
+  console.log(route);
+  getRoute(route);
+  return false;
+});
+
 // vista tvShowRequests
 // actualizar lista de peticiones
 $(document).on('click', '[data-action=get-list]', function() {

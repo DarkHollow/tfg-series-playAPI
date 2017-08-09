@@ -88,3 +88,17 @@
     width: 90%;
     margin-left: 9px;
 }
+
+/* tvShow */
+.tvShow-img {
+    padding: 4px;
+    background-color: #eaeaea;
+    border: 1px solid #cdcdcd;
+    border-radius: 4px;
+    margin-right: 0 !important;
+    max-height: 200px;
+}
+
+.tvShow-poster {
+    margin-left: 24px;
+}

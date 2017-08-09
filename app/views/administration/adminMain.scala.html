@@ -109,7 +109,7 @@
                             <li class="active">
                                 @{if (route == "dashboard") {
                                     <span>Dashboard</span>
-                                } else if (route == "tvShows") {
+                                } else if (route == "tvShow" || route == "tvShows") {
                                     <span>Series</span>
                                 } else if (route == "tvShowRequests") {
                                     <span>Peticiones</span>
@@ -133,7 +133,7 @@
                                 <li><a class="ajaxLink" href="@routes.AdminController.tvShows()">Series</a></li>
                                 <li><a class="ajaxLink" href="@routes.AdminController.tvShowRequests()">Peticiones</a></li>
                             } else {
-                                @if(route == "tvShows") {
+                                @if(route == "tvShow" || route == "tvShows") {
                                     <li><a class="ajaxLink" href="@routes.AdminController.index()">Dashboard</a></li>
                                     <li class="active"><a class="ajaxLink" href="@routes.AdminController.tvShows()">Series</a></li>
                                     <li><a class="ajaxLink" href="@routes.AdminController.tvShowRequests()">Peticiones</a></li>

@@ -86,7 +86,6 @@ $(document).on('click', '[data-action=accept-tvShow]', function(e) {
               if (!response.fanart) {
                 fanartData = htmlDataError;
               }
-
               // cambiar estado
               let status = '<ul class="icons-list">' +
                 '<li class="dropdown">' +
@@ -103,7 +102,7 @@ $(document).on('click', '[data-action=accept-tvShow]', function(e) {
                 '<li><span class="pull-right">' + posterData + '</span>Poster</li>' +
                 '<li><span class="pull-right">' + fanartData + '</span>Fanart</li>' +
                 '<li class="divider"></li>' +
-                '<li><button type="button" class="btn btn-labeled btn-xs bg-primary btn-group-justified"><b><i class="icon-tv"></i></b> Ver serie</button></li>' +
+                '<li><button type="button" data-id=' + response.tvShow.id + ' data-action="view-tvShow" class="btn btn-labeled btn-xs bg-primary btn-group-justified"><b><i class="icon-tv"></i></b> Ver serie</button></li>' +
                 '</ul>' +
                 '</li>' +
                 '</ul>';

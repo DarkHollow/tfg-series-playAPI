@@ -3,6 +3,17 @@
 
 @administration.adminMain(title, route) {
 
+<!-- Botón atrás -->
+    <ul class="fab-menu fab-menu-absolute fab-menu-top-left affix" id="affixed-back-button-left">
+        <li>
+            <a href="@routes.AdminController.index()" class="ajaxLink fab-menu-btn btn bg-indigo-400 btn-float btn-rounded btn-icon">
+                <i class="fab-icon-open icon-arrow-left8"></i>
+                <i class="fab-icon-open icon-arrow-left8"></i>
+            </a>
+        </li>
+    </ul>
+    <!-- /botón atrás -->
+
     <!-- Panel y tabla de peticiones pendientes (requeted y processing) -->
     @if(tvShows.size() == 0) {
         <div class="panel panel-collapsed" id="tvShows_table_panel">
@@ -48,6 +59,31 @@
         // ocultar tooltip
         $(document).on('click', '[data-popup="tooltip"]', function(e) {
             $('[data-popup="tooltip"]').tooltip('hide');
+        });
+
+        $(function() {
+            // Add bottom spacing if reached bottom,
+            // to avoid footer overlapping
+            // -------------------------
+            $(window).scroll(function() {
+                if($(window).scrollTop() + $(window).height() > $(document).height() - 40) {
+                    $('.fab-menu-bottom-left, .fab-menu-bottom-right').addClass('reached-bottom');
+                }
+                else {
+                    $('.fab-menu-bottom-left, .fab-menu-bottom-right').removeClass('reached-bottom');
+                }
+            });
+
+
+            // Affix
+            // -------------------------
+            // Left alignment
+            $('#affixed-back-button-left').affix({
+                offset: {
+                    top: $('#affixed-back-button-left').offset().top - 20
+                }
+            });
+
         });
 
         // on page ready

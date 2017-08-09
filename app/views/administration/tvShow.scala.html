@@ -1,6 +1,18 @@
 @(title: String, route: String, tvShow: TvShow)
 
 @administration.adminMain(title, route) {
+
+    <!-- Botón atrás -->
+    <ul class="fab-menu fab-menu-absolute fab-menu-top-left affix" id="affixed-back-button-left">
+        <li>
+            <a href="#" class="fab-menu-btn btn bg-indigo-400 btn-float btn-rounded btn-icon">
+                <i class="fab-icon-open icon-arrow-left8"></i>
+                <i class="fab-icon-open icon-arrow-left8"></i>
+            </a>
+        </li>
+    </ul>
+    <!-- /botón atrás -->
+
     <!-- Panel serie -->
     <div class="panel" id="tvShow_table_panel">
         <div class="panel-heading">
@@ -242,8 +254,6 @@
 
     </div>
     <!-- Fin panel -->
-
-    <script type="text/javascript" src="@routes.Assets.versioned("javascripts/core/app.js")"></script>
     <script>
 
         // tooltips
@@ -258,6 +268,31 @@
 
         // on page ready
         $(document).ready(function () {
+
+        });
+
+        $(function() {
+            // Add bottom spacing if reached bottom,
+            // to avoid footer overlapping
+            // -------------------------
+            $(window).scroll(function() {
+                if($(window).scrollTop() + $(window).height() > $(document).height() - 40) {
+                    $('.fab-menu-bottom-left, .fab-menu-bottom-right').addClass('reached-bottom');
+                }
+                else {
+                    $('.fab-menu-bottom-left, .fab-menu-bottom-right').removeClass('reached-bottom');
+                }
+            });
+
+
+            // Affix
+            // -------------------------
+            // Left alignment
+            $('#affixed-back-button-left').affix({
+                offset: {
+                    top: $('#affixed-back-button-left').offset().top - 20
+                }
+            });
 
         });
 

@@ -61,7 +61,7 @@
                         <li class="media">
                             <div class="media-left col-sm-2 text-semibold">Género</div>
                             <div class="media-body">
-                                @if(tvShow.firstAired != null) {
+                                @if(tvShow.genre != null) {
                                     <div class="media-content">@tvShow.genre.toString.replaceAll("\"", "").replaceAll("\\[", "").replaceAll("\\]", "")</div>
                                 }else{
                                     <div class="media-content"></div>
@@ -83,12 +83,97 @@
                     <br />
 
                     <div class="smartphone">
-                        
+
+                        <div class="smartphone-header">
+                            <div class="fanart-box">
+                                @if(tvShow.fanart != null && tvShow.fanart != "") {
+                                    <img class="fanart img-responsive" src="@{ "http://".concat(requestHeader.host).concat(tvShow.fanart.substring(1)) }" />
+                                }else{
+                                    <img class="fanart img-responsive" src="@{ "http://".concat(requestHeader.host).concat("/assets/images/placeholderFanart.jpg") }" />
+                                }
+                            </div>
+                            <div class="poster-box">
+                                @if(tvShow.poster != null && tvShow.poster != "") {
+                                    <img class="poster img-responsive" src="@{ "http://".concat(requestHeader.host).concat(tvShow.poster.substring(1)) }" />
+                                }else{
+                                    <img class="poster img-responsive" src="@{ "http://".concat(requestHeader.host).concat("/assets/images/placeholderPoster.jpg") }" />
+                                }
+                            </div>
+                            <div class="title-box">
+                                @if(tvShow.name != null && tvShow.name != "") {
+                                    <span>@tvShow.name</span>
+                                }else{
+                                    <span>&nbsp;</span>
+                                }
+                            </div>
+                            <div class="subtitle-box">
+                                @if(tvShow.firstAired != null) {
+                                    <span>@tvShow.firstAired.format("yyyy")</span>
+                                }else{
+                                    <span>&nbsp;</span>
+                                }
+                                @if(tvShow.rating != null && tvShow.rating != "") {
+                                    <span>@tvShow.rating</span>
+                                }else{
+                                    <span>&nbsp;</span>
+                                }
+                            </div>
+                            <div class="genre-box">
+                                @if(tvShow.genre != null && !tvShow.genre.isEmpty) {
+                                    <span>@{ tvShow.genre.toString.replaceAll("\"", "").replaceAll("\\[", "").replaceAll("\\]", "") }</span>
+                                }else{
+                                    <span>&nbsp;</span>
+                                }
+                            </div>
+                            <div class="runtime-box">
+                                @if(tvShow.runtime != null && tvShow.runtime != "") {
+                                    <i class="icon-watch2 small"></i>
+                                    <span>@tvShow.runtime min</span>
+                                }else{
+                                    <i class="icon- small"></i>
+                                    <span>&nbsp;</span>
+                                }
+                            </div>
+                            <div class="network-box">
+                                @if(tvShow.network != null && tvShow.network != "") {
+                                    <i class="icon-tv small"></i>
+                                    <span>@tvShow.network</span>
+                                }else{
+                                    <i class="icon- small"></i>
+                                    <span>&nbsp;</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="smartphone-body">
+                            <div class="overview-box">
+                                @if(tvShow.overview != null && tvShow.overview != "" && tvShow.overview != "null") {
+                                    <p>@tvShow.overview</p>
+                                }else{
+                                    <p>
+                                        <br /><br />
+                                    </p>
+                                }
+
+                            </div>
+                            <div class="status-box">
+                                @if(tvShow.status != null) {
+                                    <p><span>Estado</span> @tvShow.status</p>
+                                }else{
+                                    <p><span>Estado</span> Desconocido</p>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="smartphone-footer"></div>
+
                     </div>
+
                 </div>
                 <!-- /Previsualizacion movil -->
 
             </div>
+
             <br />
             <div class="row">
                 <small class="display-block">Imágenes</small>
@@ -104,7 +189,7 @@
                                         <a target="_blank" href="@{ "http://".concat(requestHeader.host).concat(tvShow.poster.substring(1)) }">
                                             <img class="tvShow-img tvShow-poster img-responsive" src="@{ "http://".concat(requestHeader.host).concat(tvShow.poster.substring(1)) }" />
                                         </a>
-                                    }else {
+                                    }else{
                                         <span>No tenemos póster</span>
                                     }
                                 </div>

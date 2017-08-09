@@ -1,0 +1,170 @@
+@(title: String, route: String, tvShow: TvShow)
+
+@administration.adminMain(title, route) {
+    <!-- Panel serie -->
+    <div class="panel" id="tvShow_table_panel">
+        <div class="panel-heading">
+            <h6 class="panel-title">Serie: @tvShow.name</h6>
+        </div>
+        <div class="panel-body padTop0">
+            <div class="row">
+                <div class="col-sm-8">
+                    <small class="display-block">Datos generales</small>
+                    <br />
+                    <ul class="media-list content-group">
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Id</div>
+                            <div class="media-body">
+                                <div class="media-content">@tvShow.id</div>
+                            </div>
+                        </li>
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Nombre</div>
+                            <div class="media-body">
+                                <div class="media-content">@tvShow.name</div>
+                            </div>
+                        </li>
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Sinopsis</div>
+                            <div class="media-body">
+                                <div class="media-content">@tvShow.overview</div>
+                            </div>
+                        </li>
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Estreno</div>
+                            <div class="media-body">
+                                @if(tvShow.firstAired != null) {
+                                    <div class="media-content">@tvShow.firstAired.format("dd-MM-yyyy")</div>
+                                }else{
+                                    <div class="media-content"></div>
+                                }
+                            </div>
+                        </li>
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Network</div>
+                            <div class="media-body">
+                                <div class="media-content">@tvShow.network</div>
+                            </div>
+                        </li>
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Rating</div>
+                            <div class="media-body">
+                                <div class="media-content">@tvShow.rating</div>
+                            </div>
+                        </li>
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Runtime</div>
+                            <div class="media-body">
+                                <div class="media-content">@tvShow.runtime</div>
+                            </div>
+                        </li>
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Género</div>
+                            <div class="media-body">
+                                @if(tvShow.firstAired != null) {
+                                    <div class="media-content">@tvShow.genre.toString.replaceAll("\"", "").replaceAll("\\[", "").replaceAll("\\]", "")</div>
+                                }else{
+                                    <div class="media-content"></div>
+                                }
+                            </div>
+                        </li>
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Estado</div>
+                            <div class="media-body">
+                                <div class="media-content">@tvShow.status</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-sm-4"></div>
+            </div>
+            <br />
+            <div class="row">
+                <small class="display-block">Imágenes</small>
+                <br />
+
+                <div class="col-sm-3">
+                    <ul class="media-list content-group">
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Póster</div>
+                            <div class="media-body">
+                                <div class="media-content">
+                                    @if(tvShow.poster != null) {
+                                        <a target="_blank" href="@{ "http://".concat(requestHeader.host).concat(tvShow.poster.substring(1)) }">
+                                            <img class="tvShow-img tvShow-poster img-responsive" src="@{ "http://".concat(requestHeader.host).concat(tvShow.poster.substring(1)) }" />
+                                        </a>
+                                    }else {
+                                        <span>No tenemos póster</span>
+                                    }
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-sm-4">
+                    <ul class="media-list content-group">
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Banner</div>
+                            <div class="media-body">
+                                <div class="media-content">
+                                    @if(tvShow.banner != null) {
+                                        <a target="_blank" href="@{ "http://".concat(requestHeader.host).concat(tvShow.banner.substring(1)) }">
+                                            <img class="tvShow-img img-responsive" src="@{ "http://".concat(requestHeader.host).concat(tvShow.banner.substring(1)) }" />
+                                        </a>
+                                    }else{
+                                        <span>No tenemos banner</span>
+                                    }
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-sm-4">
+                    <ul class="media-list content-group">
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Fanart</div>
+                            <div class="media-body">
+                                <div class="media-content">
+                                    @if(tvShow.fanart != null) {
+                                        <a target="_blank" href="@{ "http://".concat(requestHeader.host).concat(tvShow.fanart.substring(1)) }">
+                                            <img class="tvShow-img img-responsive" src="@{ "http://".concat(requestHeader.host).concat(tvShow.fanart.substring(1)) }" />
+                                        </a>
+                                    }else{
+                                        <span>No tenemos fanart</span>
+                                    }
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+        <!-- /panel body -->
+
+    </div>
+    <!-- Fin panel -->
+
+    <script type="text/javascript" src="@routes.Assets.versioned("javascripts/core/app.js")"></script>
+    <script>
+
+        // tooltips
+        $('body').tooltip({
+            selector: '.tooltips'
+        });
+
+        // ocultar tooltip
+        $(document).on('click', '[data-popup="tooltip"]', function() {
+            $('[data-popup="tooltip"]').tooltip('hide');
+        });
+
+        // on page ready
+        $(document).ready(function () {
+
+        });
+
+    </script>
+}

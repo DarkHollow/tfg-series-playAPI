@@ -56,6 +56,17 @@ public class AdminController extends Controller {
 
   @Transactional(readOnly = true)
   @Security.Authenticated(Administrator.class)
+  public Result tvShow(Integer tvShowId) {
+    TvShow tvShow = tvShowService.find(tvShowId);
+    String title = "Trending Series Administration - Serie";
+    if (tvShow != null) {
+      title = title + " " + tvShow.name;
+    }
+    return ok(views.html.administration.tvShow.render(title, "tvShow", tvShow));
+  }
+
+  @Transactional(readOnly = true)
+  @Security.Authenticated(Administrator.class)
   public Result tvShowRequests() {
     List<TvShowRequest> pendingRequests = tvShowRequestService.getPending();
     List<TvShowRequest> persistedRequests = tvShowRequestService.getPersisted();

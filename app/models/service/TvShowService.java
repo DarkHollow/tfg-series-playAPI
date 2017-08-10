@@ -3,16 +3,19 @@ package models.service;
 import com.google.inject.Inject;
 import models.TvShow;
 import models.dao.TvShowDAO;
+import models.service.tvdb.TvdbService;
 
 import java.util.List;
 
 public class TvShowService {
 
   private final TvShowDAO tvShowDAO;
+  private final TvdbService tvdbService;
 
   @Inject
-  public TvShowService(TvShowDAO tvShowDAO) {
+  public TvShowService(TvShowDAO tvShowDAO, TvdbService tvdbService) {
     this.tvShowDAO = tvShowDAO;
+    this.tvdbService = tvdbService;
   }
 
   // CRUD
@@ -58,6 +61,30 @@ public class TvShowService {
     } else {
       return false;
     }
+  }
+
+  // Update mediante servicios externos
+  public TvShow updateData(TvShow tvShow) {
+    if (tvShow != null) {
+      // TVDB: pedimos los datos provenientes de este servicio
+      TvShow tvdbShow = tvdbService.getTvShowTVDB(tvShow.tvdbId);
+      if (tvdbShow != null) {
+        // actualizamos datos
+        tvShow.imdbId = tvdbShow.imdbId;
+        tvShow.name = tvdbShow.name;
+        tvShow.network = tvdbShow.network;
+        tvShow.overview = tvdbShow.overview;
+        tvShow.rating = tvdbShow.rating;
+        tvShow.runtime = tvdbShow.runtime;
+        tvShow.firstAired = tvdbShow.firstAired;
+        tvShow.genre = tvdbShow.genre;
+        tvShow.status = tvdbShow.status;
+      } else {
+        // no se ha encontrado en TVDB o error en la solicitud
+        tvShow = null;
+      }
+    }
+    return tvShow;
   }
 
 }

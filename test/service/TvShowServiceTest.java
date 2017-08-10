@@ -3,6 +3,7 @@ package service;
 import models.TvShow;
 import models.dao.TvShowDAO;
 import models.service.TvShowService;
+import models.service.tvdb.TvdbService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
@@ -24,6 +25,7 @@ public class TvShowServiceTest {
   private static Database db;
   private static JPAApi jpa;
   private JndiDatabaseTester databaseTester;
+  private static TvShowService tvShowService;
 
   @BeforeClass
   static public void initDatabase() {
@@ -39,6 +41,10 @@ public class TvShowServiceTest {
 
   @Before
   public void initData() throws Exception {
+    TvShowDAO tvShowDAO = new TvShowDAO(jpa);
+    TvdbService tvdbService = mock(TvdbService.class);
+    tvShowService = new TvShowService(tvShowDAO, tvdbService);
+
     databaseTester = new JndiDatabaseTester("DefaultDS");
     IDataSet initialDataSet = new FlatXmlDataSetBuilder().build(new
       FileInputStream("test/resources/tvShow_dataset.xml"));
@@ -68,28 +74,18 @@ public class TvShowServiceTest {
   // testeamos crear una tv show
   @Test
   public void testTvShowServiceCreate() {
-    TvShowDAO tvShowDAO = new TvShowDAO(jpa);
-    TvShowService tvShowService = new TvShowService(tvShowDAO);
     TvShow tvShow1 = new TvShow(3, "tvdbId", "Stranger Things", new Date(), "Descripción",
       "banner.jpg", "poster.jpg", "fanart.jpg", "Network", "45", null, "TV-14",
       TvShow.Status.Continuing, "Guionista", "Actor 1, Actor2", (float)9.0, "url_trailer");
 
-    TvShow tvShow2 = jpa.withTransaction(() -> {
-      return tvShowService.create(tvShow1);
-    });
-
+    TvShow tvShow2 = jpa.withTransaction(() -> tvShowService.create(tvShow1));
     assertEquals(tvShow1, tvShow2);
   }
 
   // testeamos buscar por id -> found
   @Test
   public void testTvShowServiceFind() {
-    TvShowDAO tvShowDAO = new TvShowDAO(jpa);
-    TvShowService tvShowService = new TvShowService(tvShowDAO);
-    TvShow tvShow = jpa.withTransaction(() -> {
-      return tvShowService.find(1);
-    });
-
+    TvShow tvShow = jpa.withTransaction(() -> tvShowService.find(1));
     assertEquals(1, (int) tvShow.id);
     assertEquals(78804, (int) tvShow.tvdbId);
     assertEquals("Doctor Who (2005)", tvShow.name);
@@ -98,24 +94,14 @@ public class TvShowServiceTest {
   // testeamos buscar por id -> not found
   @Test
   public void testTvShowServiceFindNotFound() {
-    TvShowDAO tvShowDAO = new TvShowDAO(jpa);
-    TvShowService tvShowService = new TvShowService(tvShowDAO);
-    TvShow tvShow = jpa.withTransaction(() -> {
-      return tvShowService.find(0);
-    });
-
+    TvShow tvShow = jpa.withTransaction(() -> tvShowService.find(0));
     assertNull(tvShow);
   }
 
   // testeamos buscar por tvdbId
   @Test
   public void testTvShowServiceFindByTvdbId() {
-    TvShowDAO tvShowDAO = new TvShowDAO(jpa);
-    TvShowService tvShowService = new TvShowService(tvShowDAO);
-    TvShow tvShow = jpa.withTransaction(() -> {
-      return tvShowService.findByTvdbId(78804);
-    });
-
+    TvShow tvShow = jpa.withTransaction(() -> tvShowService.findByTvdbId(78804));
     assertEquals(1, (int) tvShow.id);
     assertEquals(78804, (int) tvShow.tvdbId);
     assertEquals("Doctor Who (2005)", tvShow.name);
@@ -124,31 +110,18 @@ public class TvShowServiceTest {
   // testeamos buscar por tvdbId not found
   @Test
   public void testTvShowServiceFindByTvdbIdNotFound() {
-    TvShowDAO tvShowDAO = new TvShowDAO(jpa);
-    TvShowService tvShowService = new TvShowService(tvShowDAO);
-    TvShow tvShow = jpa.withTransaction(() -> {
-      return tvShowService.findByTvdbId(0);
-    });
-
+    TvShow tvShow = jpa.withTransaction(() -> tvShowService.findByTvdbId(0));
     assertNull(tvShow);
   }
 
   // testeamos buscar por campo coincidendo exacto
   @Test
   public void testTvShowServiceFindByExact() {
-    List<TvShow> tvShowsEncontrados = jpa.withTransaction(() -> {
-      TvShowDAO tvShowDAO = new TvShowDAO(jpa);
-      TvShowService tvShowService = new TvShowService(tvShowDAO);
-      return tvShowService.findBy("name", "who", true);
-    });
+    List<TvShow> tvShowsEncontrados = jpa.withTransaction(() -> tvShowService.findBy("name", "who", true));
 
     assertEquals(0, tvShowsEncontrados.size());
 
-    tvShowsEncontrados = jpa.withTransaction(() -> {
-      TvShowDAO tvShowDAO = new TvShowDAO(jpa);
-      TvShowService tvShowService = new TvShowService(tvShowDAO);
-      return tvShowService.findBy("name", "Doctor Who (2005)", true);
-    });
+    tvShowsEncontrados = jpa.withTransaction(() -> tvShowService.findBy("name", "Doctor Who (2005)", true));
 
     assertEquals(1, tvShowsEncontrados.size());
     assertEquals("Doctor Who (2005)", tvShowsEncontrados.get(0).name);
@@ -157,12 +130,7 @@ public class TvShowServiceTest {
   // testeamos buscar por campo coincidiendo LIKE
   @Test
   public void testTvShowServiceFindByLike() {
-    List<TvShow> tvShowsEncontrados = jpa.withTransaction(() -> {
-      TvShowDAO tvShowDAO = new TvShowDAO(jpa);
-      TvShowService tvShowService = new TvShowService(tvShowDAO);
-      return tvShowService.findBy("name", "Who", false);
-    });
-
+    List<TvShow> tvShowsEncontrados = jpa.withTransaction(() -> tvShowService.findBy("name", "Who", false));
     assertEquals(1, tvShowsEncontrados.size());
     assertEquals("Doctor Who (2005)", tvShowsEncontrados.get(0).name);
   }
@@ -170,12 +138,7 @@ public class TvShowServiceTest {
   // testeamos obtener todas las tvShows
   @Test
   public void testTvShowServiceAll() {
-    TvShowDAO tvShowDAO = new TvShowDAO(jpa);
-    TvShowService tvShowService = new TvShowService(tvShowDAO);
-    List<TvShow> tvShowsEncontrados = jpa.withTransaction(() -> {
-      return tvShowService.all();
-    });
-
+    List<TvShow> tvShowsEncontrados = jpa.withTransaction(() -> tvShowService.all());
     assertEquals(2, tvShowsEncontrados.size());
   }
 
@@ -184,24 +147,14 @@ public class TvShowServiceTest {
   // testeamos delete tvshow
   @Test
   public void testTvShowServiceDelete() {
-    TvShowDAO tvShowDAO = new TvShowDAO(jpa);
-    TvShowService tvShowService = new TvShowService(tvShowDAO);
-    Boolean borrado = jpa.withTransaction(() -> {
-      return tvShowService.delete(1);
-    });
-
+    Boolean borrado = jpa.withTransaction(() -> tvShowService.delete(1));
     assertTrue(borrado);
   }
 
   // testeamos delete tvshow not found
   @Test
   public void testTvShowServiceDeleteNotFound() {
-    TvShowDAO tvShowDAO = new TvShowDAO(jpa);
-    TvShowService tvShowService = new TvShowService(tvShowDAO);
-    Boolean borrado = jpa.withTransaction(() -> {
-      return tvShowService.delete(0);
-    });
-
+    Boolean borrado = jpa.withTransaction(() -> tvShowService.delete(0));
     assertFalse(borrado);
   }
 

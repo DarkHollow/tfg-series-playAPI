@@ -14,7 +14,7 @@
     <!-- /botón atrás -->
 
     <!-- Panel serie -->
-    <div class="panel" id="tvShow_table_panel">
+    <div id="tvShow_panel" class="panel">
         <div class="panel-heading">
             <h6 class="panel-title">Serie: @tvShow.name</h6>
         </div>
@@ -251,6 +251,34 @@
 
         </div>
         <!-- /panel body -->
+
+        <!-- panel footer -->
+        <div class="panel-footer">
+            <div class="heading-elements">
+                <small class="heading-text">Acciones</small>
+
+                <div class="heading-btn pull-left">
+                    <button data-id="@tvShow.id" data-action="download-data" data-host="@requestHeader.host" data-reload="@routes.AdminController.tvShow(tvShow.id)" type="button" class="btn bg-green btn-labeled">
+                        <b><i class="icon-download"></i></b>
+                        Descargar datos de nuevo
+                    </button>
+
+                    <button data-id="@tvShow.id" data-action="download-images" data-host="@requestHeader.host" data-reload="@routes.AdminController.tvShow(tvShow.id)" type="button" class="btn bg-green-800 btn-labeled">
+                        <b><i class="icon-image2"></i></b>
+                        Descargar imágenes de nuevo
+                    </button>
+                </div>
+
+                <div class="heading-btn pull-right">
+                    <button data-id="@tvShow.id" data-action="delete-tvShow" data-host="@requestHeader.host" data-redirect="@routes.AdminController.tvShows()" type="button" class="btn bg-danger btn-labeled">
+                        <b><i class="icon-eraser"></i></b>
+                        Eliminar serie
+                    </button>
+                </div>
+
+            </div>
+        </div>
+        <!-- /panel footer -->
 
     </div>
     <!-- Fin panel -->

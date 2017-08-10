@@ -25,11 +25,13 @@ import java.util.List;
 public class TvShowController extends Controller {
 
   private final TvShowService tvShowService;
+  private final TvdbService tvdbService;
   private final FormFactory formFactory;
 
   @Inject
-  public TvShowController(TvShowService tvShowService, FormFactory formFactory) {
+  public TvShowController(TvShowService tvShowService, TvdbService tvdbService, FormFactory formFactory) {
     this.tvShowService = tvShowService;
+    this.tvdbService = tvdbService;
     this.formFactory = formFactory;
   }
 
@@ -145,8 +147,45 @@ public class TvShowController extends Controller {
         case "data":
           tvShow = tvShowService.updateData(tvShow);
           break;
+        case "images":
+          // las imagenes deben ser una a una desde aquí
+          // obtenemos banner
+          tvShow.banner = tvdbService.getBanner(tvShow);
+          if (tvShow.banner != null) {
+            tvShow.banner = tvShow.banner.replace("public", "assets");
+            // banner obtenido
+            result.put("banner", true);
+          } else {
+            // no se ha podido obtener el banner
+            Logger.info(tvShow.name + " - no se ha podido obtener el banner");
+            result.put("banner", false);
+          }
+          // obtenemos poster
+          tvShow.poster = tvdbService.getImage(tvShow, "poster");
+          if (tvShow.poster != null) {
+            tvShow.poster = tvShow.poster.replace("public", "assets");
+            // poster obtenido
+            result.put("poster", true);
+          } else {
+            // no se ha podido obtener el poster
+            Logger.info(tvShow.name + " - no se ha podido obtener el poster");
+            result.put("poster", false);
+          }
+          // obtenemos fanart
+          tvShow.fanart = tvdbService.getImage(tvShow, "fanart");
+          if (tvShow.fanart != null) {
+            tvShow.fanart = tvShow.fanart.replace("public", "assets");
+            // fanart obtenido
+            result.put("fanart", true);
+          } else {
+            // no se ha podido obtener el fanart
+            Logger.info(tvShow.name + " - no se ha podido obtener el fanart");
+            result.put("fanart", false);
+          }
+          break;
         default:
           Logger.error("Actualizar " + request + ": el tipo de datos a actualizar de la serie no coincide con ninguno conocido: '" + request + "'");
+          tvShow = null;
       }
 
       // si el tvShow no es null, se ha actualizado correctamente

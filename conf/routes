@@ -31,6 +31,9 @@ GET     /api/tvshows                controllers.TvShowController.all
 GET     /api/tvshow/:id/            controllers.TvShowController.tvShowById(id: Integer)
 GET     /api/tvshow/:id             controllers.TvShowController.tvShowById(id: Integer)
 
+DELETE  /api/tvshows/:id/           controllers.TvShowController.deleteTvShow(id: Integer)
+DELETE  /api/tvshows/:id            controllers.TvShowController.deleteTvShow(id: Integer)
+
 ## TV Show on TVDB by tvdbId
 
 GET     /api/tvshows/tvdb/:tvdbId/  controllers.TvdbController.tvShowById(tvdbId: Integer)

@@ -216,5 +216,20 @@ public class TvShowController extends Controller {
     return ok(result);
   }
 
+  @Transactional
+  @Security.Authenticated(Administrator.class)
+  public Result deleteTvShow(Integer id) {
+    ObjectNode result = Json.newObject();
 
+    if (tvShowService.delete(id)) {
+      result.put("ok", "tv show deleted");
+      result.put("message", "serie eliminada");
+    } else {
+      result.put("error", "tv show not deleted");
+      result.put("message", "serie no eliminada");
+      return notFound(result);
+    }
+
+    return ok(result);
+  }
 }

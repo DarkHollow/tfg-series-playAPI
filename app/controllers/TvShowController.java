@@ -1,5 +1,6 @@
 package controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -7,6 +8,8 @@ import com.google.inject.Inject;
 import json.TvShowViews;
 import models.TvShow;
 import models.service.TvShowService;
+import models.service.tvdb.TvdbService;
+import play.Logger;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -20,10 +23,12 @@ import java.util.List;
 public class TvShowController extends Controller {
 
   private final TvShowService tvShowService;
+  private final TvdbService tvdbService;
 
   @Inject
-  public TvShowController(TvShowService tvShowService) {
+  public TvShowController(TvShowService tvShowService, TvdbService tvdbService) {
     this.tvShowService = tvShowService;
+    this.tvdbService = tvdbService;
   }
 
   // devolver todas los TV Shows (NOTE: futura paginacion?)
@@ -115,5 +120,42 @@ public class TvShowController extends Controller {
       return badRequest(result);
     }
   }
+
+  @Transactional
+  @Security.Authenticated(Administrator.class)
+  public Result updateTvShowData(Integer id) {
+    ObjectNode result = Json.newObject();
+    TvShow tvShow = tvShowService.find(id);
+
+    if (tvShow != null) {
+      tvShow = tvShowService.updateData(tvShow);
+      // si el tvShow no es null, se ha actualizado correctamente
+      if (tvShow != null) {
+        result.put("ok", "TV Show successfully updated");
+        result.put("message", "Serie actualizada correctamente");
+        try {
+          JsonNode jsonNode = Json.parse(new ObjectMapper()
+                  .writerWithView(TvShowViews.FullTvShow.class)
+                  .writeValueAsString(tvShow));
+          result.set("tvShow", jsonNode);
+        } catch (JsonProcessingException e) {
+          Logger.error("Error parseando datos serie a JSON, serie actualizada igualmente");
+        }
+      } else {
+        // no se ha podido actualizar
+        result.put("error", "Not found");
+        result.put("message", "Recurso no encontrado o error");
+        return notFound(result);
+      }
+    } else {
+      // no se ha podido actualizar
+      result.put("error", "Not found");
+      result.put("message", "Recurso no encontrado");
+      return notFound(result);
+    }
+
+    return ok(result);
+  }
+
 
 }

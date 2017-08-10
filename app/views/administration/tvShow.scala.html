@@ -14,7 +14,7 @@
     <!-- /botón atrás -->
 
     <!-- Panel serie -->
-    <div class="panel" id="tvShow_table_panel">
+    <div id="tvShow_panel" class="panel">
         <div class="panel-heading">
             <h6 class="panel-title">Serie: @tvShow.name</h6>
         </div>
@@ -258,7 +258,7 @@
                 <small class="heading-text">Acciones</small>
 
                 <div class="heading-btn pull-left">
-                    <button data-id="@tvShow.id" data-action="download-data" type="button" class="btn bg-green btn-labeled">
+                    <button data-id="@tvShow.id" data-action="download-data" data-host="@requestHeader.host" data-reload="@routes.AdminController.tvShow(tvShow.id)" type="button" class="btn bg-green btn-labeled">
                         <b><i class="icon-download"></i></b>
                         Descargar datos de nuevo
                     </button>

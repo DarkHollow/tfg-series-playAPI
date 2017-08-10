@@ -8,6 +8,7 @@ import models.dao.UserDAO;
 import models.service.TvShowRequestService;
 import models.service.TvShowService;
 import models.service.UserService;
+import models.service.tvdb.TvdbService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
@@ -28,6 +29,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public class TvShowRequestServiceTest {
   private static Database db;
@@ -48,7 +50,8 @@ public class TvShowRequestServiceTest {
 
     // inicializamos tvShowRequestService
     TvShowDAO tvShowDAO = new TvShowDAO(jpa);
-    TvShowService tvShowService = new TvShowService(tvShowDAO);
+    TvdbService tvdbService = mock(TvdbService.class);
+    TvShowService tvShowService = new TvShowService(tvShowDAO, tvdbService);
     UserDAO userDAO = new UserDAO(jpa);
     Password sr = new Password();
     UserService userService = new UserService(userDAO, sr);

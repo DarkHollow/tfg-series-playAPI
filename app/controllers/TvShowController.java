@@ -10,6 +10,8 @@ import models.TvShow;
 import models.service.TvShowService;
 import models.service.tvdb.TvdbService;
 import play.Logger;
+import play.data.DynamicForm;
+import play.data.FormFactory;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -23,12 +25,12 @@ import java.util.List;
 public class TvShowController extends Controller {
 
   private final TvShowService tvShowService;
-  private final TvdbService tvdbService;
+  private final FormFactory formFactory;
 
   @Inject
-  public TvShowController(TvShowService tvShowService, TvdbService tvdbService) {
+  public TvShowController(TvShowService tvShowService, FormFactory formFactory) {
     this.tvShowService = tvShowService;
-    this.tvdbService = tvdbService;
+    this.formFactory = formFactory;
   }
 
   // devolver todas los TV Shows (NOTE: futura paginacion?)
@@ -128,18 +130,36 @@ public class TvShowController extends Controller {
     TvShow tvShow = tvShowService.find(id);
 
     if (tvShow != null) {
-      tvShow = tvShowService.updateData(tvShow);
+
+      // comprobamos qué recurso ha de ser actualizado
+      DynamicForm requestForm = formFactory.form().bindFromRequest();
+      String request;
+      try {
+        request = requestForm.get("update");
+      } catch (Exception ex) {
+        result.put("error", "update null");
+        return badRequest(result);
+      }
+
+      switch (request) {
+        case "data":
+          tvShow = tvShowService.updateData(tvShow);
+          break;
+        default:
+          Logger.error("Actualizar " + request + ": el tipo de datos a actualizar de la serie no coincide con ninguno conocido: '" + request + "'");
+      }
+
       // si el tvShow no es null, se ha actualizado correctamente
       if (tvShow != null) {
-        result.put("ok", "TV Show successfully updated");
-        result.put("message", "Serie actualizada correctamente");
+        result.put("ok", "TV Show " + request + " successfully updated");
+        result.put("message", "Serie " + request + "  actualizada correctamente");
         try {
           JsonNode jsonNode = Json.parse(new ObjectMapper()
                   .writerWithView(TvShowViews.FullTvShow.class)
                   .writeValueAsString(tvShow));
           result.set("tvShow", jsonNode);
         } catch (JsonProcessingException e) {
-          Logger.error("Error parseando datos serie a JSON, serie actualizada igualmente");
+          Logger.error("Error parseando datos serie a JSON, serie  " + request + "  actualizada igualmente");
         }
       } else {
         // no se ha podido actualizar

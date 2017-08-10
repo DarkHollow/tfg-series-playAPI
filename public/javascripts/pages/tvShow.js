@@ -1,6 +1,6 @@
 // tvShows
 
-// aceptar serie
+// volver a descargar datos de la serie
 $(document).on('click', '[data-action=download-data]', function(e) {
   console.log('redescargar datos');
   e.preventDefault();
@@ -45,7 +45,7 @@ $(document).on('click', '[data-action=download-data]', function(e) {
         let promise = $.ajax({
           url: host + '/admin/tvshows/' + tvShowId,
           type: 'PUT',
-          data: JSON.stringify({}),
+          data: JSON.stringify({ "update": "data" }),
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',

@@ -263,14 +263,14 @@
                         Descargar datos de nuevo
                     </button>
 
-                    <button data-id="@tvShow.id" data-action="download-images" type="button" class="btn bg-green-800 btn-labeled">
+                    <button data-id="@tvShow.id" data-action="download-images" data-host="@requestHeader.host" data-reload="@routes.AdminController.tvShow(tvShow.id)" type="button" class="btn bg-green-800 btn-labeled">
                         <b><i class="icon-image2"></i></b>
                         Descargar imágenes de nuevo
                     </button>
                 </div>
 
                 <div class="heading-btn pull-right">
-                    <button data-id="@tvShow.id" data-action="delete-tvShow" type="button" class="btn bg-danger btn-labeled">
+                    <button data-id="@tvShow.id" data-action="delete-tvShow" data-host="@requestHeader.host" data-reload="@routes.AdminController.tvShow(tvShow.id)" type="button" class="btn bg-danger btn-labeled">
                         <b><i class="icon-eraser"></i></b>
                         Eliminar serie
                     </button>

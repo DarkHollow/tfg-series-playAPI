@@ -40,8 +40,10 @@
                         <th>Banner</th>
                         <th>Estreno</th>
                         <th>Solicitante</th>
+                        <th>Veces</th>
                         <th>F. solicitud</th>
-                        <th>Estado</th>
+                        <th>Estado anterior</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
             </table>
@@ -221,16 +223,23 @@
                                 '<td>';
 
                         if (response.banner !== "") {
-                            row += '<img class="img-responsive center-block" style="max-height: 65px;" src="http://thetvdb.com/banners/' + response.banner + '" />';
+                            row += '<a href="http://thetvdb.com/banners/' + response.banner + '" target="_blank"><img class="img-responsive center-block" style="max-height: 65px;" src="http://thetvdb.com/banners/' + response.banner + '" /></a>';
                         } else {
                             row += '<img class="img-responsive center-block" style="max-height: 65px;" src="@routes.Assets.versioned("images/placeholderBanner.png")" />';
                         }
-
                         row +=
                                 '</td>' +
                                 '<td>' + response.firstAired + '</td>' +
-                                '<td>' + '@request.user.email' + '</td>' +
-                                '<td>' + '@request.requestDate.toString' + '</td>';
+                                '<td>' + '@request.user.email' + '</td>';
+
+                        let requestCount = 1;
+                        if (response.requestCount !== undefined && response.requestCount !== null) {
+                          requestCount = response.responseCount;
+                        }
+                        row +=
+                                '<td class="text-center">' + requestCount + '</td>' +
+                                '<td>' + '@request.requestDate.toString' + '</td>' +
+                                '<td>' + '@request.lastStatus' + '</td>';
 
                         let status;
                         if (@request.status.equals(TvShowRequest.Status.Requested)) {

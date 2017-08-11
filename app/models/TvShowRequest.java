@@ -29,7 +29,7 @@ public class TvShowRequest {
   @Enumerated(EnumType.STRING)
   public Status status;
 
-  @ColumnDefault("0")
+  @ColumnDefault("1")
   public Integer requestCount;
 
   public Status lastStatus;

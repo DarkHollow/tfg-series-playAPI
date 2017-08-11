@@ -97,7 +97,7 @@ public class TvShowRequestController extends Controller {
     }
   }
 
-  // Peticion POST TvShow nuevo
+  // Peticion POST TvShowRequest
   // realizar la petición del TV Show
   @Transactional
   @Security.Authenticated(User.class)
@@ -129,8 +129,8 @@ public class TvShowRequestController extends Controller {
               result.put("ok", "TV Show request done");
               return ok(result);
             } else {
-              // tv show ya solicitado por este user?
-              result.put("error", "This user requested this TV Show already");
+              // tv show ya solicitado?
+              result.put("error", "TV Show already requested");
               return badRequest(result);
             }
           } else {
@@ -180,6 +180,7 @@ public class TvShowRequestController extends Controller {
         // comprobamos que la request no esté en otro estado que 'Requested' por asincronía
         if (request.status.equals(TvShowRequest.Status.Requested)) {
           // ponemos la request en proceso
+          request.lastStatus = request.status;
           request.status = TvShowRequest.Status.Processing;
 
           Integer tvdbId = request.tvdbId;
@@ -189,7 +190,6 @@ public class TvShowRequestController extends Controller {
             // obtenemos tv show
             TvShow tvShow = tvdbService.getTvShowTVDB(tvdbId);
             if (tvShow != null) {
-
               // persistimos serie nueva y respuesta ok
               tvShow = tvShowService.create(tvShow);
               result.put("ok", "Serie persistida");

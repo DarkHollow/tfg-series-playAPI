@@ -39,12 +39,14 @@ public class AdminController extends Controller {
 
     // series en nuestra base de datos
     Integer tvShowCount = tvShowService.all().size();
+    // series eliminadas a partir de peticiones de series eliminadas
+    Integer deletedTvShowCount = tvShowRequestService.getDeleted().size();
     // peticiones nuevas series
     Integer requestsCount = tvShowRequestService.all().size();
     Integer pendingRequestsCount = tvShowRequestService.getPending().size();
     Integer persistedRequestsCount = tvShowRequestService.getPersisted().size();
     Integer rejectedRequestsCount = tvShowRequestService.getRejected().size();
-    return ok(index.render("Trending Series Administration - Dashboard", "dashboard", tvShowCount, requestsCount, pendingRequestsCount, persistedRequestsCount, rejectedRequestsCount));
+    return ok(index.render("Trending Series Administration - Dashboard", "dashboard", tvShowCount, deletedTvShowCount, requestsCount, pendingRequestsCount, persistedRequestsCount, rejectedRequestsCount));
   }
 
   @Transactional(readOnly = true)

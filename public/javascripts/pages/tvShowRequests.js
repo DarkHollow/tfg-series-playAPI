@@ -232,8 +232,6 @@ $(document).on('click', '[data-action=reject-tvShow]', function(e) {
                 '</div>' +
                 '<ul class="media-list check-list dropdown-content-body">' +
                 '<li>Petición rechazada</li>' +
-                '<li class="divider"></li>' +
-                '<li><button type="button" class="btn btn-labeled btn-xs bg-danger btn-group-justified"><b><i class="icon-tv"></i></b> Ver rechazos</button></li>' +
                 '</ul>' +
                 '</li>' +
                 '</ul>';

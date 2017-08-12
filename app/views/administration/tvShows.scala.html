@@ -2,8 +2,9 @@
 @(title: String, route: String, tvShows: util.List[TvShow], deletedRequests: util.List[TvShowRequest])
 
 @administration.adminMain(title, route) {
+<span id="host" hidden>@requestHeader.host</span>
 
-<!-- Botón atrás -->
+    <!-- Botón atrás -->
     <ul class="fab-menu fab-menu-absolute fab-menu-top-left affix" id="affixed-back-button-left">
         <li>
             <a href="@routes.AdminController.index()" class="ajaxLink fab-menu-btn btn bg-indigo-400 btn-float btn-rounded btn-icon">

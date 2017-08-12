@@ -1,6 +1,7 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -8,7 +9,7 @@ import java.util.Date;
 @Entity
 @Table(name = "tvShowRequest", uniqueConstraints = @UniqueConstraint(columnNames = {"tvdbId", "userId"}))
 public class TvShowRequest {
-  public enum Status { Requested, Processing, Persisted, Rejected }
+  public enum Status { Requested, Processing, Persisted, Rejected, Deleted }
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +28,11 @@ public class TvShowRequest {
 
   @Enumerated(EnumType.STRING)
   public Status status;
+
+  @ColumnDefault("1")
+  public Integer requestCount;
+
+  public Status lastStatus;
 
   // constructor vacío
   public TvShowRequest() {}

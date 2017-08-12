@@ -1,11 +1,13 @@
 package models.service;
 
 import com.google.inject.Inject;
+import models.TvShow;
 import models.TvShowRequest;
 import models.User;
 import models.dao.TvShowRequestDAO;
 import play.Logger;
 
+import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +22,11 @@ public class TvShowRequestService {
     this.tvShowService = tvShowService;
     this.userService = userService;
     this.rqDAO = rqDAO;
+  }
+
+  // create
+  public TvShowRequest createRequest(TvShowRequest request) {
+    return rqDAO.create(request);
   }
 
   // obtener peticion por id
@@ -56,10 +63,13 @@ public class TvShowRequestService {
     return rqDAO.getRejected();
   }
 
+  // obtener peticiones de tipo Deleted
+  public List<TvShowRequest> getDeleted() { return rqDAO.getDeleted(); }
+
   // buscar peticiones por id de TVDB
   public TvShowRequest findTvShowRequestByTvdbId(Integer tvdbId) { return rqDAO.findTvShowRequetByTvdbId(tvdbId); }
 
-  // POST petición TV Show
+  // petición TV Show (si existe actualizar, si no existe crear)
   public Boolean requestTvShow(Integer tvdbId, Integer userId) {
     Boolean result = false;
 
@@ -68,18 +78,30 @@ public class TvShowRequestService {
       // encontrar al user
       User user = userService.find(userId);
       if (user != null) {
-        // hacemos la peticion
-        TvShowRequest request = new TvShowRequest(tvdbId, user);
-        request.status = TvShowRequest.Status.Requested;
-        try {
-          request = rqDAO.create(request);
-
-          if (request != null) {
+        // comprobar si existe ya petición para actualizarla
+        TvShowRequest actualRequest = findTvShowRequestByTvdbId(tvdbId);
+        if (actualRequest != null) {
+          // como ya existe, si el estado es rejected o deleted, la actualizamos
+          if (actualRequest.status.equals(TvShowRequest.Status.Rejected) || actualRequest.status.equals(TvShowRequest.Status.Deleted)) {
+            actualRequest.lastStatus = actualRequest.status;
+            actualRequest.status = TvShowRequest.Status.Requested;
+            actualRequest.requestCount++;
+            actualRequest.user = user;
             result = true;
           }
-        } catch (Exception ex) {
-          // el mismo user pidiendo el mismo TV Show ?
-          Logger.debug("TvShow ya pedido por este user");
+        } else {
+          // no existe petición de esta serie, crearla
+          TvShowRequest request = new TvShowRequest(tvdbId, user);
+          request.status = TvShowRequest.Status.Requested;
+          try {
+            request = createRequest(request);
+            if (request != null) {
+              result = true;
+            }
+          } catch (Exception ex) {
+            // problema al crear
+            Logger.info("TvShowRequestService - requestTvShow() Exception: " + ex.getClass());
+          }
         }
       }
     }
@@ -91,6 +113,7 @@ public class TvShowRequestService {
   public Boolean reject(Integer id) {
     TvShowRequest tvShowRequest = rqDAO.find(id);
     if (tvShowRequest != null) {
+      tvShowRequest.lastStatus = tvShowRequest.status;
       tvShowRequest.status = TvShowRequest.Status.Rejected;
       return true;
     } else {

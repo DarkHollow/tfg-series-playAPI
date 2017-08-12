@@ -1,4 +1,4 @@
-@(title: String, route: String, tvShowCount: Integer, requestsCount: Integer, pendingRequestsCount: Integer, persistedRequestsCount: Integer, rejectedRequestsCount: Integer)
+@(title: String, route: String, tvShowCount: Integer, deletedTvShowCount: Integer, requestsCount: Integer, pendingRequestsCount: Integer, persistedRequestsCount: Integer, rejectedRequestsCount: Integer)
 
 @administration.adminMain(title, route) {
 
@@ -24,20 +24,35 @@
         <div class="col-lg-6">
             <div class="panel">
                 <div class="panel-heading">
-                    <h6 class="panel-title"><a class="ajaxLink" href="#"><i class="icon-tv position-left"></i> <span class="media-middle">Series</span></a></h6>
+                    <h6 class="panel-title"><a class="ajaxLink" href="@routes.AdminController.tvShows()"><i class="icon-tv position-left"></i> <span class="media-middle">Series</span><span class="label label-striped position-right">@{ tvShowCount + deletedTvShowCount } en total</span></a></h6>
                 </div>
                 <div class="panel-body" style="padding-top: 0;">
                     <ul class="menu-list dd-menu">
+
                         <li class="media">
-                            <a href="#" class="dd-parent-a">
-                                <div class="media-left media-middle">
-                                    <span class="btn border-blue text-blue btn-flat btn-rounded btn-icon btn-xs">
-                                        <i class="icon-tv"></i>
+                            <a class="ajaxLink dd-parent-a" href="@routes.AdminController.tvShows()">
+                                <div class="media-left media-top">
+                                    <span class="btn text-warning btn-flat btn-rounded btn-icon btn-xs">
+                                        <span class="badge badge-info">@tvShowCount</span>
                                     </span>
                                 </div>
                                 <div class="media-body">
-                                    Series en total: @tvShowCount
-                                    <div class="media-annotation">Series que habitan nuestra base de datos</div>
+                                    Series en el sistema
+                                    <div class="media-annotation">Series que son accesibles que habitan la base de datos</div>
+                                </div>
+                            </a>
+                        </li>
+
+                        <li class="media">
+                            <a class="ajaxLink dd-parent-a">
+                                <div class="media-left media-top">
+                                    <span class="btn text-warning btn-flat btn-rounded btn-icon btn-xs">
+                                        <span class="badge badge-danger">@deletedTvShowCount</span>
+                                    </span>
+                                </div>
+                                <div class="media-body">
+                                    Series eliminadas
+                                    <div class="media-annotation">Series que han sido eliminadas</div>
                                 </div>
                             </a>
                         </li>
@@ -49,25 +64,10 @@
         <div class="col-lg-6">
             <div class="panel">
                 <div class="panel-heading">
-                    <h6 class="panel-title"><a class="ajaxLink" href="@routes.AdminController.tvShowRequests()"><i class="icon-add position-left"></i> <span class="media-middle">Peticiones</span></a></h6>
+                    <h6 class="panel-title"><a class="ajaxLink" href="@routes.AdminController.tvShowRequests()"><i class="icon-add position-left"></i> <span class="media-middle">Peticiones</span><span class="label label-striped position-right">@requestsCount en total</span></a></h6>
                 </div>
                 <div class="panel-body" style="padding-top: 0;">
                     <ul class="menu-list dd-menu">
-                        <li class="media">
-                            <a class="ajaxLink dd-parent-a" href="@routes.AdminController.tvShowRequests()">
-                                <div class="media-left media-top">
-                                    <span class="btn text-green btn-flat btn-rounded btn-icon btn-xs">
-                                        <i class="icon-add"></i>
-                                    </span>
-                                </div>
-                                <div class="media-body">
-                                    Peticiones en total: @requestsCount
-                                    <div class="media-annotation">Peticiones recibidas, como aceptadas, como rechazadas, etc.</div>
-                                </div>
-                            </a>
-                            <hr class="hr-condensed">
-                        </li>
-
 
                         <li class="media">
                             <a class="ajaxLink dd-parent-a" href="@routes.AdminController.tvShowRequests()">

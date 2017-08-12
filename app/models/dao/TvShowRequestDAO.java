@@ -77,6 +77,11 @@ public class TvShowRequestDAO {
     return jpa.em().createQuery("SELECT r FROM " + TABLE + " r WHERE r.status = 'Rejected' ORDER BY r.requestDate", TvShowRequest.class).getResultList();
   }
 
+  // Read de obtener todas las requests de series eliminadas
+  public List<TvShowRequest> getDeleted() {
+    return jpa.em().createQuery("SELECT r FROM " + TABLE + " r WHERE r.status = 'Deleted' ORDER BY r.requestDate", TvShowRequest.class).getResultList();
+  }
+
   // Delete
   public void delete(TvShowRequest request) {
     jpa.em().remove(request);

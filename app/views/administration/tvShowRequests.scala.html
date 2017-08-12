@@ -230,14 +230,8 @@
                         row +=
                                 '</td>' +
                                 '<td>' + response.firstAired + '</td>' +
-                                '<td>' + '@request.user.email' + '</td>';
-
-                        let requestCount = 1;
-                        if (response.requestCount !== undefined && response.requestCount !== null) {
-                          requestCount = response.responseCount;
-                        }
-                        row +=
-                                '<td class="text-center">' + requestCount + '</td>' +
+                                '<td>' + '@request.user.email' + '</td>' +
+                                '<td class="text-center">' + '@request.requestCount' + '</td>' +
                                 '<td>' + '@request.requestDate.toString' + '</td>' +
                                 '<td>' + '@request.lastStatus' + '</td>';
 

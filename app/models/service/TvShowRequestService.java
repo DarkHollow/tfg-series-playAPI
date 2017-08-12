@@ -85,7 +85,7 @@ public class TvShowRequestService {
           if (actualRequest.status.equals(TvShowRequest.Status.Rejected) || actualRequest.status.equals(TvShowRequest.Status.Deleted)) {
             actualRequest.lastStatus = actualRequest.status;
             actualRequest.status = TvShowRequest.Status.Requested;
-            actualRequest.requestCount++;
+            actualRequest.requestCount = actualRequest.requestCount + 1;
             actualRequest.user = user;
             result = true;
           }
@@ -93,6 +93,7 @@ public class TvShowRequestService {
           // no existe petición de esta serie, crearla
           TvShowRequest request = new TvShowRequest(tvdbId, user);
           request.status = TvShowRequest.Status.Requested;
+          request.requestCount = 1;
           try {
             request = createRequest(request);
             if (request != null) {

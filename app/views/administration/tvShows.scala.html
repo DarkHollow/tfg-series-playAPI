@@ -1,5 +1,5 @@
 @import java.util
-@(title: String, route: String, tvShows: util.List[TvShow])
+@(title: String, route: String, tvShows: util.List[TvShow], deletedRequests: util.List[TvShowRequest])
 
 @administration.adminMain(title, route) {
 
@@ -14,12 +14,8 @@
     </ul>
     <!-- /botón atrás -->
 
-    <!-- Panel y tabla de peticiones pendientes (requeted y processing) -->
-    @if(tvShows.size() == 0) {
-        <div class="panel panel-collapsed" id="tvShows_table_panel">
-    } else {
-        <div class="panel" id="tvShows_table_panel">
-    }
+    <!-- Panel y tabla de series en el sistema -->
+    <div class="panel" id="tvShows_table_panel">
         <div class="panel-heading">
             <h6 class="panel-title">Series: <span class="badge badge-info">@tvShows.size()</span></h6>
             <div class="heading-elements">
@@ -42,12 +38,42 @@
                     </tr>
                 </thead>
             </table>
-
             <!-- /style combinations -->
             <!-- FIN TABLA -->
         </div>
     </div>
-    <!-- Fin panel y tabla de peticiones pendientes -->
+    <!-- Fin panel y tabla de series en el sistema -->
+
+    <!-- Panel y tabla de series eliminadas -->
+    <div class="panel" id="deleted_tvShows_table_panel">
+        <div class="panel-heading">
+            <h6 class="panel-title">Series eliminadas: <span class="badge badge-danger">@deletedRequests.size()</span></h6>
+            <div id="deleted-adv" class="text-center"><a data-action="close-adv"><span class="label label-striped">Para cargar los datos, pulsa en el botón <i class="icon-download"></i> de la derecha</span></a></div>
+
+            <div class="heading-elements">
+                <ul class="icons-list">
+                    <li><a href="@routes.AdminController.tvShows()" data-action="get-list" class="tooltips" data-popup="tooltip" title="Recargar lista de series eliminadas"><i class="icon-database-refresh"></i></a></li>
+                    <li><a data-action="load-deleted-tvShows" class="tooltips" data-popup="tooltip" title="Obtener datos"><i class="icon-download"></i></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="panel-body padTop0">
+            <!-- TABLA -->
+            <table id="deleted_tvShows_table" class="table datatable-deleted-tvShows table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID de TVDB</th>
+                        <th>Título</th>
+                        <th>Banner</th>
+                        <th>Estreno</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+            </table>
+            <!-- FIN TABLA -->
+        </div>
+    </div>
+    <!-- Fin panel y tabla de series eliminadas -->
 
     <script>
 
@@ -89,6 +115,8 @@
         // on page ready
         $(document).ready(function () {
 
+            containerHeight(); // recalculate page height
+
             // Settings Tablas
 
             // tvShows datatable
@@ -96,6 +124,14 @@
                 columnDefs: [{
                     orderable: false,
                     targets: [ 0, 5 ]
+                }]
+            });
+
+            // deleted tvShows datatable
+            $('.datatable-deleted-tvShows').DataTable({
+                columnDefs: [{
+                    orderable: false,
+                    targets: [ 2, 4 ]
                 }]
             });
 
@@ -141,17 +177,7 @@
                         '<td>' + "@{ if (tvShow.firstAired != null) { tvShow.firstAired.format("dd-MM-yyyy") } }" + '</td>' +
                         '<td>' + "@tvShow.status" + '</td>';
 
-                tvShowsActions = '<ul class="icons-list">' +
-                        '<li class="dropdown">' +
-                            '<a href="#" class="dropdown-toggle tooltips" data-toggle="dropdown" data-popup="tooltip" title="Acciones">' +
-                                '<i class="icon-menu9"></i>' +
-                            '</a>' +
-                            '<ul class="dropdown-menu dropdown-menu-right">' +
-                                '<li><button type="button" data-id="@tvShow.id" data-action="view-tvShow" data-host="@requestHeader.host" class="btn btn-labeled btn-xs bg-blue-300 btn-action"><b><i class="icon-eye2"></i></b> Ver serie</button></li>' +
-                                '<li><button type="button" data-id="@tvShow.id" data-action="delete-tvShow" class="btn btn-labeled btn-xs bg-danger-300 btn-action"><b><i class="icon-cross"></i></b> Eliminar serie</button></li>' +
-                            '</ul>' +
-                        '</li>' +
-                        '</ul>';
+                tvShowsActions = '<button type="button" data-id="@tvShow.id" data-action="view-tvShow" data-host="@requestHeader.host" class="btn btn-labeled btn-xs bg-blue-300 btn-action"><b><i class="icon-eye2"></i></b> Ver serie</button>';
 
                 row +=
                         '<td style="text-align: center;" id="status-@tvShow.id">' +
@@ -164,6 +190,47 @@
             }
             $('#tvShows_table_panel').unblock();
 
+        }
+
+        // DELETED TV SHOWS
+
+        // clear deleted tvShows data
+        function deletedTvShowsTableClear() {
+            $('#rejected_requests_table').DataTable().clear().draw();
+        }
+
+        // load rejected requests data
+        function deletedTvShowsTableLoad() {
+            $('#deleted_tvShows_table_panel').block({
+                message: '<i class="icon-spinner9 spinner"></i>',
+                overlayCSS: {
+                    backgroundColor: '#fff',
+                    opacity: 0.8,
+                    cursor: 'wait'
+                },
+                css: {
+                    border: 0,
+                    padding: 0,
+                    backgroundColor: 'none'
+                }
+            });
+
+            @for(request <- deletedRequests) {
+            var row = '';
+            row +=
+                    '<tr>' +
+                    '<td><a class="tooltips" data-popup="tooltip" title="Ver en TVDB" data-placement="left" target="_blank" href="http://thetvdb.com/?tab=series&id=' + @request.tvdbId + '">' + @request.tvdbId + '</a></td>' +
+                    '<td id="name-@request.id"></td>' +
+                    '<td id="banner-@request.id"></td>' +
+                    '<td id="firstAired-@request.id"></td>' +
+                    '<td id="actions-@request.id" style="text-align: center;"><button type="button" data-id="@request.id" data-tvdbid="@request.tvdbId" data-action="get-deleted-tvShow-data" data-host="@requestHeader.host" class="btn btn-labeled btn-xs bg-green-300"><b><i class="icon-download"></i></b> Descargar datos</button></td>' +
+                    '</tr>';
+
+            // añadir fila a la tabla
+            $('#deleted_tvShows_table').DataTable().row.add($(row)).draw();
+            }
+
+            $('#deleted_tvShows_table_panel').unblock();
         }
 
     </script>

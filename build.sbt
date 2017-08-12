@@ -14,6 +14,7 @@ libraryDependencies ++= Seq(
   "org.dbunit" % "dbunit" % "2.5.3",
   "org.mockito" % "mockito-core" % "2.7.5",
   "com.auth0" % "java-jwt" % "3.1.0",
+  "commons-io" % "commons-io" % "2.5",
   javaJdbc,
   cache,
   javaWs,

@@ -4,7 +4,11 @@ import com.google.inject.Inject;
 import models.TvShow;
 import models.dao.TvShowDAO;
 import models.service.tvdb.TvdbService;
+import org.apache.commons.io.FileUtils;
+import play.Logger;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public class TvShowService {
@@ -57,6 +61,14 @@ public class TvShowService {
     TvShow tvShow = tvShowDAO.find(id);
     if (tvShow != null) {
       tvShowDAO.delete(tvShow);
+
+      // borrar imagenes !
+      File folder = new File("./public/images/series/" + tvShow.id + "/");
+      try {
+        FileUtils.deleteDirectory(folder);
+      } catch (IOException e) {
+        Logger.error("Delete serie - no se ha podido eliminar la carpeta de imagenes de la serie");
+      }
       return true;
     } else {
       return false;

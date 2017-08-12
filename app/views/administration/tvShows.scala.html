@@ -223,7 +223,10 @@
                     '<td id="name-@request.id"></td>' +
                     '<td id="banner-@request.id"></td>' +
                     '<td id="firstAired-@request.id"></td>' +
-                    '<td id="actions-@request.id" style="text-align: center;"><button type="button" data-id="@request.id" data-tvdbid="@request.tvdbId" data-action="get-deleted-tvShow-data" data-host="@requestHeader.host" class="btn btn-labeled btn-xs bg-green-300"><b><i class="icon-download"></i></b> Descargar datos</button></td>' +
+                    '<td id="actions-@request.id" style="text-align: center;">' +
+                        '<button type="button" data-id="@request.id" data-tvdbid="@request.tvdbId" data-action="get-deleted-tvShow-data" data-host="@requestHeader.host" class="btn btn-labeled btn-xs bg-green-300"><b><i class="icon-download"></i></b> Descargar datos</button>' +
+                        ' <button type="button" data-id="@request.id" data-tvdbid="@request.tvdbId" data-action="reaccept-tvShow" data-host="@requestHeader.host" class="btn btn-labeled btn-xs bg-success"><b><i class="icon-check"></i></b> Reaprobar serie</button>' +
+                    '</td>' +
                     '</tr>';
 
             // añadir fila a la tabla

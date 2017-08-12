@@ -20,10 +20,24 @@ $(document).on('click', '.panel [data-action=load-deleted-tvShows]', function(e)
 $(document).on('click', '[data-action=get-deleted-tvShow-data]', function(e) {
   console.log('cargar datos de serie eliminada');
   e.preventDefault();
-  let requestId = $(this).attr('data-id');
-  let tvdbId = $(this).attr('data-tvdbid');
-  let host = 'http://' + $(this).attr('data-host');
-  $('#actions-' + requestId).html('<i class="icon-spinner9 spinner"></i>');
+  let button = $(this);
+  let requestId = button.attr('data-id');
+  let tvdbId = button.attr('data-tvdbid');
+  let host = 'http://' + button.attr('data-host');
+  button.block({
+    message: '',
+    overlayCSS: {
+      backgroundColor: '#fff',
+      opacity: 0.8,
+      cursor: 'wait'
+    },
+    css: {
+      border: 0,
+      padding: 0,
+      backgroundColor: 'none'
+    }
+  });
+  $('i', button).attr('class', 'icon-spinner9 spinner');
 
   // pedir datos serie a tvdb
   var promises = [];
@@ -57,9 +71,11 @@ $(document).on('click', '[data-action=get-deleted-tvShow-data]', function(e) {
   promises.push(promise);
 
   $.when.apply(null, promises).done(function() {
-    $('#actions-' + requestId).html('<i class="icon-checkmark4 text-green"></i>');
+    button.unblock();
+    button.remove();
   }).fail(function() {
-    $('#actions-' + requestId).html('<i class="icon-cross2 text-danger"></i>');
+    button.unblock();
+    button.remove();
   });
 
 });

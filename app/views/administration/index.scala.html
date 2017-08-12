@@ -64,7 +64,7 @@
         <div class="col-lg-6">
             <div class="panel">
                 <div class="panel-heading">
-                    <h6 class="panel-title"><a class="ajaxLink" href="@routes.AdminController.tvShowRequests()"><i class="icon-add position-left"></i> <span class="media-middle">Peticiones</span><span class="label label-striped position-right">@requestsCount en total</span></a></h6>
+                    <h6 class="panel-title"><a class="ajaxLink" href="@routes.AdminController.tvShowRequests()"><i class="icon-add position-left"></i> <span class="media-middle">Peticiones</span><span class="label label-striped position-right">@{ requestsCount - deletedTvShowCount } en total</span></a></h6>
                 </div>
                 <div class="panel-body" style="padding-top: 0;">
                     <ul class="menu-list dd-menu">

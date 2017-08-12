@@ -53,7 +53,8 @@ public class AdminController extends Controller {
   @Security.Authenticated(Administrator.class)
   public Result tvShows() {
     List<TvShow> tvShows = tvShowService.all();
-    return ok(views.html.administration.tvShows.render("Trending Series Administration - Series", "tvShows", tvShows));
+    List<TvShowRequest> deletedRequests = tvShowRequestService.getDeleted();
+    return ok(views.html.administration.tvShows.render("Trending Series Administration - Series", "tvShows", tvShows, deletedRequests));
   }
 
   @Transactional(readOnly = true)

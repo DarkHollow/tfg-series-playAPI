@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import json.TvShowViews;
 import models.TvShow;
+import models.service.TvShowRequestService;
 import models.service.TvShowService;
 import models.service.tvdb.TvdbService;
 import play.Logger;
@@ -25,12 +26,14 @@ import java.util.List;
 public class TvShowController extends Controller {
 
   private final TvShowService tvShowService;
+  private final TvShowRequestService tvShowRequestService;
   private final TvdbService tvdbService;
   private final FormFactory formFactory;
 
   @Inject
-  public TvShowController(TvShowService tvShowService, TvdbService tvdbService, FormFactory formFactory) {
+  public TvShowController(TvShowService tvShowService, TvdbService tvdbService, FormFactory formFactory, TvShowRequestService tvShowRequestService) {
     this.tvShowService = tvShowService;
+    this.tvShowRequestService = tvShowRequestService;
     this.tvdbService = tvdbService;
     this.formFactory = formFactory;
   }
@@ -220,10 +223,17 @@ public class TvShowController extends Controller {
   @Security.Authenticated(Administrator.class)
   public Result deleteTvShow(Integer id) {
     ObjectNode result = Json.newObject();
+    Integer tvdbId = tvShowService.find(id).tvdbId;
 
     if (tvShowService.delete(id)) {
       result.put("ok", "tv show deleted");
       result.put("message", "serie eliminada");
+      // cambiar estado de su petición
+      if (tvShowRequestService.deleteTvShow(tvdbId)) {
+        result.put("request", "petición pasada a Deleted");
+      } else {
+        result.put("request", "no se ha encontrado la request");
+      }
     } else {
       result.put("error", "tv show not deleted");
       result.put("message", "serie no eliminada");

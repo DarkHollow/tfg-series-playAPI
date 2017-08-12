@@ -177,8 +177,8 @@ public class TvShowRequestController extends Controller {
       TvShowRequest request = tvShowRequestService.findById(requestId);
 
       if (request != null) {
-        // comprobamos que la request no esté en otro estado que 'Requested' por asincronía
-        if (request.status.equals(TvShowRequest.Status.Requested)) {
+        // comprobamos que la request no esté en otro estado que 'Requested' o 'Deleted' por asincronía
+        if (request.status.equals(TvShowRequest.Status.Requested) || request.status.equals(TvShowRequest.Status.Deleted)) {
           // ponemos la request en proceso
           request.lastStatus = request.status;
           request.status = TvShowRequest.Status.Processing;

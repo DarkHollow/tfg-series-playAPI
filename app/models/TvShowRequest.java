@@ -32,6 +32,7 @@ public class TvShowRequest {
   @ColumnDefault("1")
   public Integer requestCount;
 
+  @Enumerated(EnumType.STRING)
   public Status lastStatus;
 
   // constructor vacío

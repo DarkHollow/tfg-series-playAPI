@@ -132,4 +132,19 @@ public class TvShowRequestService {
     }
   }
 
+  // delete TV Show, necesario para cuando se borra un TV Show, cambia el estado de la petición a deleted
+  // no borra la petición
+  public Boolean deleteTvShow(Integer tvdbId) {
+    TvShowRequest request = findTvShowRequestByTvdbId(tvdbId);
+    if (request != null) {
+      request.lastStatus = request.status;
+      request.status = TvShowRequest.Status.Deleted;
+      return true;
+    } else {
+      // no existe la peticion ?
+      Logger.error("TvShowRequestService - deleteTvShow: no se ha podido cambiar el estado de la petición a Deleted");
+      return false;
+    }
+  }
+
 }

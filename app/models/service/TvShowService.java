@@ -52,7 +52,7 @@ public class TvShowService {
     return tvShowDAO.all();
   }
 
-  // Delete por id
+  // Delete por id - TODO acordarse de llamar también a TvShowRequestService.deleteTvShow !!!
   public Boolean delete(Integer id) {
     TvShow tvShow = tvShowDAO.find(id);
     if (tvShow != null) {

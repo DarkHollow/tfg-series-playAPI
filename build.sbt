@@ -18,7 +18,8 @@ libraryDependencies ++= Seq(
   javaJdbc,
   cache,
   javaWs,
-  javaJpa
+  javaJpa,
+  evolutions
 )
 
 def itTestFilter(name: String): Boolean = (name endsWith "ItTest") || (name endsWith "IntegrationTest")

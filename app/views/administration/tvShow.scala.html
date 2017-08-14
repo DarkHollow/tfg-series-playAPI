@@ -1,4 +1,5 @@
-@(title: String, route: String, tvShow: TvShow)
+@import models.service.EvolutionService
+@(title: String, route: String, tvShow: TvShow)(implicit evolutionService: EvolutionService)
 
 @administration.adminMain(title, route) {
 

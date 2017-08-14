@@ -1,5 +1,6 @@
 @import java.util
-@(title: String, route: String, pendingRequests: util.List[TvShowRequest], requestedRequests: util.List[TvShowRequest], rejectedRequests: util.List[TvShowRequest])
+@import models.service.EvolutionService
+@(title: String, route: String, pendingRequests: util.List[TvShowRequest], requestedRequests: util.List[TvShowRequest], rejectedRequests: util.List[TvShowRequest])(implicit evolutionService: EvolutionService)
 
 @administration.adminMain(title, route) {
     <span id="host" hidden>@requestHeader.host</span>

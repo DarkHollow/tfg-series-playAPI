@@ -173,7 +173,7 @@ public class TvdbService {
       if (!newBanner.isEmpty()) {
         URL downloadURL = new URL("http://thetvdb.com/banners/" + newBanner);
         String format = newBanner.substring(newBanner.lastIndexOf('.') + 1);
-        String path = "." + SEPARATOR + "public" + SEPARATOR + "images" + SEPARATOR + "series" + SEPARATOR + tvShow.id.toString() + SEPARATOR + format;
+        String path = "." + SEPARATOR + "public" + SEPARATOR + "images" + SEPARATOR + "series" + SEPARATOR + tvShow.id.toString() + "banner." + format;
         String resultPath = downloadImage(downloadURL, format, path);
         if (resultPath != null) {
           Logger.info(tvShow.name + " - banner descargado");

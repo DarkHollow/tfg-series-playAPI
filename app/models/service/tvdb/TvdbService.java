@@ -78,7 +78,7 @@ public class TvdbService {
           break;
         }
       } catch (Exception ex) {
-        Logger.error("Petición TVDB - " + ex.getMessage());
+        Logger.error("Petición TVDB - " + ex.getClass());
         break;
       }
     }

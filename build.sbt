@@ -28,3 +28,5 @@ def unitTestFilter(name: String): Boolean = (name endsWith "Test") && !itTestFil
 testOptions in ItTest := Seq(Tests.Filter(itTestFilter))
 
 testOptions in Test := Seq(Tests.Filter(unitTestFilter))
+
+PlayKeys.externalizeResources := false

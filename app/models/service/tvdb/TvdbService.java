@@ -12,7 +12,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,6 +25,8 @@ public class TvdbService {
   private final WSClient ws;
   private final SimpleDateFormat df;
   private final TvdbConnection tvdbConnection;
+
+  private static char SEPARATOR = File.separatorChar;
 
   @Inject
   public TvdbService(WSClient ws, SimpleDateFormat df, TvdbConnection tvdbConnection) {
@@ -145,7 +146,7 @@ public class TvdbService {
         // descargar imagen
         URL downloadURL = new URL("http://thetvdb.com/banners/" + fileName);
         String format = fileName.substring(fileName.lastIndexOf('.') + 1);
-        String path = "./public/images/series/" + tvShow.id.toString() + "/" + type + "." + format;
+        String path = "." + SEPARATOR + "public" + SEPARATOR + "images" + SEPARATOR + "series" + SEPARATOR + tvShow.id.toString() + SEPARATOR + type + "." + format;
         String resultPath = downloadImage(downloadURL, format, path);
         if (resultPath != null) {
           Logger.info(tvShow.name + " - " + type + " descargado");
@@ -172,7 +173,7 @@ public class TvdbService {
       if (!newBanner.isEmpty()) {
         URL downloadURL = new URL("http://thetvdb.com/banners/" + newBanner);
         String format = newBanner.substring(newBanner.lastIndexOf('.') + 1);
-        String path = "./public/images/series/" + tvShow.id.toString() + "/banner." + format;
+        String path = "." + SEPARATOR + "public" + SEPARATOR + "images" + SEPARATOR + "series" + SEPARATOR + tvShow.id.toString() + SEPARATOR + format;
         String resultPath = downloadImage(downloadURL, format, path);
         if (resultPath != null) {
           Logger.info(tvShow.name + " - banner descargado");

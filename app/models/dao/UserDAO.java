@@ -41,15 +41,10 @@ public class UserDAO {
 
   // buscar por email
   public User findByEmail(String email) {
-    Logger.debug(email);
-    TypedQuery<User> query = jpa.em().createQuery("SELECT u FROM " + TABLE + " u WHERE u.email = :email", User.class);
     try {
-      return query.setParameter("email", email).getSingleResult();
+      return (User) jpa.em().createQuery("SELECT u FROM " + TABLE + " u WHERE u.email = :email").getSingleResult();
     } catch (NoResultException e) {
       return null;
-    } catch (ArrayIndexOutOfBoundsException e) {
-      Logger.error("ArrayIndexOutOfBoundsException - no sabemos por qué");
-      throw new ArrayIndexOutOfBoundsException();
     }
   }
 

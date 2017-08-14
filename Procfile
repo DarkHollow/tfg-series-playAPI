@@ -1,1 +1,1 @@
-web: target/universal/stage/bin/tfg-api/ -Dhttp.port=80 -Dconfig.resource=prod.conf
+web: target/universal/stage/bin/tfg-api -Dhttp.port=80 -Dconfig.resource=prod.conf

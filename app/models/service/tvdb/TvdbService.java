@@ -94,7 +94,8 @@ public class TvdbService {
       image = ImageIO.read(url);
       File imageFile = new File(path);
       // creamos carpetas
-      imageFile.getParentFile().mkdirs();
+      Boolean foldersCreated = imageFile.getParentFile().mkdirs();
+      Logger.info("Ruta creada: " + foldersCreated);
       // guardamos imagen
       ImageIO.write(image, format, imageFile);
     } catch (Exception ex) {

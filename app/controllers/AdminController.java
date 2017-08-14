@@ -3,6 +3,7 @@ package controllers;
 import com.google.inject.Inject;
 import models.TvShow;
 import models.TvShowRequest;
+import models.service.EvolutionService;
 import models.service.TvShowRequestService;
 import models.service.TvShowService;
 import models.service.UserService;
@@ -23,16 +24,18 @@ public class AdminController extends Controller {
   private final TvShowRequestService tvShowRequestService;
   private final UserService userService;
   private final utils.Security.Administrator adminAuth;
+  private final EvolutionService evolutionService;
 
   @Inject
-  public AdminController(TvShowService tvShowService, TvShowRequestService tvShowRequestService, UserService userService, utils.Security.Administrator adminAuth) {
+  public AdminController(TvShowService tvShowService, TvShowRequestService tvShowRequestService, UserService userService, utils.Security.Administrator adminAuth, EvolutionService evolutionService) {
     this.tvShowService = tvShowService;
     this.tvShowRequestService = tvShowRequestService;
     this.userService = userService;
     this.adminAuth = adminAuth;
+    this.evolutionService = evolutionService;
   }
 
-  @Transactional(readOnly = true)
+  @Transactional
   @Security.Authenticated(Administrator.class)
   public Result index() {
     // sumario datos
@@ -46,18 +49,18 @@ public class AdminController extends Controller {
     Integer pendingRequestsCount = tvShowRequestService.getPending().size();
     Integer persistedRequestsCount = tvShowRequestService.getPersisted().size();
     Integer rejectedRequestsCount = tvShowRequestService.getRejected().size();
-    return ok(index.render("Trending Series Administration - Dashboard", "dashboard", tvShowCount, deletedTvShowCount, requestsCount, pendingRequestsCount, persistedRequestsCount, rejectedRequestsCount));
+    return ok(index.render("Trending Series Administration - Dashboard", "dashboard", tvShowCount, deletedTvShowCount, requestsCount, pendingRequestsCount, persistedRequestsCount, rejectedRequestsCount, evolutionService));
   }
 
-  @Transactional(readOnly = true)
+  @Transactional
   @Security.Authenticated(Administrator.class)
   public Result tvShows() {
     List<TvShow> tvShows = tvShowService.all();
     List<TvShowRequest> deletedRequests = tvShowRequestService.getDeleted();
-    return ok(views.html.administration.tvShows.render("Trending Series Administration - Series", "tvShows", tvShows, deletedRequests));
+    return ok(views.html.administration.tvShows.render("Trending Series Administration - Series", "tvShows", tvShows, deletedRequests, evolutionService));
   }
 
-  @Transactional(readOnly = true)
+  @Transactional
   @Security.Authenticated(Administrator.class)
   public Result tvShow(Integer tvShowId) {
     TvShow tvShow = tvShowService.find(tvShowId);
@@ -65,16 +68,16 @@ public class AdminController extends Controller {
     if (tvShow != null) {
       title = title + " " + tvShow.name;
     }
-    return ok(views.html.administration.tvShow.render(title, "tvShow", tvShow));
+    return ok(views.html.administration.tvShow.render(title, "tvShow", tvShow, evolutionService));
   }
 
-  @Transactional(readOnly = true)
+  @Transactional
   @Security.Authenticated(Administrator.class)
   public Result tvShowRequests() {
     List<TvShowRequest> pendingRequests = tvShowRequestService.getPending();
     List<TvShowRequest> persistedRequests = tvShowRequestService.getPersisted();
     List<TvShowRequest> rejectedRequests = tvShowRequestService.getRejected();
-    return ok(views.html.administration.tvShowRequests.render("Trending Series Administration - Peticiones", "tvShowRequests", pendingRequests, persistedRequests, rejectedRequests));
+    return ok(views.html.administration.tvShowRequests.render("Trending Series Administration - Peticiones", "tvShowRequests", pendingRequests, persistedRequests, rejectedRequests, evolutionService));
   }
 
   @Transactional(readOnly = true)

@@ -1,4 +1,5 @@
-@(title: String, route: String)(content: Html)
+@import models.service.EvolutionService
+@(title: String, route: String)(content: Html)(implicit evolutionService: EvolutionService)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -148,7 +149,26 @@
                         </ul>
                     </div>
                 </div>
+
+                <!-- Avisos importantes -->
+                @if(evolutionService.needEvolution()) {
+                    <div class="bg-danger navbar">
+                        <div class="panel-heading">
+                            <h6 class="panel-title">Importante: evolución de la base de datos</h6>
+                        </div>
+                        <div class="aviso-body">
+                            Debido a una evolución reciente de la base de datos, hay que actualizar ciertos datos para el correcto funcionamiento de la nuevas características.
+                            <br />
+                            <button type="button" style="margin-top: 8px;" class="btn btn-sm btn-success btn-labeled">
+                                <b><i class="icon-play4"></i></b>
+                                Comenzar actualización
+                            </button>
+                        </div>
+                    </div>
+                }
+                <!-- /Fin Avisos importantes -->
             </div>
+
             <!-- /page header -->
 
             <!-- Page container -->
@@ -161,7 +181,6 @@
                     <div class="content-wrapper">
 
                         <!-- Dashboard content -->
-
                         @content
 
                         <!-- /dashboard content -->

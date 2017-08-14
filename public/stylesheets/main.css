@@ -300,3 +300,9 @@
     width: 100%;
     background: linear-gradient(#272727, #FFFFFF);
 }
+
+.aviso-body {
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 12px;
+}

@@ -36,7 +36,9 @@ public class User {
   public List<TvShowRequest> requestedTvShows;
 
   // constructor vacío
-  public User() {}
+  public User() {
+    rol = "u";
+  }
 
   // constructor por parámetros
   public User(String email, String password, String name) {

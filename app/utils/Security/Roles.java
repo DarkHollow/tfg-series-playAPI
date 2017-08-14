@@ -98,7 +98,7 @@ public class Roles extends Security.Authenticator {
       Logger.error("jwt - JWT.create() ha generado JWTCreationException");
       return null;
     }
-
+    Logger.info("Creado jwt para " + user.email);
     return token;
   }
 

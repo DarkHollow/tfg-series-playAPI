@@ -1,12 +1,13 @@
 package models.dao;
 
 import com.google.inject.Inject;
+import com.mysql.jdbc.exceptions.MySQLSyntaxErrorException;
 import models.Evolution;
 import play.Logger;
 import play.db.jpa.JPAApi;
 
 import javax.persistence.Query;
-import java.util.List;
+import java.util.*;
 
 public class EvolutionDAO {
 
@@ -50,14 +51,24 @@ public class EvolutionDAO {
 
   // obtener evolutions de play definidas en conf/evolutions/default/
   public List<Object[]> getPlayEvolutions() {
-    Query query = jpa.em().createNativeQuery("SELECT id, state FROM play_evolutions ORDER BY play_evolutions.id");
-    return query.getResultList();
-  }
+    try {
+      Query query = jpa.em().createNativeQuery("SELECT id, state FROM play_evolutions ORDER BY play_evolutions.id");
+      return query.getResultList();
+    } catch (Exception ex) {
+      Logger.info("No existe la tabla play_evolutions - aun no hay");
+      return new ArrayList<Object[]>();
+      }
+    }
 
   // obtener evolutions de play definidas en conf/evolutions/default/ que estén 'applied' !
   public List<Object[]> getAppliedPlayEvolutions() {
-    Query query = jpa.em().createNativeQuery("SELECT id, state FROM play_evolutions WHERE state = 'applied' ORDER BY play_evolutions.id");
-    return query.getResultList();
+    try {
+      Query query = jpa.em().createNativeQuery("SELECT id, state FROM play_evolutions WHERE state = 'applied' ORDER BY play_evolutions.id");
+      return query.getResultList();
+    } catch (Exception ex) {
+      Logger.info("No existe la tabla play_evolutions - aun no hay");
+      return new ArrayList<Object[]>();
+    }
   }
 
 }

@@ -29,14 +29,16 @@ public class User {
   @Temporal(TemporalType.DATE)
   public Date registrationDate;
 
-  @Column(length = 1, columnDefinition = "varchar default 'u'")
+  @Column(length = 1)
   public String rol;
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   public List<TvShowRequest> requestedTvShows;
 
   // constructor vacío
-  public User() {}
+  public User() {
+    rol = "u";
+  }
 
   // constructor por parámetros
   public User(String email, String password, String name) {

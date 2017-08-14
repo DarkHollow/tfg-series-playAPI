@@ -29,7 +29,7 @@ public class User {
   @Temporal(TemporalType.DATE)
   public Date registrationDate;
 
-  @Column(length = 1)
+  @Column(length = 1, columnDefinition = "varchar default u")
   public String rol;
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

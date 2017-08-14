@@ -21,12 +21,14 @@ public class UserController extends Controller {
   private final UserService userService;
   private final FormFactory formFactory;
   private final utils.Security.Administrator adminAuth;
+  private final utils.Security.User userAuth;
 
   @Inject
-  public UserController(UserService userService, FormFactory formFactory, utils.Security.Administrator adminAuth) {
+  public UserController(UserService userService, FormFactory formFactory, utils.Security.Administrator adminAuth, utils.Security.User userAuth) {
     this.userService = userService;
     this.formFactory = formFactory;
     this.adminAuth = adminAuth;
+    this.userAuth = userAuth;
   }
 
   @Transactional
@@ -144,8 +146,13 @@ public class UserController extends Controller {
         try {
           user = userService.verifyEmailAndPassword(email, password);
 
+          String token = null;
           // intentamos crear token
-          String token = adminAuth.createJWT(user);
+          if (user.rol.equals("a")) {
+            token = adminAuth.createJWT(user);
+          } else if (user.rol.equals("u")) {
+            token = userAuth.createJWT(user);
+          }
 
           if (token == null) {
             result.put("error","fail creating JWT");

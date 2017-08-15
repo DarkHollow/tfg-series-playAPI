@@ -20,7 +20,7 @@
               fatigas."
          banner="graphical/78804-g44.jpg" poster="posterDoctor.jpg"
          fanart="fanartDoctor.jpg" network="BBC One" runtime="45" rating="TV-14"
-         status="Continuing" />
+         status="Continuing" score="1" voteCount="1" />
 
   <TvShow id="2" tvdbId="81189" name="Breaking Bad"
          firstAired="2008-01-20"
@@ -35,7 +35,7 @@
               esté."
          banner="graphical/81189-g21.jpg"  poster="posterBreakingBad.jpg"
          fanart="fanartBreakingBad.jpg" network="AMC" runtime="49" rating="TV-14"
-         status="Ended" />
+         status="Ended" score="2" voteCount="2" />
 
   <TvShowRequest id="1" tvdbId="111111" userId="1" requestDate="2017-02-27" />
 

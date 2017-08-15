@@ -3,6 +3,7 @@ package service;
 import models.Evolution;
 import models.dao.EvolutionDAO;
 import models.service.EvolutionService;
+import models.service.TvShowService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
@@ -14,11 +15,9 @@ import play.db.jpa.JPA;
 import play.db.jpa.JPAApi;
 
 import java.io.FileInputStream;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
 
 public class EvolutionModelServiceTest {
   private static Database db;

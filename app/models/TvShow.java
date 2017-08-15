@@ -66,6 +66,12 @@ public class TvShow {
   @JsonView(TvShowViews.FullTvShow.class)
   public Status status;
 
+  @JsonView(TvShowViews.SearchTvShow.class)
+  public Float score;
+
+  @JsonView(TvShowViews.FullTvShow.class)
+  public Integer voteCount;
+
   @Transient
   @JsonView(TvShowViews.SearchTVDB.class)
   public Boolean local;
@@ -80,7 +86,7 @@ public class TvShow {
   // contructor por campos
   public TvShow(Integer tvdbId, String imdbId, String name, Date firstAired, String overview, String banner,
                 String poster, String fanart, String network, String runtime, Set<String> genre, String rating,
-                Status status, String writer, String actors, Float imdbRating, String trailer) {
+                Status status, Float score, Integer voteCount) {
 
     this.tvdbId = tvdbId;
     this.imdbId = imdbId;
@@ -95,6 +101,8 @@ public class TvShow {
     this.genre = genre;
     this.rating = rating;
     this.status = status;
+    this.score = score;
+    this.voteCount = voteCount;
     local = false;
   }
 
@@ -113,15 +121,16 @@ public class TvShow {
     this.genre = tvShow.genre;
     this.rating = tvShow.rating;
     this.status = tvShow.status;
+    this.score = tvShow.score;
+    this.voteCount = tvShow.voteCount;
     this.local = false;
   }
 
   // solo informacion importante
   @Override
   public String toString() {
-    return "TvShow [id=" + id + ", tvdbId=" + tvdbId + ", name="
-            + name + ", firstAired=" + firstAired + ", overview="
-            + overview + ", network=" + network
-            + ", status=" + status + "]";
+    return "TvShow [id=" + id + ", tvdbId=" + tvdbId + ", name=" + name + ", firstAired=" + firstAired + ", overview="
+            + overview + ", network=" + network + ", status=" + status + ", score =" + score
+            + ", voteCount=" + voteCount +"]";
   }
 }

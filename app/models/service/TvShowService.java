@@ -26,6 +26,10 @@ public class TvShowService {
 
   // Create
   public TvShow create(TvShow tvShow) {
+    if (tvShow.score == null || tvShow.voteCount == null) {
+      tvShow.score = 0.0f;
+      tvShow.voteCount = 0;
+    }
     return tvShowDAO.create(tvShow);
   }
 

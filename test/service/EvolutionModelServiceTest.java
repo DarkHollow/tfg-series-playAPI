@@ -40,8 +40,7 @@ public class EvolutionModelServiceTest {
   @Before
   public void initData() throws Exception {
     EvolutionDAO evolutionDAO = new EvolutionDAO(jpa);
-    TvShowService tvShowService = mock(TvShowService.class);
-    evolutionService = new EvolutionService(evolutionDAO, tvShowService);
+    evolutionService = new EvolutionService(evolutionDAO);
 
     databaseTester = new JndiDatabaseTester("DefaultDS");
     IDataSet initialDataSet = new FlatXmlDataSetBuilder().build(new

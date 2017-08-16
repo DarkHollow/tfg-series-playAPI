@@ -191,13 +191,15 @@ $(document).on('click', '[data-evolution=load]', function(e) {
   return false;
 });
 
-// ejecutar evolution
+// ejecutar evolutions
 $(document).on('click', '[data-evolution=upgrade]', function(e) {
   e.preventDefault();
   let button = $(this);
   let host = 'http://' + button.attr('data-host');
   let modal = $('#evolution_modal');
 
+  button.block();
+  button.html('<b><i class="icon-spinner9 spinner"></i></b> Actualizando...');
 
   // pedir datos de evolutions no aplicadas
   var promises = [];
@@ -211,35 +213,99 @@ $(document).on('click', '[data-evolution=upgrade]', function(e) {
       'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
     },
     success: function (response) {
-      console.log(response);
       // comprobamos si hay evolution sin aplicar
       if (response.hasOwnProperty('evolutions') && response.evolutions !== null && response.evolutions.length > 0) {
         console.log('Evolutions a aplicar: ' + response.evolutions.length);
 
         // las recorremos para aplicarlas
+        var promises2 = [];
         for (var i = 0; i < response.evolutions.length; i++) {
           var evolution = response.evolutions[i];
           if (evolution.hasOwnProperty('version') && evolution.version !== null) {
             console.log('Aplicando actualización versión ' + evolution.version);
-
+            var data = JSON.stringify({"evolutionId": evolution.id});
+            promise2 = $.ajax({
+              url: host + '/admin/evolutions',
+              type: 'PATCH',
+              data: data,
+              dataType: 'json',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
+              },
+              success: function (response) {
+                if (response.ok !== undefined) {
+                  // evolution aplicada con exito
+                  console.log(response.message);
+                }
+              }
+            });
+            promises2.push(promise2);
           }
         }
+
+        $.when.apply(null, promises2).done(function() {
+          var body = '<h6 class="text-semibold">Información</h6>' +
+            '<p>¡Sistema actualizado con éxito!</p>' +
+            '<p>Es necesario reiniciar para aplicar los cambios.</p>';
+
+          var reload = $('#evolution_modal').attr('data-reload');
+          body += '<button type="button" id="evolution_reload" class="btn btn-sm btn-success btn-labeled">' +
+            '<b><i class="icon-switch2"></i></b>' +
+            'Reiniciar' +
+            '</button>';
+
+          $('#upgrade-body').html(body);
+
+        }).fail(function() {
+          var reload = $('#evolution_modal').attr('data-reload');
+          $('#upgrade-body').html('Ha habido un error intentado actualizar, recargando página...');
+          setTimeout(function() {
+            // redireccionar
+            getRoute(reload);
+          }, 3000);
+        });
+
       } else {
         // no hay evolutions que aplicar
         console.log('No hay evolutions que aplicar?');
+        var reload = $('#evolution_modal').attr('data-reload');
+        $('#upgrade-body').html('No se han encontrado actualizaciones, recargando página...');
+        setTimeout(function() {
+          // redireccionar
+          getRoute(reload);
+        }, 3000);
       }
     },
     error: function () {
       console.log('Upgrade - Error');
+      var reload = $('#evolution_modal').attr('data-reload');
+      $('#upgrade-body').html('Ha habido un error obteniendo datos, recargando página...');
+      setTimeout(function() {
+        // redireccionar
+        getRoute(reload);
+      }, 3000);
     }
   });
   promises.push(promise);
 
   $.when.apply(null, promises).done(function() {
-    modal.unblock();
+
   }).fail(function() {
-    modal.unblock();
+    var reload = $('#evolution_modal').attr('data-reload');
+    $('#upgrade-body').html('Ha habido un error obteniendo datos, recargando página...');
+    setTimeout(function() {
+      // redireccionar
+      getRoute(reload);
+    }, 3000);
   });
 
   return false;
+});
+
+$(document).on('click', '#evolution_reload', function(e) {
+  e.preventDefault();
+  var reload = $('#evolution_modal').attr('data-reload');
+  getRoute();
 });

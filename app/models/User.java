@@ -35,6 +35,9 @@ public class User {
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   public List<TvShowRequest> requestedTvShows;
 
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  public List<TvShowVote> tvShowVotes;
+
   // constructor vacío
   public User() {
     rol = "u";

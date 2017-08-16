@@ -7,6 +7,7 @@ import json.TvShowViews;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -79,6 +80,9 @@ public class TvShow {
   @Transient
   @JsonView(TvShowViews.SearchTVDB.class)
   public String requestStatus;
+
+  @OneToMany(mappedBy = "tvShow", cascade = CascadeType.ALL)
+  public List<TvShowVote> tvShowVotes;
 
   // constructor vacio
   public TvShow() {}

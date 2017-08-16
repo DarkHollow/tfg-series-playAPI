@@ -1,24 +1,54 @@
 package models.service;
 
 import models.Evolution;
+import models.TvShow;
 import models.dao.EvolutionDAO;
 import play.Logger;
 
 import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EvolutionService {
   private final EvolutionDAO evolutionDAO;
+  private final TvShowService tvShowService;
 
   @Inject
-  public EvolutionService(EvolutionDAO evolutionDAO) {
+  public EvolutionService(EvolutionDAO evolutionDAO, TvShowService tvShowService) {
     this.evolutionDAO = evolutionDAO;
+    this.tvShowService = tvShowService;
   }
 
   public Evolution createEvolution(Evolution evolution) {
     return evolutionDAO.create(evolution);
+  }
+
+  public List<Evolution> all() {
+    return evolutionDAO.all();
+  }
+
+  public Evolution getLastApplied() {
+    Evolution result = null;
+
+    // obtenemos todas
+    List<Evolution> evolutions = all();
+    // devolvemos la última aplicada
+    for (Evolution evolution: evolutions) {
+      if (evolution.state != null && evolution.state.equals("applied")) {
+        result = evolution;
+      }
+    }
+
+    return result;
+  }
+
+  public List<Evolution> getNotApplied() {
+    List<Evolution> evolutions = all();
+    evolutions.removeIf(evolution -> evolution.state != null);
+    Logger.debug("Evolutions sin aplicar: " + evolutions.size());
+    return evolutions;
   }
 
   // importa las evolutions de play que no tengamos ya importadas

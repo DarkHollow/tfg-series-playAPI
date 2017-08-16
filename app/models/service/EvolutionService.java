@@ -25,6 +25,11 @@ public class EvolutionService {
     return evolutionDAO.create(evolution);
   }
 
+  // buscar por id
+  public Evolution find(Integer id) {
+    return evolutionDAO.find(id);
+  }
+
   public List<Evolution> all() {
     return evolutionDAO.all();
   }

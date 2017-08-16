@@ -17,6 +17,7 @@ import play.db.jpa.JPAApi;
 import java.io.FileInputStream;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 
 public class EvolutionModelServiceTest {
@@ -77,6 +78,22 @@ public class EvolutionModelServiceTest {
 
     assertEquals(evolution1.version, evolution2.version);
     assertEquals(evolution1.state, evolution2.state);
+  }
+
+  // testeamos buscar por id -> found
+  @Test
+  public void testEvolutionServiceFind() {
+    Evolution evolution = jpa.withTransaction(() -> evolutionService.find(1));
+    assertEquals(1, (int) evolution.id);
+    assertEquals(1, (int) evolution.version);
+    assertEquals("estado 1", evolution.state);
+  }
+
+  // testeamos buscar por id -> not found
+  @Test
+  public void testEvolutionServiceFindNotFound() {
+    Evolution evolution = jpa.withTransaction(() -> evolutionService.find(0));
+    assertNull(evolution);
   }
 
 }

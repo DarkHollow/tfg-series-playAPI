@@ -99,3 +99,6 @@ PUT     /admin/tvshows/:id          controllers.TvShowController.updateTvShowDat
 
 GET     /admin/tvShowRequests/      controllers.AdminController.tvShowRequests()
 GET     /admin/tvShowRequests       controllers.AdminController.tvShowRequests()
+
+GET     /admin/evolutions/          controllers.EvolutionController.getEvolutionsJSON
+GET     /admin/evolutions           controllers.EvolutionController.getEvolutionsJSON

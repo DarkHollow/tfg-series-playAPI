@@ -190,3 +190,56 @@ $(document).on('click', '[data-evolution=load]', function(e) {
 
   return false;
 });
+
+// ejecutar evolution
+$(document).on('click', '[data-evolution=upgrade]', function(e) {
+  e.preventDefault();
+  let button = $(this);
+  let host = 'http://' + button.attr('data-host');
+  let modal = $('#evolution_modal');
+
+
+  // pedir datos de evolutions no aplicadas
+  var promises = [];
+  promise = $.ajax({
+    url: host + '/admin/evolutions/notApplied',
+    type: 'GET',
+    dataType: 'json',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
+    },
+    success: function (response) {
+      console.log(response);
+      // comprobamos si hay evolution sin aplicar
+      if (response.hasOwnProperty('evolutions') && response.evolutions !== null && response.evolutions.length > 0) {
+        console.log('Evolutions a aplicar: ' + response.evolutions.length);
+
+        // las recorremos para aplicarlas
+        for (var i = 0; i < response.evolutions.length; i++) {
+          var evolution = response.evolutions[i];
+          if (evolution.hasOwnProperty('version') && evolution.version !== null) {
+            console.log('Aplicando actualización versión ' + evolution.version);
+
+          }
+        }
+      } else {
+        // no hay evolutions que aplicar
+        console.log('No hay evolutions que aplicar?');
+      }
+    },
+    error: function () {
+      console.log('Upgrade - Error');
+    }
+  });
+  promises.push(promise);
+
+  $.when.apply(null, promises).done(function() {
+    modal.unblock();
+  }).fail(function() {
+    modal.unblock();
+  });
+
+  return false;
+});

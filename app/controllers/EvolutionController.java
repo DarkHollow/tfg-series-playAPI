@@ -33,7 +33,7 @@ public class EvolutionController extends Controller {
     this.evolutionService = evolutionService;
   }
 
-  @Transactional
+  @Transactional(readOnly = true)
   @Security.Authenticated(Administrator.class)
   public Result getEvolutionsJSON() {
     ObjectNode result = Json.newObject();
@@ -51,19 +51,29 @@ public class EvolutionController extends Controller {
     if (!notApplied.isEmpty()) {
       // si hay evolution no aplicada
       result.put("newVersion", notApplied.get(notApplied.size() - 1).version.toString());
-
-      // información de actualizaciones necesarias para alcanzar la nueva y última versión
-      try {
-        JsonNode jsonNode = Json.parse(new ObjectMapper().writeValueAsString(notApplied));
-        result.set("evolutions", jsonNode);
-      } catch (JsonProcessingException e) {
-        Logger.error("Error parseando datos lista evolutions a JSON");
-        result.put("evolutions", "error");
-      }
-
     } else {
       // si no hay evolution no aplicada
       result.put("newVersion", "none");
+      return notFound(result);
+    }
+
+    return ok(result);
+  }
+
+  @Transactional(readOnly = true)
+  @Security.Authenticated(Administrator.class)
+  public Result getNotAppliedJSON() {
+    ObjectNode result = Json.newObject();
+
+    // información de actualizaciones necesarias para alcanzar la nueva y última versión
+    List<Evolution> notApplied = evolutionService.getNotApplied();
+    try {
+      JsonNode jsonNode = Json.parse(new ObjectMapper().writeValueAsString(notApplied));
+      result.set("evolutions", jsonNode);
+    } catch (JsonProcessingException e) {
+      Logger.error("Error parseando datos lista evolutions a JSON");
+      result.put("evolutions", "error");
+      return internalServerError(result);
     }
 
     return ok(result);

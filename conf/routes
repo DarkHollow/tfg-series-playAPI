@@ -102,3 +102,6 @@ GET     /admin/tvShowRequests       controllers.AdminController.tvShowRequests()
 
 GET     /admin/evolutions/          controllers.EvolutionController.getEvolutionsJSON
 GET     /admin/evolutions           controllers.EvolutionController.getEvolutionsJSON
+
+GET     /admin/evolutions/notApplied/   controllers.EvolutionController.getNotAppliedJSON
+GET     /admin/evolutions/notApplied    controllers.EvolutionController.getNotAppliedJSON

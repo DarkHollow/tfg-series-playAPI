@@ -105,7 +105,7 @@ public class TvShowVoteModelDAOTest {
     assertNull(tvShowVote);
   }
 
-  // testeamos obtener totdas las tvShowVotes
+  // testeamos obtener todas las tvShowVotes
   @Test
   public void testTvShowVoteDAOAll() {
     List<TvShowVote> tvShowVotesEncontrados = jpa.withTransaction(tvShowVoteDAO::all);

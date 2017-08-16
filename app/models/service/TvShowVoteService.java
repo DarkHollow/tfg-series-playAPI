@@ -3,11 +3,8 @@ package models.service;
 import com.google.inject.Inject;
 import models.TvShowVote;
 import models.dao.TvShowVoteDAO;
-import org.apache.commons.io.FileUtils;
 import play.Logger;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 public class TvShowVoteService {

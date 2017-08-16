@@ -1,17 +1,12 @@
 package service;
 
 import models.TvShow;
-import models.TvShowRequest;
 import models.TvShowVote;
 import models.User;
 import models.dao.TvShowDAO;
-import models.dao.TvShowRequestDAO;
 import models.dao.TvShowVoteDAO;
 import models.dao.UserDAO;
 import models.service.TvShowVoteService;
-import models.service.TvShowService;
-import models.service.UserService;
-import models.service.tvdb.TvdbService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
@@ -23,13 +18,11 @@ import play.db.Database;
 import play.db.Databases;
 import play.db.jpa.JPA;
 import play.db.jpa.JPAApi;
-import utils.Security.Password;
 
 import java.io.FileInputStream;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
 
 public class TvShowVoteServiceTest {
   private static Database db;

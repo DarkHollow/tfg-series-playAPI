@@ -5,10 +5,7 @@ import models.TvShowVote;
 import play.Logger;
 import play.db.jpa.JPAApi;
 
-import javax.persistence.NoResultException;
 import javax.validation.ConstraintViolationException;
-import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 
 public class TvShowVoteDAO {

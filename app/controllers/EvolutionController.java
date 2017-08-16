@@ -109,7 +109,7 @@ public class EvolutionController extends Controller {
           // intentamos aplicar evolution
           if (evolutionService.applyEvolution(evolution)) {
             result.put("ok", "evolution applied successfully");
-            result.put("message", "Evolución aplicada con éxito");
+            result.put("message", "Evolución v" + evolution.version + " aplicada con éxito");
             return ok(result);
           } else {
             // esta aplicada??
@@ -136,7 +136,7 @@ public class EvolutionController extends Controller {
       result.put("message", "El parámetro evolutionId es null o no es tipo número");
       return badRequest(result);
     }
-    
+
   }
 
 }

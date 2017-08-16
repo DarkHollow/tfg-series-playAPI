@@ -159,9 +159,9 @@
                         <div class="aviso-body">
                             Debido a una evolución reciente de la base de datos, hay que actualizar ciertos datos para el correcto funcionamiento de la nuevas características.
                             <br />
-                            <button type="button" style="margin-top: 8px;" class="btn btn-sm btn-success btn-labeled">
-                                <b><i class="icon-play4"></i></b>
-                                Comenzar actualización
+                            <button type="button" style="margin-top: 8px;" class="btn btn-sm btn-success btn-labeled" data-host="@requestHeader.host" data-evolution="load" data-toggle="modal" data-target="#evolution_modal">
+                                <b><i class="icon-server"></i></b>
+                                Ver actualización
                             </button>
                         </div>
                     </div>
@@ -185,6 +185,19 @@
 
                         <!-- /dashboard content -->
 
+                        <!-- evolutions modal -->
+                        <div id="evolution_modal" class="modal fade" data-backdrop="static" data-reload="@routes.AdminController.index()">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-primary">
+                                        <h5 id="upgrade-title">Actualización</h5>
+                                    </div>
+                                    <div id="upgrade-body" class="modal-body"></div>
+                                    <div id="upgrade-footer" class="modal-footer"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /evolutions modal -->
                     </div>
                     <!-- /main content -->
 

@@ -306,3 +306,10 @@
     padding-right: 20px;
     padding-bottom: 12px;
 }
+
+.modal-full-rob {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    padding-top: 200px;
+}

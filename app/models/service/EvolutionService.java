@@ -1,24 +1,59 @@
 package models.service;
 
 import models.Evolution;
+import models.TvShow;
 import models.dao.EvolutionDAO;
 import play.Logger;
 
 import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EvolutionService {
   private final EvolutionDAO evolutionDAO;
+  private final TvShowService tvShowService;
 
   @Inject
-  public EvolutionService(EvolutionDAO evolutionDAO) {
+  public EvolutionService(EvolutionDAO evolutionDAO, TvShowService tvShowService) {
     this.evolutionDAO = evolutionDAO;
+    this.tvShowService = tvShowService;
   }
 
   public Evolution createEvolution(Evolution evolution) {
     return evolutionDAO.create(evolution);
+  }
+
+  // buscar por id
+  public Evolution find(Integer id) {
+    return evolutionDAO.find(id);
+  }
+
+  public List<Evolution> all() {
+    return evolutionDAO.all();
+  }
+
+  public Evolution getLastApplied() {
+    Evolution result = null;
+
+    // obtenemos todas
+    List<Evolution> evolutions = all();
+    // devolvemos la última aplicada
+    for (Evolution evolution: evolutions) {
+      if (evolution.state != null && evolution.state.equals("applied")) {
+        result = evolution;
+      }
+    }
+
+    return result;
+  }
+
+  public List<Evolution> getNotApplied() {
+    List<Evolution> evolutions = all();
+    evolutions.removeIf(evolution -> evolution.state != null);
+    Logger.debug("Evolutions sin aplicar: " + evolutions.size());
+    return evolutions;
   }
 
   // importa las evolutions de play que no tengamos ya importadas
@@ -75,9 +110,9 @@ public class EvolutionService {
     } catch (NoSuchMethodException e) {
       Logger.error("NoSuchMethodException - No se ha podido aplicar la evolución: " + version);
     } catch (IllegalAccessException e) {
-      Logger.error("IllegalAccessException - No se ha podido aplicar la evolución: \" + version");
+      Logger.error("IllegalAccessException - No se ha podido aplicar la evolución: " + version);
     } catch (InvocationTargetException e) {
-      Logger.error("InvocationTargetException - No se ha podido aplicar la evolución: \" + version");
+      Logger.error("InvocationTargetException - No se ha podido aplicar la evolución: " + version);
     }
 
     return result;
@@ -94,5 +129,30 @@ public class EvolutionService {
     return result;
   }
   */
+
+  // Evolution 1: nuevos atributos de TvShow: score, voteCount, inicializarlos en series ya persistidas
+  public Boolean applyEvolution1() {
+    try {
+      List<TvShow> tvShows = tvShowService.all();
+      if (!tvShows.isEmpty()) {
+        Logger.info("Evolution 1 - Actualizando series...");
+        // si no está vacía, inicializar nuevos campos
+        for (TvShow tvShow: tvShows) {
+          if (tvShow.score == null || tvShow.voteCount == null) {
+            tvShow.score = 0.0f;
+            tvShow.voteCount = 0;
+          }
+        }
+      } else {
+        Logger.info("Evolution 1 - No hay series que actualizar");
+      }
+    } catch (Exception ex) {
+      Logger.error("Evolution 1 - No se ha podido actualizar: " + ex.getClass().toString());
+      return false;
+    }
+
+    Logger.info("Evolution 1 - Actualización finalizada con éxito");
+    return true;
+  }
 
 }

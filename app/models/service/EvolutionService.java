@@ -125,4 +125,29 @@ public class EvolutionService {
   }
   */
 
+  // Evolution 1: nuevos atributos de TvShow: score, voteCount, inicializarlos en series ya persistidas
+  public Boolean applyEvolution1() {
+    try {
+      List<TvShow> tvShows = tvShowService.all();
+      if (!tvShows.isEmpty()) {
+        Logger.info("Evolution 1 - Actualizando series...");
+        // si no está vacía, inicializar nuevos campos
+        for (TvShow tvShow: tvShows) {
+          if (tvShow.score == null || tvShow.voteCount == null) {
+            tvShow.score = 0.0f;
+            tvShow.voteCount = 0;
+          }
+        }
+      } else {
+        Logger.info("Evolution 1 - No hay series que actualizar");
+      }
+    } catch (Exception ex) {
+      Logger.error("Evolution 1 - No se ha podido actualizar: " + ex.getClass().toString());
+      return false;
+    }
+
+    Logger.info("Evolution 1 - Actualización finalizada con éxito");
+    return true;
+  }
+
 }

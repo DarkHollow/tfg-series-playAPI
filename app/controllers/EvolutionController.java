@@ -13,6 +13,8 @@ import models.service.TvShowRequestService;
 import models.service.TvShowService;
 import models.service.UserService;
 import play.Logger;
+import play.data.DynamicForm;
+import play.data.FormFactory;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -27,10 +29,12 @@ import java.util.List;
 
 public class EvolutionController extends Controller {
   private final EvolutionService evolutionService;
+  private final FormFactory formFactory;
 
   @Inject
-  public EvolutionController(EvolutionService evolutionService) {
+  public EvolutionController(EvolutionService evolutionService, FormFactory formFactory) {
     this.evolutionService = evolutionService;
+    this.formFactory = formFactory;
   }
 
   @Transactional(readOnly = true)
@@ -77,6 +81,62 @@ public class EvolutionController extends Controller {
     }
 
     return ok(result);
+  }
+
+  @Transactional
+  @Security.Authenticated(Administrator.class)
+    public Result applyEvolutionJSON() {
+    ObjectNode result = Json.newObject();
+    Integer evolutionId = null;
+
+    // obtenemos datos de la evolution a aplicar de la petición post
+    DynamicForm requestForm = formFactory.form().bindFromRequest();
+
+    try {
+      evolutionId = Integer.valueOf(requestForm.get("evolutionId"));
+    } catch (Exception ex) {
+      result.put("error", "evolutionId null or not number");
+      return badRequest(result);
+    }
+
+    // comprobaciones rutinarias
+    if (evolutionId != null) {
+      // comprobamos que exista
+      Evolution evolution = evolutionService.find(evolutionId);
+      if (evolution != null) {
+        // comprobamos que esté sin aplicar
+        if (evolution.state == null || !evolution.state.equals("applied")) {
+          // intentamos aplicar evolution
+          if (evolutionService.applyEvolution(evolution)) {
+            result.put("ok", "evolution applied successfully");
+            result.put("message", "Evolución aplicada con éxito");
+            return ok(result);
+          } else {
+            // esta aplicada??
+            result.put("error", "evolution not applied correctly");
+            result.put("message", "La evolución no se ha ejecutado correctamente");
+            return internalServerError(result);
+          }
+        } else {
+          // esta aplicada??
+          result.put("error", "evolution already applied");
+          result.put("message", "Evolución ya aplicada");
+          return badRequest(result);
+        }
+      } else {
+        // evolution no encontrada
+        // esta aplicada??
+        result.put("error", "evolution not found");
+        result.put("message", "Evolución no encontrada");
+        return notFound(result);
+      }
+    } else {
+      // evolution id nula
+      result.put("error", "evolutionId null or not number");
+      result.put("message", "El parámetro evolutionId es null o no es tipo número");
+      return badRequest(result);
+    }
+    
   }
 
 }

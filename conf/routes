@@ -105,3 +105,6 @@ GET     /admin/evolutions           controllers.EvolutionController.getEvolution
 
 GET     /admin/evolutions/notApplied/   controllers.EvolutionController.getNotAppliedJSON
 GET     /admin/evolutions/notApplied    controllers.EvolutionController.getNotAppliedJSON
+
+PATCH   /admin/evolutions/          controllers.EvolutionController.applyEvolutionJSON
+PATCH   /admin/evolutions           controllers.EvolutionController.applyEvolutionJSON

@@ -110,9 +110,9 @@ public class EvolutionService {
     } catch (NoSuchMethodException e) {
       Logger.error("NoSuchMethodException - No se ha podido aplicar la evolución: " + version);
     } catch (IllegalAccessException e) {
-      Logger.error("IllegalAccessException - No se ha podido aplicar la evolución: \" + version");
+      Logger.error("IllegalAccessException - No se ha podido aplicar la evolución: " + version);
     } catch (InvocationTargetException e) {
-      Logger.error("InvocationTargetException - No se ha podido aplicar la evolución: \" + version");
+      Logger.error("InvocationTargetException - No se ha podido aplicar la evolución: " + version);
     }
 
     return result;

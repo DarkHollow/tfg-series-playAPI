@@ -1,1 +1,1 @@
-web: target/universal/stage/bin/tfg-api -Dhttp.port=$PORT -Dconfig.resource=prod.conf
+web: target/universal/stage/bin/tfg-api -Dhttp.port=$PORT -Dconfig.resource=prod.conf -Dplay.evolutions.db.default.autoApply=true

@@ -250,8 +250,7 @@ $(document).on('click', '[data-evolution=upgrade]', function(e) {
             '<p>¡Sistema actualizado con éxito!</p>' +
             '<p>Es necesario reiniciar para aplicar los cambios.</p>';
 
-          var reload = $('#evolution_modal').attr('data-reload');
-          body += '<button type="button" id="evolution_reload" class="btn btn-sm btn-success btn-labeled">' +
+          body += '<button type="button" id="evolution_reload" class="btn btn-sm btn-success btn-labeled" data-dismiss="modal">' +
             '<b><i class="icon-switch2"></i></b>' +
             'Reiniciar' +
             '</button>';
@@ -307,5 +306,8 @@ $(document).on('click', '[data-evolution=upgrade]', function(e) {
 $(document).on('click', '#evolution_reload', function(e) {
   e.preventDefault();
   var reload = $('#evolution_modal').attr('data-reload');
-  getRoute();
+  setTimeout(function() {
+    getRoute(reload);
+  }, 500);
+
 });

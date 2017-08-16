@@ -31,7 +31,7 @@
     <non-jta-data-source>DefaultDS</non-jta-data-source>
     <properties>
       <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/>
-      <property name="hibernate.hbm2ddl.auto" value="update"/>
+      <property name="hibernate.hbm2ddl.auto" value="validate"/>
       <property name="hibernate.show_sql" value="true"/>
     </properties>
   </persistence-unit>

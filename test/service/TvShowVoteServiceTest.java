@@ -7,6 +7,7 @@ import models.dao.TvShowDAO;
 import models.dao.TvShowVoteDAO;
 import models.dao.UserDAO;
 import models.service.TvShowVoteService;
+import models.service.UserService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
@@ -18,6 +19,7 @@ import play.db.Database;
 import play.db.Databases;
 import play.db.jpa.JPA;
 import play.db.jpa.JPAApi;
+import utils.Security.Password;
 
 import java.io.FileInputStream;
 import java.util.List;
@@ -43,7 +45,10 @@ public class TvShowVoteServiceTest {
 
     // inicializamos tvShowVoteService
     TvShowVoteDAO tvShowVoteDAO = new TvShowVoteDAO(jpa);
-    tvShowVoteService = new TvShowVoteService(tvShowVoteDAO);
+    UserDAO userDAO = new UserDAO(jpa);
+    Password password = new Password();
+    UserService userService = new UserService(userDAO, password);
+    tvShowVoteService = new TvShowVoteService(tvShowVoteDAO, userService);
 
     // inicializamos base de datos de prueba
     databaseTester = new JndiDatabaseTester("DefaultDS");
@@ -145,6 +150,22 @@ public class TvShowVoteServiceTest {
       tvShowVote = tvShowVoteService.find(1);
       assertNull(tvShowVote);
     });
+  }
+
+  // testeamos devolver una votación según id de tvshow e id de user -> found
+  @Test
+  public void testTvShowVoteServiceFindByTvShowUserOk() {
+    TvShowVote tvShowVote = jpa.withTransaction(() -> tvShowVoteService.findByTvShowIdUserId(1, 1));
+    assertEquals(1, (int) tvShowVote.id);
+    assertEquals(1, (int) tvShowVote.user.id);
+    assertEquals(1, (int) tvShowVote.tvShow.id);
+  }
+
+  // testeamos devolver una votación según id de tvshow e id de user -> found
+  @Test
+  public void testTvShowVoteServiceFindByTvShowUserNotFound() {
+    TvShowVote tvShowVote = jpa.withTransaction(() -> tvShowVoteService.findByTvShowIdUserId(2, 2));
+    assertNull(tvShowVote);
   }
 
 }

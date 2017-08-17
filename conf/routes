@@ -57,6 +57,11 @@ PUT     /admin/tvshows/requests     controllers.TvShowRequestController.acceptTv
 PATCH     /admin/tvshows/requests/    controllers.TvShowRequestController.rejectTvShowRequest()
 PATCH     /admin/tvshows/requests     controllers.TvShowRequestController.rejectTvShowRequest()
 
+# TV Show Vote ----------------
+
+### TV Show Vote by userId and tvShowId
+GET     /api/tvshows/:tvShowId/tvshowvotes/users/:userId/   controllers.TvShowVoteController.getTvShowVoteByUserTvShow(tvShowId: Integer, userId: Integer)
+GET     /api/tvshows/:tvShowId/tvshowvotes/users/:userId    controllers.TvShowVoteController.getTvShowVoteByUserTvShow(tvShowId: Integer, userId: Integer)
 
 # API Search ---------------------
 

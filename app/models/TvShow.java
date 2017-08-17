@@ -1,6 +1,8 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import json.TvShowViews;
 
@@ -70,7 +72,7 @@ public class TvShow {
   @JsonView(TvShowViews.SearchTvShow.class)
   public Float score;
 
-  @JsonView(TvShowViews.FullTvShow.class)
+  @JsonView(TvShowViews.SearchTvShow.class)
   public Integer voteCount;
 
   @Transient
@@ -82,6 +84,8 @@ public class TvShow {
   public String requestStatus;
 
   @OneToMany(mappedBy = "tvShow", cascade = CascadeType.ALL)
+  @JsonManagedReference
+  @JsonIgnore
   public List<TvShowVote> tvShowVotes;
 
   // constructor vacio

@@ -273,6 +273,16 @@
     font-size: 0.9rem;
 }
 
+.score-avg {
+    margin-top: 12px;
+    margin-left: 50px;
+}
+
+.score-user {
+    margin-top: -20px;
+    margin-left: 180px;
+}
+
 .overview-box {
     padding: 10px;
     color: #eae5ec;

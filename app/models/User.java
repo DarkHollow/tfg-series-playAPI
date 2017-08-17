@@ -2,6 +2,7 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -36,6 +37,8 @@ public class User {
   public List<TvShowRequest> requestedTvShows;
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  @JsonManagedReference
+  @JsonIgnore
   public List<TvShowVote> tvShowVotes;
 
   // constructor vacío

@@ -1,5 +1,7 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 
 @Entity
@@ -12,10 +14,12 @@ public class TvShowVote {
 
   @ManyToOne
   @JoinColumn(name = "userId")
+  @JsonBackReference
   public User user;
 
   @ManyToOne
   @JoinColumn(name = "tvShowId")
+  @JsonBackReference
   public TvShow tvShow;
 
   public Float score;

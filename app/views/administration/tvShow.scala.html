@@ -87,6 +87,18 @@
                                 <div class="media-content">@tvShow.status</div>
                             </div>
                         </li>
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Nota media</div>
+                            <div class="media-body">
+                                <div class="media-content">@tvShow.score</div>
+                            </div>
+                        </li>
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Núm. votos</div>
+                            <div class="media-body">
+                                <div class="media-content">@tvShow.voteCount</div>
+                            </div>
+                        </li>
                     </ul>
                 </div>
 
@@ -159,6 +171,19 @@
                         </div>
 
                         <div class="smartphone-body">
+                            <div class="scores-box">
+                                <div class="score-avg">
+                                    @if(tvShow.score == null || tvShow.score == 0) {
+                                        <i class="icon-star-empty3 text-warning-300"></i> <span class="text-grey-600">Sin votos</span>
+                                    }else{
+                                        <i class="icon-star-full2 text-warning-300"></i> <span class="text-white-07">@tvShow.score <span class="text-green-600">@tvShow.voteCount</span></span>
+                                    }
+                                </div>
+                                <div class="score-user">
+                                    <i class="icon-star-full2 text-blue-300"></i> <span class="text-white-07">8</span>
+                                </div>
+                            </div>
+
                             <div class="overview-box">
                                 @if(tvShow.overview != null && tvShow.overview != "" && tvShow.overview != "null") {
                                     <p>@tvShow.overview</p>

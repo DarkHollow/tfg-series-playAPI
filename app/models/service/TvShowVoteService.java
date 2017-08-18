@@ -1,6 +1,7 @@
 package models.service;
 
 import com.google.inject.Inject;
+import models.TvShow;
 import models.TvShowVote;
 import models.User;
 import models.dao.TvShowVoteDAO;
@@ -12,11 +13,13 @@ public class TvShowVoteService {
 
   private final TvShowVoteDAO tvShowVoteDAO;
   private final UserService userService;
+  private final TvShowService tvShowService;
 
   @Inject
-  public TvShowVoteService(TvShowVoteDAO tvShowVoteDAO, UserService userService) {
+  public TvShowVoteService(TvShowVoteDAO tvShowVoteDAO, UserService userService, TvShowService tvShowService) {
     this.tvShowVoteDAO = tvShowVoteDAO;
     this.userService = userService;
+    this.tvShowService = tvShowService;
   }
 
   // CRUD
@@ -24,7 +27,21 @@ public class TvShowVoteService {
   // Create
   public TvShowVote create(TvShowVote tvShowVote) {
     if (tvShowVote != null && tvShowVote.user != null && tvShowVote.tvShow != null && (tvShowVote.score >= 0.0f && tvShowVote.score <= 10.0f)) {
-      return tvShowVoteDAO.create(tvShowVote);
+      // creamos votación
+      TvShowVote tvShowVoteCreated = tvShowVoteDAO.create(tvShowVote);
+      if (tvShowVoteCreated != null) {
+        // si se ha creado, actualizamos votación media y número votos del tv show
+        if (updateScore(tvShowVote, tvShowVoteCreated.score, true)) {
+          return tvShowVoteCreated;
+        } else {
+          Logger.error("TvShowVoteService.create - Votación creada pero no actualizada");
+          return tvShowVoteCreated;
+        }
+      } else {
+        // votacion no creada
+        Logger.error("TvShowVoteService.create - Votación no creada");
+        return null;
+      }
     } else {
       Logger.error("Al tvShowVote le faltan datos para poder ser creado");
       return null;
@@ -64,6 +81,33 @@ public class TvShowVoteService {
     } else {
       return false;
     }
+  }
+
+  public Boolean updateScore(TvShowVote tvShowVote, Float newScore, Boolean newVote) {
+    Boolean result = false;
+
+    TvShow tvShow = tvShowService.find(tvShowVote.tvShow.id);
+    if (tvShow != null) {
+
+      // obtenemos votación total actual
+      Float actualTotalScore = tvShow.score * tvShow.voteCount;
+
+      // si es una nueva votación
+      if (newVote) {
+        tvShow.voteCount++;
+        actualTotalScore += newScore;
+      } else {
+        // si no es votación nueva, restamos al total y sumamos la nueva
+        actualTotalScore = actualTotalScore - tvShowVote.score + newScore;
+        // actualizamos score en la propia votación
+        tvShowVote.score = newScore;
+      }
+
+      tvShow.score = actualTotalScore / tvShow.voteCount; // actualizamos media
+      result = true;
+    }
+
+    return result;
   }
 
 }

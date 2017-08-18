@@ -6,8 +6,10 @@ import models.User;
 import models.dao.TvShowDAO;
 import models.dao.TvShowVoteDAO;
 import models.dao.UserDAO;
+import models.service.TvShowService;
 import models.service.TvShowVoteService;
 import models.service.UserService;
+import models.service.tvdb.TvdbService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
@@ -25,6 +27,7 @@ import java.io.FileInputStream;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 public class TvShowVoteServiceTest {
   private static Database db;
@@ -48,7 +51,10 @@ public class TvShowVoteServiceTest {
     UserDAO userDAO = new UserDAO(jpa);
     Password password = new Password();
     UserService userService = new UserService(userDAO, password);
-    tvShowVoteService = new TvShowVoteService(tvShowVoteDAO, userService);
+    TvShowDAO tvShowDAO = new TvShowDAO(jpa);
+    TvdbService tvdbService = mock(TvdbService.class);
+    TvShowService tvShowService = new TvShowService(tvShowDAO, tvdbService);
+    tvShowVoteService = new TvShowVoteService(tvShowVoteDAO, userService, tvShowService);
 
     // inicializamos base de datos de prueba
     databaseTester = new JndiDatabaseTester("DefaultDS");

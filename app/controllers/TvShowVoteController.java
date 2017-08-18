@@ -23,7 +23,7 @@ public class TvShowVoteController extends Controller {
   // Devolver votacion segun usuario y tvshow
   @Transactional(readOnly = true)
   @Security.Authenticated(Roles.class)
-  public Result getTvShowVoteByUserTvShow(Integer userId, Integer tvShowId) {
+  public Result getTvShowVoteByUserTvShow(Integer tvShowId, Integer userId) {
     ObjectNode result = Json.newObject();
     TvShowVote tvShowVote;
 

@@ -63,7 +63,11 @@ PATCH     /admin/tvshows/requests     controllers.TvShowRequestController.reject
 GET     /api/tvshows/:tvShowId/tvshowvotes/users/:userId/   controllers.TvShowVoteController.getTvShowVoteByUserTvShow(tvShowId: Integer, userId: Integer)
 GET     /api/tvshows/:tvShowId/tvshowvotes/users/:userId    controllers.TvShowVoteController.getTvShowVoteByUserTvShow(tvShowId: Integer, userId: Integer)
 
+PUT     /api/tvshows/:tvShowId/vote/    controllers.TvShowVoteController.voteTvShow(tvShowId: Integer)
 PUT     /api/tvshows/:tvShowId/vote     controllers.TvShowVoteController.voteTvShow(tvShowId: Integer)
+
+DELETE  /api/tvshows/:tvShowId/vote/    controllers.TvShowVoteController.deleteTvShowVote(tvShowId: Integer)
+DELETE  /api/tvshows/:tvShowId/vote     controllers.TvShowVoteController.deleteTvShowVote(tvShowId: Integer)
 
 # API Search ---------------------
 

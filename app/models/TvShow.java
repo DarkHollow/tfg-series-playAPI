@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import json.TvShowViews;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -83,7 +85,7 @@ public class TvShow {
   @JsonView(TvShowViews.SearchTVDB.class)
   public String requestStatus;
 
-  @OneToMany(mappedBy = "tvShow", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "tvShow", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonManagedReference
   @JsonIgnore
   public List<TvShowVote> tvShowVotes;

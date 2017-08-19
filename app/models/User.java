@@ -3,6 +3,7 @@ package models;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.annotations.Fetch;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -36,7 +37,7 @@ public class User {
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   public List<TvShowRequest> requestedTvShows;
 
-  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonManagedReference
   @JsonIgnore
   public List<TvShowVote> tvShowVotes;

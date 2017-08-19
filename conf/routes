@@ -24,7 +24,7 @@ GET     /api/                       controllers.RootController.index
 # TV Shows ------------------------
 
 ## all TV Shows (future pagination?)
-GET     /api/tvshows/               controllers.Default.redirect(to = "../tvShowRequests")
+GET     /api/tvshows/               controllers.TvShowController.all
 GET     /api/tvshows                controllers.TvShowController.all
 
 ## TV Show by id

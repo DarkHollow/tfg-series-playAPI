@@ -77,6 +77,13 @@ public class TvShowVoteService {
     TvShowVote tvShowVote = tvShowVoteDAO.find(id);
 
     if (tvShowVote != null) {
+      // me elimino de mis padres
+      Integer userId = tvShowVote.user.id;
+      Integer tvShowId = tvShowVote.tvShow.id;
+      userService.find(userId).tvShowVotes.remove(tvShowVote);
+      tvShowService.find(tvShowId).tvShowVotes.remove(tvShowVote);
+
+      // finalmente, me elimino yo
       tvShowVoteDAO.delete(tvShowVote);
       Logger.debug("en teoria existe y borrado...");
       return true;

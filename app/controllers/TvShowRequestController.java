@@ -18,6 +18,7 @@ import play.data.FormFactory;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
 import utils.Security.Administrator;
@@ -32,16 +33,18 @@ public class TvShowRequestController extends Controller {
   private final TvShowRequestService tvShowRequestService;
   private final UserService userService;
   private final FormFactory formFactory;
+  private final utils.Security.User userAuth;
 
   @Inject
   public TvShowRequestController(TvdbService tvdbService, TvShowService tvShowService,
                                  TvShowRequestService tvShowRequestService, UserService userService,
-                                 FormFactory formFactory) {
+                                 FormFactory formFactory, utils.Security.User userAuth) {
     this.tvdbService = tvdbService;
     this.tvShowService = tvShowService;
     this.tvShowRequestService = tvShowRequestService;
     this.userService = userService;
     this.formFactory = formFactory;
+    this.userAuth = userAuth;
   }
 
   // buscar TV Show en TVDB y marcar las locales
@@ -103,38 +106,33 @@ public class TvShowRequestController extends Controller {
   @Security.Authenticated(User.class)
   public Result requestTvShow() {
     ObjectNode result = Json.newObject();
-    Integer tvdbId, userId;
+    Integer tvdbId;
 
-    // obtenemos datos de la petición post
+    // obtenemos el usuario identificado
+    models.User user = userService.findByEmail(userAuth.getUsername(Http.Context.current()));
+    // obtenemos tvdbId de la petición post
     DynamicForm requestForm = formFactory.form().bindFromRequest();
 
     try {
       tvdbId = Integer.valueOf(requestForm.get("tvdbId"));
-      userId = Integer.valueOf(requestForm.get("userId"));
     } catch (Exception ex) {
-      result.put("error", "tvdbId/userId null or not number");
+      result.put("error", "tvdbId null or not number");
       return badRequest(result);
     }
 
     // comprobamos que exista en tvdb y que no la tengamos en local
-    if (tvdbId != null && userId != null) {
+    if (tvdbId != null && user != null) {
       TvShow tvShow = tvdbService.findOnTvdbByTvdbId(tvdbId);
       if (tvShow != null) {
         // comprobamos que no esté en local
         if (tvShowService.findByTvdbId(tvShow.tvdbId) == null) {
-          // comprobamos que exista el usuario
-          if (userService.find(userId) != null) {
-            // intentamos hacer la peticion
-            if (tvShowRequestService.requestTvShow(tvdbId, userId)) {
-              result.put("ok", "TV Show request done");
-              return ok(result);
-            } else {
-              // tv show ya solicitado?
-              result.put("error", "TV Show already requested");
-              return badRequest(result);
-            }
+          // intentamos hacer la peticion
+          if (tvShowRequestService.requestTvShow(tvdbId, user.id)) {
+            result.put("ok", "TV Show request done");
+            return created(result);
           } else {
-            result.put("error", "This user doesn't exist");
+            // tv show ya solicitado?
+            result.put("error", "TV Show already requested");
             return badRequest(result);
           }
         } else {
@@ -149,7 +147,7 @@ public class TvShowRequestController extends Controller {
       }
     } else {
       // peticion erronea ? tvdbId es null
-      result.put("error", "tvdbId/userId can't be null");
+      result.put("error", "user not valid or tvdbId is null");
       return badRequest(result);
     }
   }

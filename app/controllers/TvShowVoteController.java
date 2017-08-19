@@ -25,11 +25,11 @@ public class TvShowVoteController extends Controller {
   private final UserService userService;
   private final TvShowService tvShowService;
   private final FormFactory formFactory;
-  private final utils.Security.Administrator userAuth;
+  private final utils.Security.User userAuth;
 
   @Inject
   public TvShowVoteController(TvShowVoteService tvShowVoteService, UserService userService, TvShowService tvShowService,
-                              FormFactory formFactory, utils.Security.Administrator userAuth) {
+                              FormFactory formFactory, utils.Security.User userAuth) {
     this.tvShowVoteService = tvShowVoteService;
     this.userService = userService;
     this.tvShowService = tvShowService;

@@ -37,7 +37,7 @@ public class TvShowVoteController extends Controller {
     this.userAuth = userAuth;
   }
 
-  // Acción de votar (crear votación)
+  // Acción de votar (crear votación/modificar votación)
   @Transactional
   @Security.Authenticated(User.class)
   public Result voteTvShow(Integer tvShowId) {
@@ -152,6 +152,53 @@ public class TvShowVoteController extends Controller {
       return badRequest(result);
     }
 
+  }
+
+  // Acción de borrar votación
+  @Transactional
+  @Security.Authenticated(User.class)
+  public Result deleteTvShowVote(Integer tvShowId) {
+    ObjectNode result = Json.newObject();
+
+    // obtenemos el usuario identificado
+    models.User user = userService.findByEmail(userAuth.getUsername(Http.Context.current()));
+
+    if (tvShowId != null && user != null) {
+      // comprobamos si existe una votación del usuario identificado a esta serie
+      TvShowVote tvShowVote;
+      tvShowVote = tvShowVoteService.findByTvShowIdUserId(tvShowId, user.id);
+      if (tvShowVote != null) {
+        // actualizar score de borrado
+        if (tvShowVoteService.updateDeletedScore(tvShowVote)) {
+          // intentar eliminar votación
+          if (deleteVote(tvShowVote.id)) {
+            result.put("ok", "vote deleted");
+            return ok(result);
+          } else {
+            Logger.error("TvShowVoteService.deleteTvShowVote - TvShowVote no borrado");
+            result.put("error", "data updated (warning: vote not deleted");
+            return internalServerError(result);
+          }
+        } else {
+          // no se ha podido actualizar datos
+          result.put("error", "score cannot be updated (vote not deleted)");
+          return ok(result);
+        }
+      } else {
+        // la votación no existe, nada que borrar
+        result.put("error", "logged user didn't vote this tv show");
+        result.put("mensaje", "No has votado esta serie");
+        return notFound(result);
+      }
+    } else {
+      result.put("error", "user not valid or tvShowId null/not number");
+      return badRequest(result);
+    }
+  }
+
+  @Transactional
+  private Boolean deleteVote(Integer id) {
+    return tvShowVoteService.delete(id);
   }
 
 }

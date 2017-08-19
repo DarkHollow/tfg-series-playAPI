@@ -34,16 +34,9 @@ GET     /api/tvshows/:id             controllers.TvShowController.tvShowById(id:
 DELETE  /api/tvshows/:id/           controllers.TvShowController.deleteTvShow(id: Integer)
 DELETE  /api/tvshows/:id            controllers.TvShowController.deleteTvShow(id: Integer)
 
-## TV Show on TVDB by tvdbId
 
-GET     /api/tvshows/tvdb/:tvdbId/  controllers.TvdbController.tvShowById(tvdbId: Integer)
-GET     /api/tvshows/tvdb/:tvdbId   controllers.TvdbController.tvShowById(tvdbId: Integer)
 
 # TV Show request ----------------
-
-## TV Shows search on TVDB by name
-GET     /api/search/TVDB/:q/        controllers.TvShowRequestController.searchTvShowTVDBbyName(q: String)
-GET     /api/search/TVDB/:q         controllers.TvShowRequestController.searchTvShowTVDBbyName(q: String)
 
 ## TV Show request
 POST    /api/tvshows/requests/      controllers.TvShowRequestController.requestTvShow
@@ -68,6 +61,16 @@ PUT     /api/tvshows/:tvShowId/vote     controllers.TvShowVoteController.voteTvS
 
 DELETE  /api/tvshows/:tvShowId/vote/    controllers.TvShowVoteController.deleteTvShowVote(tvShowId: Integer)
 DELETE  /api/tvshows/:tvShowId/vote     controllers.TvShowVoteController.deleteTvShowVote(tvShowId: Integer)
+
+## TVDB
+
+## TV Show on TVDB by tvdbId
+GET     /api/tvshows/tvdb/:tvdbId/  controllers.TvdbController.tvShowById(tvdbId: Integer)
+GET     /api/tvshows/tvdb/:tvdbId   controllers.TvdbController.tvShowById(tvdbId: Integer)
+
+## TV Shows search on TVDB by name
+GET     /api/search/TVDB/:q/        controllers.TvShowRequestController.searchTvShowTVDBbyName(q: String)
+GET     /api/search/TVDB/:q         controllers.TvShowRequestController.searchTvShowTVDBbyName(q: String)
 
 # API Search ---------------------
 

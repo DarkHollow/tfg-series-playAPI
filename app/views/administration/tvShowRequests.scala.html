@@ -265,6 +265,13 @@
 
             $.when.apply(null, promises).done(function() {
                 $('#requests_table_panel').unblock();
+            }).fail(function() {
+                $('#requests_table_panel').unblock();
+                swal({
+                   title: 'Aviso',
+                   text: 'Algunas peticiones no se han podido cargar, int\u00E9ntalo de nuevo m\u00E1s tarde.',
+                   type: 'warning'
+                });
             });
         }
 

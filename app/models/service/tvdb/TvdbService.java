@@ -230,21 +230,27 @@ public class TvdbService {
     respuesta = tvdbGetRequest(query, "es");
 
     // recorremos tv shows encontrados en TVDB
-    if (respuesta != null && respuesta.has("data")) {
-      for (JsonNode jsonTvShow : respuesta.withArray("data")) {
-        // obtenemos datos del TV Show
-        TvShow nuevaTvShow = new TvShow();
-        nuevaTvShow.tvdbId = Integer.parseInt(jsonTvShow.get("id").asText()); // id de tvdbConnection
-        nuevaTvShow.name = jsonTvShow.get("seriesName").asText();   // nombre del TV Show
-        nuevaTvShow.banner = jsonTvShow.get("banner").asText();     // banner del TV Show
-        nuevaTvShow.local = false;                                  // iniciamos por defecto a false
+    if (respuesta != null) {
+      if (respuesta.has("data")) {
+        for (JsonNode jsonTvShow : respuesta.withArray("data")) {
+          // obtenemos datos del TV Show
+          TvShow nuevaTvShow = new TvShow();
+          nuevaTvShow.tvdbId = Integer.parseInt(jsonTvShow.get("id").asText()); // id de tvdbConnection
+          nuevaTvShow.name = jsonTvShow.get("seriesName").asText();   // nombre del TV Show
+          nuevaTvShow.banner = jsonTvShow.get("banner").asText();     // banner del TV Show
+          nuevaTvShow.local = false;                                  // iniciamos por defecto a false
 
-        JsonNode fecha = jsonTvShow.get("firstAired");
-        nuevaTvShow.firstAired = parseDate(fecha);
+          JsonNode fecha = jsonTvShow.get("firstAired");
+          nuevaTvShow.firstAired = parseDate(fecha);
 
-        // finalmente la añadimos a la lista
-        tvShows.add(nuevaTvShow);
+          // finalmente la añadimos a la lista
+          tvShows.add(nuevaTvShow);
+        }
+      } else if (respuesta.has("error")) {
+        Logger.info("TVDB Service findOnTVDBby: " + respuesta.get("error").toString());
       }
+    } else {
+      Logger.error("No se ha podido hacer petición a TVDB: TVDB caída, falta de conexión, timeout de petición...");
     }
 
     return tvShows;

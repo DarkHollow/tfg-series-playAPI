@@ -39,8 +39,8 @@ DELETE  /api/tvshows/:id            controllers.TvShowController.deleteTvShow(id
 # TV Show request ----------------
 
 ## TV Show request
-POST    /api/tvshows/requests/      controllers.TvShowRequestController.requestTvShow
-POST    /api/tvshows/requests       controllers.TvShowRequestController.requestTvShow
+POST    /api/requests/      controllers.TvShowRequestController.requestTvShow
+POST    /api/requests       controllers.TvShowRequestController.requestTvShow
 
 ### TV Show request acceptance (admin)
 PUT     /admin/tvshows/requests/    controllers.TvShowRequestController.acceptTvShowRequest()

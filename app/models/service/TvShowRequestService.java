@@ -2,7 +2,6 @@ package models.service;
 
 import com.google.inject.Inject;
 import models.TvShowRequest;
-import models.User;
 import models.dao.TvShowRequestDAO;
 import play.Logger;
 
@@ -12,13 +11,11 @@ import java.util.List;
 public class TvShowRequestService {
 
   private final TvShowService tvShowService;
-  private final UserService userService;
   private final TvShowRequestDAO rqDAO;
 
   @Inject
-  public TvShowRequestService(TvShowService tvShowService, UserService userService, TvShowRequestDAO rqDAO) {
+  public TvShowRequestService(TvShowService tvShowService, TvShowRequestDAO rqDAO) {
     this.tvShowService = tvShowService;
-    this.userService = userService;
     this.rqDAO = rqDAO;
   }
 

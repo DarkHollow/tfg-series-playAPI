@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import json.TvShowViews;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import play.data.validation.Constraints;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -27,10 +28,12 @@ public class TvShow {
   @JsonView(TvShowViews.InternalFullTvShow.class)
   public String imdbId;
 
+  @Constraints.Required
   @Column(unique = true)
   @JsonView(TvShowViews.SearchTvShowTvdbId.class)
   public Integer tvdbId;
 
+  @Constraints.Required
   @Column(length = 100)
   @JsonView(TvShowViews.SearchTvShow.class)
   public String name;
@@ -39,6 +42,7 @@ public class TvShow {
   @JsonView(TvShowViews.SearchTvShow.class)
   public Date firstAired;
 
+  @Constraints.Required
   @Column(columnDefinition = "text")
   @JsonView(TvShowViews.FullTvShow.class)
   public String overview;
@@ -134,6 +138,20 @@ public class TvShow {
     this.score = tvShow.score;
     this.voteCount = tvShow.voteCount;
     this.local = false;
+  }
+
+  // poner a null todos las cadenas vacías que no son null
+  public void nullify() {
+    if (imdbId != null && imdbId.isEmpty()) imdbId = null;
+    if (name != null && name.isEmpty()) name = null;
+    if (overview != null && overview.isEmpty()) overview = null;
+    if (banner != null && banner.isEmpty()) banner = null;
+    if (poster != null && poster.isEmpty()) poster = null;
+    if (fanart != null && fanart.isEmpty()) fanart = null;
+    if (network != null && network.isEmpty()) network = null;
+    if (runtime != null && runtime.isEmpty()) runtime = null;
+    if (rating != null && rating.isEmpty()) rating = null;
+    if (requestStatus != null && requestStatus.isEmpty()) requestStatus = null;
   }
 
   // solo informacion importante

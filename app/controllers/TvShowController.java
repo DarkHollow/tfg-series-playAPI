@@ -188,7 +188,13 @@ public class TvShowController extends Controller {
 
       switch (request) {
         case "data":
-          tvShow = tvShowService.updateData(tvShow);
+          try {
+            tvShow = tvShowService.updateData(tvShow);
+          } catch (Exception ex) {
+            Logger.error("Actualizar datos serie - timeout con API externa");
+            result.put("error", "cannot connect with external API");
+            return status(504, result); // gateway timeout
+          }
           break;
         case "images":
           // las imagenes deben ser una a una desde aquí

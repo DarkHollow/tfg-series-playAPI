@@ -18,7 +18,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class TvdbService {
 
@@ -36,7 +38,8 @@ public class TvdbService {
   }
 
   // peticion a TVDB
-  private JsonNode tvdbGetRequest(String query, String language) {
+  private JsonNode tvdbGetRequest(String query, String language)
+          throws InterruptedException, ExecutionException, TimeoutException {
     JsonNode result = null;
     int MAXTRIES = 2; // maximos intentos de refrescar token
     int count = 0;
@@ -80,7 +83,7 @@ public class TvdbService {
         }
       } catch (Exception ex) {
         Logger.error("Petición TVDB - " + ex.getClass());
-        break;
+        throw ex;
       }
     }
 
@@ -191,7 +194,7 @@ public class TvdbService {
   }
 
   // buscar por tvdbId (solo un resultado posible)
-  public TvShow findOnTvdbByTvdbId(Integer tvdbId) {
+  public TvShow findOnTvdbByTvdbId(Integer tvdbId) throws InterruptedException, ExecutionException, TimeoutException {
     TvShow tvShow = null;
     JsonNode respuesta;
     String query = "https://api.thetvdb.com/series/" + tvdbId.toString();
@@ -221,7 +224,8 @@ public class TvdbService {
   }
 
   // buscar por campo
-  public List<TvShow> findOnTVDBby(String field, String value) {
+  public List<TvShow> findOnTVDBby(String field, String value)
+          throws InterruptedException, ExecutionException, TimeoutException {
     // buscamos el TV Show en tvdbConnection
     JsonNode respuesta;
     List<TvShow> tvShows = new ArrayList<>();
@@ -256,7 +260,7 @@ public class TvdbService {
     return tvShows;
   }
 
-  public TvShow getTvShowTVDB(Integer tvdbId) {
+  public TvShow getTvShowTVDB(Integer tvdbId) throws InterruptedException, ExecutionException, TimeoutException {
     TvShow tvShow = null;
     JsonNode respuesta;
     String query = "https://api.thetvdb.com/series/" + tvdbId.toString();

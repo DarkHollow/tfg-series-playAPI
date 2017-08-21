@@ -54,11 +54,8 @@ public class TvShowRequestServiceTest {
     TvShowDAO tvShowDAO = new TvShowDAO(jpa);
     TvdbService tvdbService = mock(TvdbService.class);
     TvShowService tvShowService = new TvShowService(tvShowDAO, tvdbService);
-    UserDAO userDAO = new UserDAO(jpa);
-    Password sr = new Password();
-    UserService userService = new UserService(userDAO, sr);
     TvShowRequestDAO tvShowRequestDAO = new TvShowRequestDAO(jpa);
-    tvShowRequestService = new TvShowRequestService(tvShowService, userService, tvShowRequestDAO);
+    tvShowRequestService = new TvShowRequestService(tvShowService, tvShowRequestDAO);
 
     // inicializamos base de datos de prueba
     databaseTester = new JndiDatabaseTester("DefaultDS");

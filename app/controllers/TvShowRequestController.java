@@ -53,46 +53,58 @@ public class TvShowRequestController extends Controller {
   @Security.Authenticated(User.class)
   public Result searchTvShowTVDBbyName(String query) {
     if (query.length() >= 3) {
-      List<TvShow> tvShows = tvdbService.findOnTVDBby("name", query);
-
-      // si la lista está vacía, not found
-      if (tvShows.isEmpty()) {
-        ObjectNode result = Json.newObject();
-        result.put("error", "Not found");
-        return notFound(result);
-      }
-
-      // asignacion de campos TRANSIENT
-      // si la lista no está vacía, comprobamos series en local
-      for (TvShow tvShow : tvShows) {
-        // tenemos la serie en local ?
-        TvShow localTvShow = tvShowService.findByTvdbId(tvShow.tvdbId);
-        if (localTvShow != null) {
-          tvShow.id = localTvShow.id;
-          tvShow.local = true;
-        } else {
-          tvShow.local = false;
-        }
-
-        // hay request ?
-        TvShowRequest request = tvShowRequestService.findTvShowRequestByTvdbId(tvShow.tvdbId);
-        if (request != null) {
-          tvShow.requestStatus = request.status.toString();
-        }
-      }
-
       try {
-        JsonNode jsonNode = Json.parse(new ObjectMapper()
-                                    .writerWithView(TvShowViews.SearchTVDB.class)
-                                    .writeValueAsString(tvShows));
-        return ok(jsonNode);
+        List<TvShow> tvShows = tvdbService.findOnTVDBby("name", query);
 
+        // si la lista está vacía, not found
+        if (tvShows.isEmpty()) {
+          ObjectNode result = Json.newObject();
+          result.put("error", "Not found");
+          return notFound(result);
+        }
+
+        // asignacion de campos TRANSIENT
+        // si la lista no está vacía, comprobamos series en local
+        for (TvShow tvShow : tvShows) {
+          // tenemos la serie en local ?
+          TvShow localTvShow = tvShowService.findByTvdbId(tvShow.tvdbId);
+          if (localTvShow != null) {
+            tvShow.id = localTvShow.id;
+            tvShow.local = true;
+          } else {
+            tvShow.local = false;
+          }
+
+          // hay request ?
+          TvShowRequest request = tvShowRequestService.findTvShowRequestByTvdbId(tvShow.tvdbId);
+          if (request != null) {
+            tvShow.requestStatus = request.status.toString();
+          }
+        }
+
+        try {
+          JsonNode jsonNode = Json.parse(new ObjectMapper()
+                  .writerWithView(TvShowViews.SearchTVDB.class)
+                  .writeValueAsString(tvShows));
+          // quitamos campos no relevantes
+          ObjectNode object = (ObjectNode) jsonNode;
+          object.remove("score");
+          object.remove("tvShowVotes");
+          object.remove("voteCount");
+          return ok(object);
+
+        } catch (Exception ex) {
+          // si hubiese un error, devolver error interno
+          ObjectNode result = Json.newObject();
+          result.put("error", "It can't be processed");
+          return internalServerError(result);
+        }
       } catch (Exception ex) {
-        // si hubiese un error, devolver error interno
         ObjectNode result = Json.newObject();
-        result.put("error", "It can't be processed");
-        return internalServerError(result);
+        result.put("error", "cannot connect with external API");
+        return status(504, result); // gateway timeout
       }
+
     } else {
       ObjectNode result = Json.newObject();
       result.put("error", "Bad request");
@@ -122,31 +134,37 @@ public class TvShowRequestController extends Controller {
 
     // comprobamos que exista en tvdb y que no la tengamos en local
     if (tvdbId != null && user != null) {
-      TvShow tvShow = tvdbService.findOnTvdbByTvdbId(tvdbId);
-      if (tvShow != null) {
-        // comprobamos que no esté en local
-        if (tvShowService.findByTvdbId(tvShow.tvdbId) == null) {
-          // intentamos hacer la peticion
-          TvShowRequest request = new TvShowRequest(tvdbId, user);
-          request = tvShowRequestService.create(request);
-          if (request != null) {
-            result.put("ok", "TV Show request done");
-            response().setHeader("Location", "/api/requests/" + request.id);
-            return created(result);
+      TvShow tvShow;
+      try {
+        tvShow = tvdbService.findOnTvdbByTvdbId(tvdbId);
+        if (tvShow != null) {
+          // comprobamos que no esté en local
+          if (tvShowService.findByTvdbId(tvShow.tvdbId) == null) {
+            // intentamos hacer la peticion
+            TvShowRequest request = new TvShowRequest(tvdbId, user);
+            request = tvShowRequestService.create(request);
+            if (request != null) {
+              result.put("ok", "TV Show request done");
+              response().setHeader("Location", "/api/requests/" + request.id);
+              return created(result);
+            } else {
+              // tv show ya solicitado?
+              result.put("error", "TV Show already requested");
+              return badRequest(result);
+            }
           } else {
-            // tv show ya solicitado?
-            result.put("error", "TV Show already requested");
+            tvShow.local = true;
+            result.put("error", "TV Show is on local already");
             return badRequest(result);
           }
         } else {
-          tvShow.local = true;
-          result.put("error", "TV Show is on local already");
-          return badRequest(result);
+          // la tvShow no existe en TvdbConnection o ya la tenemos en local
+          result.put("error", "TV Show doesn't exist on TVDB");
+          return notFound(result);
         }
-      } else {
-        // la tvShow no existe en TvdbConnection o ya la tenemos en local
-        result.put("error", "TV Show doesn't exist on TVDB");
-        return notFound(result);
+      } catch (Exception ex) {
+        result.put("error", "cannot connect with external API");
+        return status(504, result); // gateway timeout
       }
     } else {
       // peticion erronea ? tvdbId es null
@@ -189,70 +207,75 @@ public class TvShowRequestController extends Controller {
           // comprobamos que no tenemos el tv show por cualquier casualidad del mundo en la bbdd
           if (tvShowService.findByTvdbId(tvdbId) == null) {
             // obtenemos tv show
-            TvShow tvShow = tvdbService.getTvShowTVDB(tvdbId);
-            if (tvShow != null) {
-              // persistimos serie nueva y respuesta ok
-              tvShow = tvShowService.create(tvShow);
-              result.put("ok", "Serie persistida");
+            try {
+              TvShow tvShow = tvdbService.getTvShowTVDB(tvdbId);
+              if (tvShow != null) {
+                // persistimos serie nueva y respuesta ok
+                tvShow = tvShowService.create(tvShow);
+                result.put("ok", "Serie persistida");
 
-              // descargamos las imagenes del TV Show
-              // obtenemos banner
-              tvShow.banner = tvdbService.getBanner(tvShow);
-              if (tvShow.banner != null) {
-                tvShow.banner = tvShow.banner.replace("public", "assets");
-                // banner obtenido
-                result.put("banner", true);
+                // descargamos las imagenes del TV Show
+                // obtenemos banner
+                tvShow.banner = tvdbService.getBanner(tvShow);
+                if (tvShow.banner != null) {
+                  tvShow.banner = tvShow.banner.replace("public", "assets");
+                  // banner obtenido
+                  result.put("banner", true);
+                } else {
+                  // no se ha podido obtener el banner
+                  Logger.info(tvShow.name + " - no se ha podido obtener el banner");
+                  result.put("banner", false);
+                }
+
+                // obtenemos poster
+                tvShow.poster = tvdbService.getImage(tvShow, "poster");
+                if (tvShow.poster != null) {
+                  tvShow.poster = tvShow.poster.replace("public", "assets");
+                  // poster obtenido
+                  result.put("poster", true);
+                } else {
+                  // no se ha podido obtener el poster
+                  Logger.info(tvShow.name + " - no se ha podido obtener el poster");
+                  result.put("poster", false);
+                }
+
+                // obtenemos fanart
+                tvShow.fanart = tvdbService.getImage(tvShow, "fanart");
+                if (tvShow.fanart != null) {
+                  tvShow.fanart = tvShow.fanart.replace("public", "assets");
+                  // fanart obtenido
+                  result.put("fanart", true);
+                } else {
+                  // no se ha podido obtener el fanart
+                  Logger.info(tvShow.name + " - no se ha podido obtener el fanart");
+                  result.put("fanart", false);
+                }
+
+                // poner request como persistida
+                request.status = TvShowRequest.Status.Persisted;
+
+                // respuesta ok - devolvemos datos obtenidos
+                try {
+                  JsonNode jsonNode = Json.parse(new ObjectMapper()
+                          .writerWithView(TvShowViews.FullTvShow.class)
+                          .writeValueAsString(tvShow));
+                  result.set("tvShow", jsonNode);
+                  return ok(result);
+                } catch (JsonProcessingException e) {
+                  Logger.error("Error parseando datos serie a JSON");
+                  // si da error parseando devolvemos el ok y si hemos obtenido las imagenes
+                  return ok(result);
+                }
+
               } else {
-                // no se ha podido obtener el banner
-                Logger.info(tvShow.name + " - no se ha podido obtener el banner");
-                result.put("banner", false);
+                // no podemos obtener serie de TVDB
+                request.status = TvShowRequest.Status.Requested;
+                result.put("error", "Imposible conectar con el servicio externo");
+                return internalServerError(result);
               }
-
-              // obtenemos poster
-              tvShow.poster = tvdbService.getImage(tvShow, "poster");
-              if (tvShow.poster != null) {
-                tvShow.poster = tvShow.poster.replace("public", "assets");
-                // poster obtenido
-                result.put("poster", true);
-              } else {
-                // no se ha podido obtener el poster
-                Logger.info(tvShow.name + " - no se ha podido obtener el poster");
-                result.put("poster", false);
-              }
-
-              // obtenemos fanart
-              tvShow.fanart = tvdbService.getImage(tvShow, "fanart");
-              if (tvShow.fanart != null) {
-                tvShow.fanart = tvShow.fanart.replace("public", "assets");
-                // fanart obtenido
-                result.put("fanart", true);
-              } else {
-                // no se ha podido obtener el fanart
-                Logger.info(tvShow.name + " - no se ha podido obtener el fanart");
-                result.put("fanart", false);
-              }
-
-              // poner request como persistida
-              request.status = TvShowRequest.Status.Persisted;
-
-              // respuesta ok - devolvemos datos obtenidos
-              try {
-                JsonNode jsonNode = Json.parse(new ObjectMapper()
-                        .writerWithView(TvShowViews.FullTvShow.class)
-                        .writeValueAsString(tvShow));
-                result.set("tvShow", jsonNode);
-                return ok(result);
-              } catch (JsonProcessingException e) {
-                Logger.error("Error parseando datos serie a JSON");
-                // si da error parseando devolvemos el ok y si hemos obtenido las imagenes
-                return ok(result);
-              }
-
-            } else {
-              // no podemos obtener serie de TVDB
-              request.status = TvShowRequest.Status.Requested;
-              result.put("error", "Imposible conectar con el servicio externo");
-              return internalServerError(result);
+            } catch (Exception ex) {
+              result.put("error", "cannot connect with external API");
+              return status(504, result); // gateway timeout
             }
           } else {
             // error - ya tenemos el tv show!

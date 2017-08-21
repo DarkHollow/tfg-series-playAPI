@@ -86,15 +86,11 @@ public class TvShowRequestController extends Controller {
           JsonNode jsonNode = Json.parse(new ObjectMapper()
                   .writerWithView(TvShowViews.SearchTVDB.class)
                   .writeValueAsString(tvShows));
-          // quitamos campos no relevantes
-          ObjectNode object = (ObjectNode) jsonNode;
-          object.remove("score");
-          object.remove("tvShowVotes");
-          object.remove("voteCount");
-          return ok(object);
+          return ok(jsonNode);
 
         } catch (Exception ex) {
           // si hubiese un error, devolver error interno
+          Logger.debug(ex.getClass().toString());
           ObjectNode result = Json.newObject();
           result.put("error", "It can't be processed");
           return internalServerError(result);

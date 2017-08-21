@@ -12,6 +12,7 @@ import models.service.TvShowService;
 import models.service.tvdb.TvdbService;
 import play.Logger;
 import play.data.DynamicForm;
+import play.data.Form;
 import play.data.FormFactory;
 import play.db.jpa.Transactional;
 import play.libs.Json;
@@ -31,7 +32,8 @@ public class TvShowController extends Controller {
   private final FormFactory formFactory;
 
   @Inject
-  public TvShowController(TvShowService tvShowService, TvdbService tvdbService, FormFactory formFactory, TvShowRequestService tvShowRequestService) {
+  public TvShowController(TvShowService tvShowService, TvdbService tvdbService, FormFactory formFactory,
+                          TvShowRequestService tvShowRequestService) {
     this.tvShowService = tvShowService;
     this.tvShowRequestService = tvShowRequestService;
     this.tvdbService = tvdbService;
@@ -64,6 +66,44 @@ public class TvShowController extends Controller {
       // si hubiese un error, devolver error interno
       ObjectNode result = Json.newObject();
       result.put("error", "It can't be processed");
+      return internalServerError(result);
+    }
+  }
+
+  @Transactional
+  @Security.Authenticated(Administrator.class)
+  public Result create() {
+    ObjectNode result = Json.newObject();
+
+    Form<TvShow> tvShowForm = formFactory.form(TvShow.class).bindFromRequest();
+
+    if (tvShowForm.hasErrors()) {
+      result.put("error", "tv show data error");
+      result.set("errors", tvShowForm.errorsAsJson());
+      return badRequest(result);
+    }
+
+    try {
+      TvShow tvShow = tvShowForm.get();
+      // comprobamos si ya existe
+      if (tvShowService.findByTvdbId(tvShow.tvdbId) == null) {
+        tvShow = tvShowService.create(tvShow);
+        if (tvShow != null) {
+          result.put("ok", "tv show created");
+          response().setHeader("Location", "/api/tvshows/" + tvShow.id);
+          return created(result);
+        } else {
+          Logger.error("TV Show Controller create - tv show no creado");
+          result.put("error", "tv show not created");
+          return internalServerError(result);
+        }
+      } else {
+        result.put("error", "tv show exists already (tvdb id conflict");
+        return badRequest(result);
+      }
+    } catch (Exception ex) {
+      Logger.error("TV Show Controller create - " + ex.getClass());
+      result.put("error", "some error creating tv show");
       return internalServerError(result);
     }
   }

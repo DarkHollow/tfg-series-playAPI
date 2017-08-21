@@ -27,23 +27,21 @@ GET     /api/                       controllers.RootController.index
 GET     /api/tvshows/               controllers.TvShowController.all
 GET     /api/tvshows                controllers.TvShowController.all
 
-POST    /api/tvshows/               controllers.TvShowController.create
-POST    /api/tvshows                controllers.TvShowController.create
-
-## TV Show by id
 GET     /api/tvshows/:id/            controllers.TvShowController.tvShowById(id: Integer)
 GET     /api/tvshows/:id             controllers.TvShowController.tvShowById(id: Integer)
+
+POST    /api/tvshows/               controllers.TvShowController.create
+POST    /api/tvshows                controllers.TvShowController.create
 
 DELETE  /api/tvshows/:id/           controllers.TvShowController.deleteTvShow(id: Integer)
 DELETE  /api/tvshows/:id            controllers.TvShowController.deleteTvShow(id: Integer)
 
 
-
 # TV Show request ----------------
 
 ## TV Show request
-POST    /api/requests/      controllers.TvShowRequestController.requestTvShow
-POST    /api/requests       controllers.TvShowRequestController.requestTvShow
+POST    /api/requests/      controllers.TvShowRequestController.create
+POST    /api/requests       controllers.TvShowRequestController.create
 
 ### TV Show request acceptance (admin)
 PUT     /admin/tvshows/requests/    controllers.TvShowRequestController.acceptTvShowRequest()

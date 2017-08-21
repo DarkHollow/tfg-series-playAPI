@@ -104,7 +104,7 @@ public class TvShowRequestController extends Controller {
   // realizar la petición del TV Show
   @Transactional
   @Security.Authenticated(User.class)
-  public Result requestTvShow() {
+  public Result create() {
     ObjectNode result = Json.newObject();
     Integer tvdbId;
 
@@ -127,8 +127,11 @@ public class TvShowRequestController extends Controller {
         // comprobamos que no esté en local
         if (tvShowService.findByTvdbId(tvShow.tvdbId) == null) {
           // intentamos hacer la peticion
-          if (tvShowRequestService.requestTvShow(tvdbId, user.id)) {
+          TvShowRequest request = new TvShowRequest(tvdbId, user);
+          request = tvShowRequestService.create(request);
+          if (request != null) {
             result.put("ok", "TV Show request done");
+            response().setHeader("Location", "/api/requests/" + request.id);
             return created(result);
           } else {
             // tv show ya solicitado?

@@ -27,6 +27,9 @@ GET     /api/                       controllers.RootController.index
 GET     /api/tvshows/               controllers.TvShowController.all
 GET     /api/tvshows                controllers.TvShowController.all
 
+POST    /api/tvshows/               controllers.TvShowController.create
+POST    /api/tvshows                controllers.TvShowController.create
+
 ## TV Show by id
 GET     /api/tvshows/:id/            controllers.TvShowController.tvShowById(id: Integer)
 GET     /api/tvshows/:id             controllers.TvShowController.tvShowById(id: Integer)

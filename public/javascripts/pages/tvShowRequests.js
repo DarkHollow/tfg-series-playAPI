@@ -62,15 +62,11 @@ $(document).on('click', '[data-action=accept-tvShow]', function(e) {
         // hacer peticion
         let host = 'http://' + $('#host').html();
         var promises2 = [];
-        var data = JSON.stringify({"requestId": requestId});
         let promise2 = $.ajax({
-          url: host + '/admin/tvshows/requests',
+          url: host + '/api/requests/' + requestId,
           type: 'PUT',
-          data: data,
-          dataType: 'json',
           headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
           },
           success: function (response) {
@@ -143,7 +139,7 @@ $(document).on('click', '[data-action=accept-tvShow]', function(e) {
               'Error persistiendo' +
               '</div>' +
               '<ul class="media-list check-list dropdown-content-body">' +
-              '<li>' + response.responseJSON.error + '</li>' +
+              '<li>' + response + '</li>' +
               '<li class="divider"></li>' +
               '<li><button type="button" data-action="get-list" class="btn btn-labeled btn-xs bg-warning btn-group-justified"><b><i class="icon-database-refresh"></i></b> Recargar lista</button></li>' +
               '</ul>' +
@@ -156,6 +152,8 @@ $(document).on('click', '[data-action=accept-tvShow]', function(e) {
         promises2.push(promise2);
 
         $.when.apply(null, promises2).done(function() {
+          $('#requests_table_panel').unblock();
+        }).fail(function(promise) {
           $('#requests_table_panel').unblock();
         });
       } else {

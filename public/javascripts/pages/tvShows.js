@@ -136,16 +136,11 @@ $(document).on('click', '[data-action=reaccept-tvShow]', function(e) {
 
         // hacer peticion
         var promises2 = [];
-        var data = JSON.stringify({"requestId": requestId});
-        console.log(data);
         let promise2 = $.ajax({
-          url: host + '/admin/tvshows/requests',
+          url: host + '/api/requests/' + requestId,
           type: 'PUT',
-          data: data,
-          dataType: 'json',
           headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
           },
           success: function (response) {

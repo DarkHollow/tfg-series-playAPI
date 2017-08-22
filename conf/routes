@@ -43,13 +43,13 @@ DELETE  /api/tvshows/:id            controllers.TvShowController.deleteTvShow(id
 POST    /api/requests/      controllers.TvShowRequestController.create
 POST    /api/requests       controllers.TvShowRequestController.create
 
-### TV Show request acceptancesbt it
+### TV Show request acceptance
 PUT     /api/requests/:id/    controllers.TvShowRequestController.acceptTvShowRequest(id: Integer)
 PUT     /api/requests/:id     controllers.TvShowRequestController.acceptTvShowRequest(id: Integer)
 
-### TV Show request rejection (admin)
-PATCH     /admin/tvshows/requests/    controllers.TvShowRequestController.rejectTvShowRequest()
-PATCH     /admin/tvshows/requests     controllers.TvShowRequestController.rejectTvShowRequest()
+### TV Show request rejection
+PATCH     /api/requests/:id/    controllers.TvShowRequestController.rejectTvShowRequest(id: Integer)
+PATCH     /api/requests/:id     controllers.TvShowRequestController.rejectTvShowRequest(id: Integer)
 
 # TV Show Vote ----------------
 

@@ -205,15 +205,11 @@ $(document).on('click', '[data-action=reject-tvShow]', function(e) {
         // hacer peticion
         let host = 'http://' + $('#host').html();
         var promises2 = [];
-        var data = JSON.stringify({"requestId": requestId});
         let promise2 = $.ajax({
-          url: host + '/admin/tvshows/requests',
+          url: host + '/api/requests/' + requestId,
           type: 'PATCH',
-          data: data,
-          dataType: 'json',
           headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
           },
           success: function (response) {

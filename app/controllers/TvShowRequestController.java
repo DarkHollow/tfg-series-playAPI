@@ -295,24 +295,11 @@ public class TvShowRequestController extends Controller {
   // rechazar request
   @Transactional
   @Security.Authenticated(Administrator.class)
-  public Result rejectTvShowRequest() {
+  public Result rejectTvShowRequest(Integer requestId) {
     ObjectNode result = Json.newObject();
-    Integer requestId;
-
-    // obtenemos datos de la petición post
-    DynamicForm requestForm = formFactory.form().bindFromRequest();
-
-    try {
-      requestId = Integer.valueOf(requestForm.get("requestId"));
-    } catch (Exception ex) {
-      result.put("error", "requestId null or not number");
-      return badRequest(result);
-    }
-
     // obtenemos request
     if (requestId != null) {
       TvShowRequest request = tvShowRequestService.findById(requestId);
-
       if (request != null) {
         // comprobamos que la request no esté en otro estado que 'Requested' por asincronía
         if (request.status.equals(TvShowRequest.Status.Requested)) {
@@ -324,7 +311,7 @@ public class TvShowRequestController extends Controller {
           } else {
             // peticion no se ha podido rechazar
             result.put("error", "La petición no se ha podido rechazar en estos momentos");
-            return badRequest(result);
+            return internalServerError(result);
           }
         } else {
           // estado no es Requested
@@ -336,7 +323,6 @@ public class TvShowRequestController extends Controller {
         result.put("error", "request cannot be find");
         return badRequest(result);
       }
-
     } else {
       // peticion erronea ? tvdbId es null
       result.put("error", "tvdbId/userId can't be null");

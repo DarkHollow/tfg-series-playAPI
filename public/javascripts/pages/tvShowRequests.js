@@ -12,6 +12,7 @@ $(document).on('click', '.panel [data-action=load-persisted-requests]', function
   e.preventDefault();
   persistedRequestsTableClear();
   persistedRequestsTableLoad();
+  closeAdv('accepted-adv');
 });
 
 // mostrar datos peticiones rechazadas
@@ -19,6 +20,7 @@ $(document).on('click', '.panel [data-action=load-rejected-requests]', function(
   e.preventDefault();
   rejectedRequestsTableClear();
   rejectedRequestsTableLoad();
+  closeAdv('rejected-adv');
 });
 
 // aceptar serie

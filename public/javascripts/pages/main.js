@@ -27,6 +27,31 @@ window.onpopstate = function(e) {
   }
 };
 
+// cerrar adv's
+function closeAdv(id) {
+  var $advClose = $('#' + id);
+
+  containerHeight(); // recalculate page height
+
+  $advClose.slideUp(150, function() {
+    $(this).remove();
+  });
+}
+
+// close advert
+$(document).on('click', '[data-action=close-adv]', function(e) {
+  e.preventDefault();
+  var elementId = $(this).parent().attr('id');
+  closeAdv(elementId);
+});
+
+// Calculate min height
+function containerHeight() {
+  var availableHeight = $(window).height() - $('.page-container').offset().top - $('.navbar-fixed-bottom').outerHeight();
+
+  $('.page-container').attr('style', 'min-height:' + availableHeight + 'px');
+}
+
 /* funciones */
 
 // mostrar nombre usuario

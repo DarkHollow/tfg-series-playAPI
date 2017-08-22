@@ -74,7 +74,7 @@ public class TvShowVoteController extends Controller {
   // Acción de votar (crear votación/modificar votación)
   @Transactional
   @Security.Authenticated(User.class)
-  public Result voteTvShow(Integer tvShowId) {
+  public Result createTvShowUser(Integer tvShowId) {
     ObjectNode result = Json.newObject();
 
     // obtenemos la nota de votación del cuerpo de la petición
@@ -160,11 +160,11 @@ public class TvShowVoteController extends Controller {
   // Acción de borrar votación
   @Transactional
   @Security.Authenticated(User.class)
-  public Result deleteTvShowVote(Integer tvShowId) {
+  public Result deleteTvShowUser(Integer tvShowId) {
     ObjectNode result = Json.newObject();
 
     // obtenemos el usuario identificado
-    models.User user = userService.findByEmail(userAuth.getUsername(Http.Context.current()));
+    models.User user = userService.findByEmail(request().username());
 
     if (tvShowId != null && user != null) {
       // comprobamos si existe una votación del usuario identificado a esta serie
@@ -178,7 +178,7 @@ public class TvShowVoteController extends Controller {
             result.put("ok", "vote deleted");
             return ok(result);
           } else {
-            Logger.error("TvShowVoteService.deleteTvShowVote - TvShowVote no borrado");
+            Logger.error("TvShowVoteService.deleteTvShowUser - TvShowVote no borrado");
             result.put("error", "data updated (warning: vote not deleted");
             return internalServerError(result);
           }

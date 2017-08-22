@@ -57,11 +57,11 @@ PATCH     /api/requests/:id     controllers.TvShowRequestController.rejectTvShow
 GET     /api/tvshows/:tvShowId/rating/    controllers.TvShowVoteController.getByTvShowUser(tvShowId: Integer)
 GET     /api/tvshows/:tvShowId/rating     controllers.TvShowVoteController.getByTvShowUser(tvShowId: Integer)
 
-PUT     /api/tvshows/:tvShowId/rating/    controllers.TvShowVoteController.voteTvShow(tvShowId: Integer)
-PUT     /api/tvshows/:tvShowId/rating     controllers.TvShowVoteController.voteTvShow(tvShowId: Integer)
+PUT     /api/tvshows/:tvShowId/rating/    controllers.TvShowVoteController.createTvShowUser(tvShowId: Integer)
+PUT     /api/tvshows/:tvShowId/rating     controllers.TvShowVoteController.createTvShowUser(tvShowId: Integer)
 
-DELETE  /api/tvshows/:tvShowId/vote/    controllers.TvShowVoteController.deleteTvShowVote(tvShowId: Integer)
-DELETE  /api/tvshows/:tvShowId/vote     controllers.TvShowVoteController.deleteTvShowVote(tvShowId: Integer)
+DELETE  /api/tvshows/:tvShowId/rating/    controllers.TvShowVoteController.deleteTvShowUser(tvShowId: Integer)
+DELETE  /api/tvshows/:tvShowId/rating     controllers.TvShowVoteController.deleteTvShowUser(tvShowId: Integer)
 
 ## TVDB
 

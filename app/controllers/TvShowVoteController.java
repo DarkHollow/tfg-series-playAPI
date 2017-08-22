@@ -125,13 +125,16 @@ public class TvShowVoteController extends Controller {
 
   // Devolver votacion segun usuario y tvshow
   @Transactional(readOnly = true)
-  @Security.Authenticated(Roles.class)
-  public Result getTvShowVoteByUserTvShow(Integer tvShowId, Integer userId) {
+  @Security.Authenticated(User.class)
+  public Result getByTvShowUser(Integer tvShowId) {
     ObjectNode result = Json.newObject();
     TvShowVote tvShowVote;
 
-    if (userId != null && tvShowId != null) {
-      tvShowVote = tvShowVoteService.findByTvShowIdUserId(tvShowId, userId);
+    // obtenemos el usuario identificado
+    models.User user = userService.findByEmail(request().username());
+
+    if (user != null && tvShowId != null) {
+      tvShowVote = tvShowVoteService.findByTvShowIdUserId(tvShowId, user.id);
       if (tvShowVote != null) {
         ObjectNode tvShowVoteJSON = Json.newObject();
         tvShowVoteJSON.put("id", tvShowVote.id);
@@ -148,7 +151,7 @@ public class TvShowVoteController extends Controller {
         return notFound(result);
       }
     } else {
-      result.put("error", "userId null/not number or tvShowId null/not number");
+      result.put("error", "tvShowId null/not number");
       return badRequest(result);
     }
 

@@ -53,9 +53,9 @@ PATCH     /api/requests/:id     controllers.TvShowRequestController.rejectTvShow
 
 # TV Show Vote ----------------
 
-### TV Show Vote by userId and tvShowId
-GET     /api/tvshows/:tvShowId/tvshowvotes/users/:userId/   controllers.TvShowVoteController.getTvShowVoteByUserTvShow(tvShowId: Integer, userId: Integer)
-GET     /api/tvshows/:tvShowId/tvshowvotes/users/:userId    controllers.TvShowVoteController.getTvShowVoteByUserTvShow(tvShowId: Integer, userId: Integer)
+### TV Show Vote by tvShowId for autenticated user
+GET     /api/tvshows/:tvShowId/rating/    controllers.TvShowVoteController.getByTvShowUser(tvShowId: Integer)
+GET     /api/tvshows/:tvShowId/rating     controllers.TvShowVoteController.getByTvShowUser(tvShowId: Integer)
 
 PUT     /api/tvshows/:tvShowId/vote/    controllers.TvShowVoteController.voteTvShow(tvShowId: Integer)
 PUT     /api/tvshows/:tvShowId/vote     controllers.TvShowVoteController.voteTvShow(tvShowId: Integer)

@@ -37,6 +37,40 @@ public class TvShowVoteController extends Controller {
     this.userAuth = userAuth;
   }
 
+  // Devolver votacion segun usuario y tvshow
+  @Transactional(readOnly = true)
+  @Security.Authenticated(User.class)
+  public Result getByTvShowUser(Integer tvShowId) {
+    ObjectNode result = Json.newObject();
+    TvShowVote tvShowVote;
+
+    // obtenemos el usuario identificado
+    models.User user = userService.findByEmail(request().username());
+
+    if (tvShowId != null && user != null) {
+      tvShowVote = tvShowVoteService.findByTvShowIdUserId(tvShowId, user.id);
+      if (tvShowVote != null) {
+        ObjectNode tvShowVoteJSON = Json.newObject();
+        tvShowVoteJSON.put("id", tvShowVote.id);
+        tvShowVoteJSON.put("tvShowId", tvShowVote.tvShow.id);
+        tvShowVoteJSON.put("userId", tvShowVote.user.id);
+        tvShowVoteJSON.put("score", tvShowVote.score);
+
+        result.put("ok", "vote found");
+        result.set("tvShowVote", tvShowVoteJSON);
+        return ok(result);
+      } else {
+        // no se ha encontrado
+        result.put("error", "vote doesn't exist");
+        return notFound(result);
+      }
+    } else {
+      result.put("error", "user not valid or tvShowId null/not number");
+      return badRequest(result);
+    }
+
+  }
+
   // Acción de votar (crear votación/modificar votación)
   @Transactional
   @Security.Authenticated(User.class)
@@ -66,7 +100,7 @@ public class TvShowVoteController extends Controller {
     }
 
     // obtenemos el usuario identificado
-    models.User user = userService.findByEmail(userAuth.getUsername(Http.Context.current()));
+    models.User user = userService.findByEmail(request().username());
 
     if (tvShowId != null && user != null) {
       // comprobamos si ya había votado este usuario a esta serie
@@ -121,40 +155,6 @@ public class TvShowVoteController extends Controller {
       result.put("error", "user not valid or tvShowId null/not number");
       return badRequest(result);
     }
-  }
-
-  // Devolver votacion segun usuario y tvshow
-  @Transactional(readOnly = true)
-  @Security.Authenticated(User.class)
-  public Result getByTvShowUser(Integer tvShowId) {
-    ObjectNode result = Json.newObject();
-    TvShowVote tvShowVote;
-
-    // obtenemos el usuario identificado
-    models.User user = userService.findByEmail(request().username());
-
-    if (user != null && tvShowId != null) {
-      tvShowVote = tvShowVoteService.findByTvShowIdUserId(tvShowId, user.id);
-      if (tvShowVote != null) {
-        ObjectNode tvShowVoteJSON = Json.newObject();
-        tvShowVoteJSON.put("id", tvShowVote.id);
-        tvShowVoteJSON.put("tvShowId", tvShowVote.tvShow.id);
-        tvShowVoteJSON.put("userId", tvShowVote.user.id);
-        tvShowVoteJSON.put("score", tvShowVote.score);
-
-        result.put("ok", "vote found");
-        result.set("tvShowVote", tvShowVoteJSON);
-        return ok(result);
-      } else {
-        // no se ha encontrado
-        result.put("error", "vote doesn't exist");
-        return notFound(result);
-      }
-    } else {
-      result.put("error", "tvShowId null/not number");
-      return badRequest(result);
-    }
-
   }
 
   // Acción de borrar votación

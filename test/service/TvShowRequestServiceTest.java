@@ -99,8 +99,15 @@ public class TvShowRequestServiceTest {
   public void testTvShowRequestCreateTvShowInexistentUserNotOk() {
     user1.id = 2;
     TvShowRequest request = new TvShowRequest(296762, user1);
-    TvShowRequest createdRequest = jpa.withTransaction(() -> tvShowRequestService.create(request));
-    assertNull(createdRequest);
+    jpa.withTransaction(() -> {
+      TvShowRequest createdRequest = null;
+      try {
+        createdRequest = tvShowRequestService.create(request);
+      } catch (Exception ex) {
+        // excepcion
+      }
+      assertNull(createdRequest);
+    });
   }
 
   // testeamos a borrar una peticion y que funcione
@@ -149,12 +156,23 @@ public class TvShowRequestServiceTest {
     });
   }
 
-  // testeamos rechazar una peticion
+  // testeamos a actualizar una petición: user null, status string
   @Test
-  public void testTvShowRequestReject() {
+  public void testTvShowRequestUpdateUserNullStatusString() {
     jpa.withTransaction(() -> {
-      tvShowRequestService.reject(1);
-      assertEquals(TvShowRequest.Status.Rejected, tvShowRequestService.findById(1).status);
+      TvShowRequest request = tvShowRequestService.findById(1);
+      tvShowRequestService.update(request, null, "Processing");
+      assertEquals(TvShowRequest.Status.Processing, tvShowRequestService.findById(1).status);
+    });
+  }
+
+  // testeamos a actualizar una petición: user not null, status Status
+  @Test
+  public void testTvShowRequestUpdateUserStatus() {
+    jpa.withTransaction(() -> {
+      TvShowRequest request = tvShowRequestService.findById(1);
+      tvShowRequestService.update(request, user1, TvShowRequest.Status.Processing);
+      assertEquals(TvShowRequest.Status.Processing, tvShowRequestService.findById(1).status);
     });
   }
 

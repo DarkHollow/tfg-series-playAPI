@@ -65,7 +65,7 @@ $(document).on('click', '[data-action=accept-tvShow]', function(e) {
         let host = 'http://' + $('#host').html();
         var promises2 = [];
         let promise2 = $.ajax({
-          url: host + '/api/requests/' + requestId,
+          url: host + '/api/requests/' + requestId + '/newtvshow',
           type: 'PUT',
           headers: {
             'Accept': 'application/json',
@@ -210,8 +210,10 @@ $(document).on('click', '[data-action=reject-tvShow]', function(e) {
         let promise2 = $.ajax({
           url: host + '/api/requests/' + requestId,
           type: 'PATCH',
+          data: JSON.stringify({ "status": "Rejected" }),
           headers: {
             'Accept': 'application/json',
+            'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
           },
           success: function (response) {
@@ -306,10 +308,8 @@ $(document).on('click', '[data-action=get-tvShow-data]', function(e) {
   promise = $.ajax({
     url: host + '/api/tvshows/tvdb/' + tvdbId,
     type: 'GET',
-    dataType: 'json',
     headers: {
       'Accept': 'application/json',
-      'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
     },
     success: function (response) {

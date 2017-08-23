@@ -279,7 +279,6 @@ $(document).on('click', '[data-action=delete-tvShow]', function(e) {
           type: 'DELETE',
           headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
           },
           success: function (response) {

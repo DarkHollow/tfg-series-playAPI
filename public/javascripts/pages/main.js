@@ -165,7 +165,6 @@ $(document).on('click', '[data-evolution=load]', function(e) {
     dataType: 'json',
     headers: {
       'Accept': 'application/json',
-      'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
     },
     success: function (response) {
@@ -234,7 +233,6 @@ $(document).on('click', '[data-evolution=upgrade]', function(e) {
     dataType: 'json',
     headers: {
       'Accept': 'application/json',
-      'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
     },
     success: function (response) {

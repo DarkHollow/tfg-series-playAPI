@@ -47,7 +47,6 @@ $(document).on('click', '[data-action=get-deleted-tvShow-data]', function(e) {
     dataType: 'json',
     headers: {
       'Accept': 'application/json',
-      'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
     },
     success: function (response) {
@@ -80,7 +79,7 @@ $(document).on('click', '[data-action=get-deleted-tvShow-data]', function(e) {
 
 });
 
-// cargar datos de una serie eliminada (boton descargar datos)
+// reaprobar serie eliminada
 $(document).on('click', '[data-action=reaccept-tvShow]', function(e) {
   console.log('reaprobar serie eliminada');
   e.preventDefault();
@@ -137,7 +136,7 @@ $(document).on('click', '[data-action=reaccept-tvShow]', function(e) {
         // hacer peticion
         var promises2 = [];
         let promise2 = $.ajax({
-          url: host + '/api/requests/' + requestId,
+          url: host + '/api/requests/' + requestId + '/newtvshow',
           type: 'PUT',
           headers: {
             'Accept': 'application/json',

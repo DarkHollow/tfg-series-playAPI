@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import json.TvShowViews;
 import models.TvShow;
+import models.TvShowRequest;
 import models.service.TvShowRequestService;
 import models.service.TvShowService;
 import models.service.tvdb.TvdbService;
@@ -270,22 +271,34 @@ public class TvShowController extends Controller {
   public Result deleteTvShow(Integer id) {
     ObjectNode result = Json.newObject();
     Integer tvdbId = tvShowService.find(id).tvdbId;
-
-    if (tvShowService.delete(id)) {
-      result.put("ok", "tv show deleted");
-      result.put("message", "serie eliminada");
-      // cambiar estado de su petición
-      if (tvShowRequestService.deleteTvShow(tvdbId)) {
-        result.put("request", "petición pasada a Deleted");
+    TvShowRequest request = tvShowRequestService.findTvShowRequestByTvdbId(tvdbId);
+    if (request != null) {
+      TvShowRequest.Status actualStatus = request.status;
+      if (tvShowRequestService.update(request, null, TvShowRequest.Status.Processing) != null) {
+        if (tvShowService.delete(id)) {
+          result.put("ok", "tv show deleted");
+          result.put("message", "serie eliminada");
+          // cambiar estado de su petición
+          if (tvShowRequestService.deleteTvShow(tvdbId)) {
+            result.put("request", "petición pasada a Deleted");
+          } else {
+            result.put("request", "no se ha encontrado la request");
+          }
+        } else {
+          result.put("error", "tv show not deleted");
+          result.put("message", "serie no eliminada");
+          tvShowRequestService.update(request, null, actualStatus);
+          return notFound(result);
+        }
+        return ok(result);
       } else {
-        result.put("request", "no se ha encontrado la request");
+        result.put("error", "request cannot be updated");
+        return internalServerError(result);
       }
     } else {
-      result.put("error", "tv show not deleted");
-      result.put("message", "serie no eliminada");
-      return notFound(result);
+      // la serie no tiene request
+      result.put("error", "tv show doesn't have request");
+      return internalServerError(result);
     }
-
-    return ok(result);
   }
 }

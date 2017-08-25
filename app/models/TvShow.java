@@ -91,7 +91,7 @@ public class TvShow {
 
   @OneToMany(mappedBy = "tvShow", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonManagedReference
-  @JsonIgnore
+  @JsonView(TvShowViews.FullTvShow.class)
   public List<TvShowVote> tvShowVotes;
 
   // constructor vacio

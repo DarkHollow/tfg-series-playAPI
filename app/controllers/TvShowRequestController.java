@@ -25,8 +25,6 @@ import utils.Security.Administrator;
 import utils.Security.Roles;
 import utils.Security.User;
 
-import java.util.List;
-
 public class TvShowRequestController extends Controller {
 
   private final TvdbService tvdbService;
@@ -46,67 +44,6 @@ public class TvShowRequestController extends Controller {
     this.userService = userService;
     this.formFactory = formFactory;
     this.userAuth = userAuth;
-  }
-
-  // buscar TV Show en TVDB y marcar las locales
-  // devolver la busqueda de TV Show LIKE
-  @Transactional(readOnly = true)
-  @Security.Authenticated(User.class)
-  public Result searchTvShowTVDBbyName(String query) {
-    if (query.length() >= 3) {
-      try {
-        List<TvShow> tvShows = tvdbService.findOnTVDBby("name", query);
-
-        // si la lista está vacía, not found
-        if (tvShows.isEmpty()) {
-          ObjectNode result = Json.newObject();
-          result.put("error", "Not found");
-          return notFound(result);
-        }
-
-        // asignacion de campos TRANSIENT
-        // si la lista no está vacía, comprobamos series en local
-        for (TvShow tvShow : tvShows) {
-          // tenemos la serie en local ?
-          TvShow localTvShow = tvShowService.findByTvdbId(tvShow.tvdbId);
-          if (localTvShow != null) {
-            tvShow.id = localTvShow.id;
-            tvShow.local = true;
-          } else {
-            tvShow.local = false;
-          }
-
-          // hay request ?
-          TvShowRequest request = tvShowRequestService.findTvShowRequestByTvdbId(tvShow.tvdbId);
-          if (request != null) {
-            tvShow.requestStatus = request.status.toString();
-          }
-        }
-
-        try {
-          JsonNode jsonNode = Json.parse(new ObjectMapper()
-                  .writerWithView(TvShowViews.SearchTVDB.class)
-                  .writeValueAsString(tvShows));
-          return ok(jsonNode);
-
-        } catch (Exception ex) {
-          // si hubiese un error, devolver error interno
-          Logger.debug(ex.getClass().toString());
-          ObjectNode result = Json.newObject();
-          result.put("error", "It can't be processed");
-          return internalServerError(result);
-        }
-      } catch (Exception ex) {
-        ObjectNode result = Json.newObject();
-        result.put("error", "cannot connect with external API");
-        return status(504, result); // gateway timeout
-      }
-
-    } else {
-      ObjectNode result = Json.newObject();
-      result.put("error", "Bad request");
-      return badRequest(result);
-    }
   }
 
   // Peticion POST TvShowRequest

@@ -24,8 +24,8 @@ GET     /api/                       controllers.RootController.index
 # TV Shows ------------------------
 
 ## all TV Shows (future pagination?)
-GET     /api/tvshows/               controllers.TvShowController.all
-GET     /api/tvshows                controllers.TvShowController.all
+GET     /api/tvshows/               controllers.TvShowController.all(search: String ?= "", tvdb: Integer ?= 0)
+GET     /api/tvshows                controllers.TvShowController.all(search: String ?= "", tvdb: Integer ?= 0)
 
 POST    /api/tvshows/               controllers.TvShowController.create
 POST    /api/tvshows                controllers.TvShowController.create
@@ -71,16 +71,6 @@ DELETE  /api/tvshows/:tvShowId/rating     controllers.TvShowVoteController.delet
 ## TV Show on TVDB by tvdbId
 GET     /api/tvshows/tvdb/:tvdbId/  controllers.TvdbController.tvShowById(tvdbId: Integer)
 GET     /api/tvshows/tvdb/:tvdbId   controllers.TvdbController.tvShowById(tvdbId: Integer)
-
-## TV Shows search on TVDB by name
-GET     /api/search/TVDB/:q/        controllers.TvShowRequestController.searchTvShowTVDBbyName(q: String)
-GET     /api/search/TVDB/:q         controllers.TvShowRequestController.searchTvShowTVDBbyName(q: String)
-
-# API Search ---------------------
-
-# TV Shows search by LIKE
-GET     /api/search/tvshows/:q/     controllers.TvShowController.searchTvShowNameLike(q: String)
-GET     /api/search/tvshows/:q      controllers.TvShowController.searchTvShowNameLike(q: String)
 
 
 # Users

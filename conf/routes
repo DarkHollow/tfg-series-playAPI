@@ -27,11 +27,14 @@ GET     /api/                       controllers.RootController.index
 GET     /api/tvshows/               controllers.TvShowController.all
 GET     /api/tvshows                controllers.TvShowController.all
 
+POST    /api/tvshows/               controllers.TvShowController.create
+POST    /api/tvshows                controllers.TvShowController.create
+
 GET     /api/tvshows/:id/            controllers.TvShowController.tvShowById(id: Integer)
 GET     /api/tvshows/:id             controllers.TvShowController.tvShowById(id: Integer)
 
-POST    /api/tvshows/               controllers.TvShowController.create
-POST    /api/tvshows                controllers.TvShowController.create
+PUT     /api/tvshows/:id/         controllers.TvShowController.updateTvShowData(id: Integer)
+PUT     /api/tvshows/:id          controllers.TvShowController.updateTvShowData(id: Integer)
 
 DELETE  /api/tvshows/:id/           controllers.TvShowController.deleteTvShow(id: Integer)
 DELETE  /api/tvshows/:id            controllers.TvShowController.deleteTvShow(id: Integer)
@@ -108,9 +111,6 @@ GET     /admin/tvShows              controllers.AdminController.tvShows()
 
 GET     /admin/tvShows/:id/         controllers.AdminController.tvShow(id: Integer)
 GET     /admin/tvShows/:id          controllers.AdminController.tvShow(id: Integer)
-
-PUT     /admin/tvshows/:id/         controllers.TvShowController.updateTvShowData(id: Integer)
-PUT     /admin/tvshows/:id          controllers.TvShowController.updateTvShowData(id: Integer)
 
 GET     /admin/tvShowRequests/      controllers.AdminController.tvShowRequests()
 GET     /admin/tvShowRequests       controllers.AdminController.tvShowRequests()

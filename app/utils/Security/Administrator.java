@@ -83,7 +83,7 @@ public class Administrator extends Roles {
 
   @Override
   public Result onUnauthorized(Http.Context context) {
-    if (getTokenFromHeader(context) == null) {
+    if (getTokenFromHeader(context) == null && context.request().path().contains("/admin")) {
       return unauthorized(login.render("Trending Series Administration - Login"));
     }
 

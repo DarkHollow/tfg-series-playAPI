@@ -160,7 +160,7 @@ $(document).on('click', '[data-evolution=load]', function(e) {
   // pedir datos de evolutions
   var promises = [];
   promise = $.ajax({
-    url: host + '/admin/evolutions',
+    url: host + '/api/evolutions',
     type: 'GET',
     dataType: 'json',
     headers: {
@@ -228,7 +228,7 @@ $(document).on('click', '[data-evolution=upgrade]', function(e) {
   // pedir datos de evolutions no aplicadas
   var promises = [];
   promise = $.ajax({
-    url: host + '/admin/evolutions/notApplied',
+    url: host + '/api/evolutions?status=not-applied',
     type: 'GET',
     dataType: 'json',
     headers: {
@@ -248,7 +248,7 @@ $(document).on('click', '[data-evolution=upgrade]', function(e) {
             console.log('Aplicando actualización versión ' + evolution.version);
             var data = JSON.stringify({"evolutionId": evolution.id});
             promise2 = $.ajax({
-              url: host + '/admin/evolutions',
+              url: host + '/api/evolutions',
               type: 'PATCH',
               data: data,
               dataType: 'json',

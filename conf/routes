@@ -84,6 +84,13 @@ POST    /api/user/session           controllers.UserController.login()
 GET     /api/user/session/          controllers.UserController.verifySession()
 GET     /api/user/session           controllers.UserController.verifySession()
 
+# Evolutions
+GET     /api/evolutions/            controllers.EvolutionController.getEvolutions(status: String ?= "")
+GET     /api/evolutions             controllers.EvolutionController.getEvolutions(status: String ?= "")
+
+PATCH   /api/evolutions/          controllers.EvolutionController.applyEvolutionJSON
+PATCH   /api/evolutions           controllers.EvolutionController.applyEvolutionJSON
+
 
 # Admin
 
@@ -104,12 +111,3 @@ GET     /admin/tvShows/:id          controllers.AdminController.tvShow(id: Integ
 
 GET     /admin/tvShowRequests/      controllers.AdminController.tvShowRequests()
 GET     /admin/tvShowRequests       controllers.AdminController.tvShowRequests()
-
-GET     /admin/evolutions/          controllers.EvolutionController.getEvolutionsJSON
-GET     /admin/evolutions           controllers.EvolutionController.getEvolutionsJSON
-
-GET     /admin/evolutions/notApplied/   controllers.EvolutionController.getNotAppliedJSON
-GET     /admin/evolutions/notApplied    controllers.EvolutionController.getNotAppliedJSON
-
-PATCH   /admin/evolutions/          controllers.EvolutionController.applyEvolutionJSON
-PATCH   /admin/evolutions           controllers.EvolutionController.applyEvolutionJSON

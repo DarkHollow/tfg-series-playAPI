@@ -178,21 +178,21 @@ public class UserController extends Controller {
           result.put("message", "No hemos podido identificar al usuario. Pruebe de nuevo más tarde");
         } catch (UserService.UserException e) {
           result.put("error", "incorrect email or password");
-          result.put("type", "bad request");
+          result.put("type", "unauthorized");
           result.put("message", "El correo electrónico o la contraseña no son correctos");
-          return badRequest(result);
+          return unauthorized(result);
         }
       } else {
         result.put("error", "incorrect password");
-        result.put("type", "bad request");
+        result.put("type", "unauthorized");
         result.put("message", "La contraseña no tiene la longitud permitida");
-        return badRequest(result);
+        return unauthorized(result);
       }
     } else {
       result.put("error", "empty field or fields");
-      result.put("type", "bad request");
+      result.put("type", "unauthorized");
       result.put("message", "Ningún campo puede estar vacío");
-      return badRequest(result);
+      return unauthorized(result);
     }
 
     // comprobar esta salida

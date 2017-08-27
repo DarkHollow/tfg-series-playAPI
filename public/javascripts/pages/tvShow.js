@@ -43,7 +43,7 @@ $(document).on('click', '[data-action=download-data]', function(e) {
         // hacer peticion
         var promises = [];
         let promise = $.ajax({
-          url: host + '/admin/tvshows/' + tvShowId,
+          url: host + '/api/tvshows/' + tvShowId,
           type: 'PUT',
           data: JSON.stringify({ "update": "data" }),
           headers: {
@@ -145,7 +145,7 @@ $(document).on('click', '[data-action=download-images]', function(e) {
         // hacer peticion
         var promises = [];
         let promise = $.ajax({
-          url: host + '/admin/tvshows/' + tvShowId,
+          url: host + '/api/tvshows/' + tvShowId,
           type: 'PUT',
           data: JSON.stringify({ "update": "images" }),
           headers: {
@@ -279,7 +279,6 @@ $(document).on('click', '[data-action=delete-tvShow]', function(e) {
           type: 'DELETE',
           headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
           },
           success: function (response) {

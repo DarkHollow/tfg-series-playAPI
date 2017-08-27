@@ -10,6 +10,8 @@ import play.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 public class TvShowService {
 
@@ -60,7 +62,7 @@ public class TvShowService {
     return tvShowDAO.all();
   }
 
-  // Delete por id - TODO acordarse de llamar también a TvShowRequestService.deleteTvShow !!!
+  // Delete por id - TODO acordarse de llamar también a TvShowRequestService.delete !!!
   public Boolean delete(Integer id) {
     TvShow tvShow = tvShowDAO.find(id);
     if (tvShow != null) {
@@ -80,7 +82,7 @@ public class TvShowService {
   }
 
   // Update mediante servicios externos
-  public TvShow updateData(TvShow tvShow) {
+  public TvShow updateData(TvShow tvShow) throws InterruptedException, ExecutionException, TimeoutException {
     if (tvShow != null) {
       // TVDB: pedimos los datos provenientes de este servicio
       TvShow tvdbShow = tvdbService.getTvShowTVDB(tvShow.tvdbId);

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
+import json.TvShowViews;
 import models.Evolution;
 import models.TvShow;
 import models.TvShowRequest;
@@ -39,8 +40,32 @@ public class EvolutionController extends Controller {
 
   @Transactional(readOnly = true)
   @Security.Authenticated(Administrator.class)
-  public Result getEvolutionsJSON() {
+  public Result getEvolutions(String status) {
     ObjectNode result = Json.newObject();
+
+    // comprobar si contiene parámetros
+    if (!status.isEmpty()) {
+      // comprobamos si se quiere obtener las evolutions no aplicadas
+      if (status.equals("not-applied")) {
+        return getNotApplied();
+      } else {
+        // status no reconocido
+        result.put("error", "parameters not valid");
+        return badRequest(result);
+      }
+    }
+
+    // todas la evolutions
+    List<Evolution> allEvolutions = evolutionService.all();
+    try {
+      JsonNode jsonNode = Json.parse(new ObjectMapper()
+              .writerWithView(TvShowViews.FullTvShow.class)
+              .writeValueAsString(allEvolutions));
+      result.set("evolutions", jsonNode);
+    } catch (Exception ex) {
+      Logger.error("Cannot parse evolutions object");
+      result.put("evolutions", "error parsing");
+    }
 
     // información de última versión aplicada
     Evolution lastApplied = evolutionService.getLastApplied();
@@ -66,7 +91,7 @@ public class EvolutionController extends Controller {
 
   @Transactional(readOnly = true)
   @Security.Authenticated(Administrator.class)
-  public Result getNotAppliedJSON() {
+  private Result getNotApplied() {
     ObjectNode result = Json.newObject();
 
     // información de actualizaciones necesarias para alcanzar la nueva y última versión

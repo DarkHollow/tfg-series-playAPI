@@ -27,6 +27,31 @@ window.onpopstate = function(e) {
   }
 };
 
+// cerrar adv's
+function closeAdv(id) {
+  var $advClose = $('#' + id);
+
+  containerHeight(); // recalculate page height
+
+  $advClose.slideUp(150, function() {
+    $(this).remove();
+  });
+}
+
+// close advert
+$(document).on('click', '[data-action=close-adv]', function(e) {
+  e.preventDefault();
+  var elementId = $(this).parent().attr('id');
+  closeAdv(elementId);
+});
+
+// Calculate min height
+function containerHeight() {
+  var availableHeight = $(window).height() - $('.page-container').offset().top - $('.navbar-fixed-bottom').outerHeight();
+
+  $('.page-container').attr('style', 'min-height:' + availableHeight + 'px');
+}
+
 /* funciones */
 
 // mostrar nombre usuario
@@ -135,12 +160,11 @@ $(document).on('click', '[data-evolution=load]', function(e) {
   // pedir datos de evolutions
   var promises = [];
   promise = $.ajax({
-    url: host + '/admin/evolutions',
+    url: host + '/api/evolutions',
     type: 'GET',
     dataType: 'json',
     headers: {
       'Accept': 'application/json',
-      'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
     },
     success: function (response) {
@@ -204,12 +228,11 @@ $(document).on('click', '[data-evolution=upgrade]', function(e) {
   // pedir datos de evolutions no aplicadas
   var promises = [];
   promise = $.ajax({
-    url: host + '/admin/evolutions/notApplied',
+    url: host + '/api/evolutions?status=not-applied',
     type: 'GET',
     dataType: 'json',
     headers: {
       'Accept': 'application/json',
-      'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
     },
     success: function (response) {
@@ -225,7 +248,7 @@ $(document).on('click', '[data-evolution=upgrade]', function(e) {
             console.log('Aplicando actualización versión ' + evolution.version);
             var data = JSON.stringify({"evolutionId": evolution.id});
             promise2 = $.ajax({
-              url: host + '/admin/evolutions',
+              url: host + '/api/evolutions',
               type: 'PATCH',
               data: data,
               dataType: 'json',

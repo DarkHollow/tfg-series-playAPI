@@ -37,6 +37,6 @@
          fanart="fanartBreakingBad.jpg" network="AMC" runtime="49" rating="TV-14"
          status="Ended" score="2" voteCount="2" />
 
-  <TvShowRequest id="1" tvdbId="111111" userId="1" requestDate="2017-02-27" />
+  <TvShowRequest id="1" tvdbId="111111" userId="1" requestDate="2017-02-27" status="Requested" />
 
 </dataset>

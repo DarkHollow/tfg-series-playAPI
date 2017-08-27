@@ -7,11 +7,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import json.TvShowViews;
 import models.TvShow;
+import models.TvShowRequest;
 import models.service.TvShowRequestService;
 import models.service.TvShowService;
 import models.service.tvdb.TvdbService;
 import play.Logger;
 import play.data.DynamicForm;
+import play.data.Form;
 import play.data.FormFactory;
 import play.db.jpa.Transactional;
 import play.libs.Json;
@@ -20,6 +22,7 @@ import play.mvc.Result;
 import play.mvc.Security;
 import utils.Security.Administrator;
 import utils.Security.Roles;
+import utils.Security.User;
 
 import java.util.List;
 
@@ -31,7 +34,8 @@ public class TvShowController extends Controller {
   private final FormFactory formFactory;
 
   @Inject
-  public TvShowController(TvShowService tvShowService, TvdbService tvdbService, FormFactory formFactory, TvShowRequestService tvShowRequestService) {
+  public TvShowController(TvShowService tvShowService, TvdbService tvdbService, FormFactory formFactory,
+                          TvShowRequestService tvShowRequestService) {
     this.tvShowService = tvShowService;
     this.tvShowRequestService = tvShowRequestService;
     this.tvdbService = tvdbService;
@@ -42,8 +46,19 @@ public class TvShowController extends Controller {
   // JSON View TvShowView.SearchTvShow: vista que solo incluye los campos
   // relevante de una búsqueda
   @Transactional(readOnly = true)
-  @Security.Authenticated(Administrator.class)
-  public Result all() {
+  @Security.Authenticated(Roles.class)
+  public Result all(String search, Integer tvdb) {
+
+    // comprobar si es búsqueda
+    if (!search.isEmpty()) {
+      // comprobamos si es búsqueda en tvdb
+      if (tvdb == 1) {
+        return searchTvShowTVDBbyName(search);
+      } else {
+        return searchTvShowNameLike(search);
+      }
+    }
+
     List<TvShow> tvShows = tvShowService.all();
 
     // si la lista está vacía, not found
@@ -64,6 +79,44 @@ public class TvShowController extends Controller {
       // si hubiese un error, devolver error interno
       ObjectNode result = Json.newObject();
       result.put("error", "It can't be processed");
+      return internalServerError(result);
+    }
+  }
+
+  @Transactional
+  @Security.Authenticated(Administrator.class)
+  public Result create() {
+    ObjectNode result = Json.newObject();
+
+    Form<TvShow> tvShowForm = formFactory.form(TvShow.class).bindFromRequest();
+
+    if (tvShowForm.hasErrors()) {
+      result.put("error", "tv show data error");
+      result.set("errors", tvShowForm.errorsAsJson());
+      return badRequest(result);
+    }
+
+    try {
+      TvShow tvShow = tvShowForm.get();
+      // comprobamos si ya existe
+      if (tvShowService.findByTvdbId(tvShow.tvdbId) == null) {
+        tvShow = tvShowService.create(tvShow);
+        if (tvShow != null) {
+          result.put("ok", "tv show created");
+          response().setHeader("Location", "/api/tvshows/" + tvShow.id);
+          return created(result);
+        } else {
+          Logger.error("TV Show Controller create - tv show no creado");
+          result.put("error", "tv show not created");
+          return internalServerError(result);
+        }
+      } else {
+        result.put("error", "tv show exists already (tvdb id conflict");
+        return badRequest(result);
+      }
+    } catch (Exception ex) {
+      Logger.error("TV Show Controller create - " + ex.getClass());
+      result.put("error", "some error creating tv show");
       return internalServerError(result);
     }
   }
@@ -96,8 +149,7 @@ public class TvShowController extends Controller {
 
   // devolver la busqueda de TV Shows LIKE
   @Transactional(readOnly = true)
-  @Security.Authenticated(Roles.class)
-  public Result searchTvShowNameLike(String query) {
+  private Result searchTvShowNameLike(String query) {
     if (query.length() >= 3) {
       List<TvShow> tvShows = tvShowService.findBy("name", query, false);
 
@@ -128,9 +180,71 @@ public class TvShowController extends Controller {
     }
   }
 
+  // buscar TV Show en TVDB y marcar las locales
+  // devolver la busqueda de TV Show LIKE
+  @Transactional(readOnly = true)
+  private Result searchTvShowTVDBbyName(String query) {
+    if (query.length() >= 3) {
+      try {
+        List<TvShow> tvShows = tvdbService.findOnTVDBby("name", query);
+
+        // si la lista está vacía, not found
+        if (tvShows.isEmpty()) {
+          ObjectNode result = Json.newObject();
+          result.put("error", "Not found");
+          return notFound(result);
+        }
+
+        // asignacion de campos TRANSIENT
+        // si la lista no está vacía, comprobamos series en local
+        for (TvShow tvShow : tvShows) {
+          // tenemos la serie en local ?
+          TvShow localTvShow = tvShowService.findByTvdbId(tvShow.tvdbId);
+          if (localTvShow != null) {
+            tvShow.id = localTvShow.id;
+            tvShow.score = localTvShow.score;
+            tvShow.voteCount = localTvShow.voteCount;
+            tvShow.local = true;
+          } else {
+            tvShow.local = false;
+          }
+
+          // hay request ?
+          TvShowRequest request = tvShowRequestService.findTvShowRequestByTvdbId(tvShow.tvdbId);
+          if (request != null) {
+            tvShow.requestStatus = request.status.toString();
+          }
+        }
+
+        try {
+          JsonNode jsonNode = Json.parse(new ObjectMapper()
+                  .writerWithView(TvShowViews.SearchTVDB.class)
+                  .writeValueAsString(tvShows));
+          return ok(jsonNode);
+
+        } catch (Exception ex) {
+          // si hubiese un error, devolver error interno
+          Logger.debug(ex.getClass().toString());
+          ObjectNode result = Json.newObject();
+          result.put("error", "It can't be processed");
+          return internalServerError(result);
+        }
+      } catch (Exception ex) {
+        ObjectNode result = Json.newObject();
+        result.put("error", "cannot connect with external API");
+        return status(504, result); // gateway timeout
+      }
+
+    } else {
+      ObjectNode result = Json.newObject();
+      result.put("error", "Bad request");
+      return badRequest(result);
+    }
+  }
+
   @Transactional
   @Security.Authenticated(Administrator.class)
-  public Result updateTvShowData(Integer id) {
+  public Result updateData(Integer id) {
     ObjectNode result = Json.newObject();
     TvShow tvShow = tvShowService.find(id);
 
@@ -148,7 +262,13 @@ public class TvShowController extends Controller {
 
       switch (request) {
         case "data":
-          tvShow = tvShowService.updateData(tvShow);
+          try {
+            tvShow = tvShowService.updateData(tvShow);
+          } catch (Exception ex) {
+            Logger.error("Actualizar datos serie - timeout con API externa");
+            result.put("error", "cannot connect with external API");
+            return status(504, result); // gateway timeout
+          }
           break;
         case "images":
           // las imagenes deben ser una a una desde aquí
@@ -221,25 +341,37 @@ public class TvShowController extends Controller {
 
   @Transactional
   @Security.Authenticated(Administrator.class)
-  public Result deleteTvShow(Integer id) {
+  public Result delete(Integer id) {
     ObjectNode result = Json.newObject();
     Integer tvdbId = tvShowService.find(id).tvdbId;
-
-    if (tvShowService.delete(id)) {
-      result.put("ok", "tv show deleted");
-      result.put("message", "serie eliminada");
-      // cambiar estado de su petición
-      if (tvShowRequestService.deleteTvShow(tvdbId)) {
-        result.put("request", "petición pasada a Deleted");
+    TvShowRequest request = tvShowRequestService.findTvShowRequestByTvdbId(tvdbId);
+    if (request != null) {
+      TvShowRequest.Status actualStatus = request.status;
+      if (tvShowRequestService.update(request, null, TvShowRequest.Status.Processing) != null) {
+        if (tvShowService.delete(id)) {
+          result.put("ok", "tv show deleted");
+          result.put("message", "serie eliminada");
+          // cambiar estado de su petición
+          if (tvShowRequestService.deleteTvShow(tvdbId)) {
+            result.put("request", "petición pasada a Deleted");
+          } else {
+            result.put("request", "no se ha encontrado la request");
+          }
+        } else {
+          result.put("error", "tv show not deleted");
+          result.put("message", "serie no eliminada");
+          tvShowRequestService.update(request, null, actualStatus);
+          return notFound(result);
+        }
+        return ok(result);
       } else {
-        result.put("request", "no se ha encontrado la request");
+        result.put("error", "request cannot be updated");
+        return internalServerError(result);
       }
     } else {
-      result.put("error", "tv show not deleted");
-      result.put("message", "serie no eliminada");
-      return notFound(result);
+      // la serie no tiene request
+      result.put("error", "tv show doesn't have request");
+      return internalServerError(result);
     }
-
-    return ok(result);
   }
 }

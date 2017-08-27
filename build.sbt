@@ -26,9 +26,11 @@ def itTestFilter(name: String): Boolean = (name endsWith "ItTest") || (name ends
 def unitTestFilter(name: String): Boolean = (name endsWith "Test") && !itTestFilter(name)
 
 testOptions in ItTest := Seq(Tests.Filter(itTestFilter))
-testOptions in Test := Seq(Tests.Filter(unitTestFilter))
+javaOptions in ItTest += "-Dconfig.file=conf/ittest.conf"
 
+testOptions in Test := Seq(Tests.Filter(unitTestFilter))
 javaOptions in Test += "-Dconfig.file=conf/test.conf"
+
 PlayKeys.devSettings += "config.resource" -> "debug.conf"
 
 PlayKeys.externalizeResources := false

@@ -18,7 +18,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class TvdbService {
 
@@ -36,7 +38,8 @@ public class TvdbService {
   }
 
   // peticion a TVDB
-  private JsonNode tvdbGetRequest(String query, String language) {
+  private JsonNode tvdbGetRequest(String query, String language)
+          throws InterruptedException, ExecutionException, TimeoutException {
     JsonNode result = null;
     int MAXTRIES = 2; // maximos intentos de refrescar token
     int count = 0;
@@ -80,7 +83,7 @@ public class TvdbService {
         }
       } catch (Exception ex) {
         Logger.error("Petición TVDB - " + ex.getClass());
-        break;
+        throw ex;
       }
     }
 
@@ -191,7 +194,7 @@ public class TvdbService {
   }
 
   // buscar por tvdbId (solo un resultado posible)
-  public TvShow findOnTvdbByTvdbId(Integer tvdbId) {
+  public TvShow findOnTvdbByTvdbId(Integer tvdbId) throws InterruptedException, ExecutionException, TimeoutException {
     TvShow tvShow = null;
     JsonNode respuesta;
     String query = "https://api.thetvdb.com/series/" + tvdbId.toString();
@@ -221,7 +224,8 @@ public class TvdbService {
   }
 
   // buscar por campo
-  public List<TvShow> findOnTVDBby(String field, String value) {
+  public List<TvShow> findOnTVDBby(String field, String value)
+          throws InterruptedException, ExecutionException, TimeoutException {
     // buscamos el TV Show en tvdbConnection
     JsonNode respuesta;
     List<TvShow> tvShows = new ArrayList<>();
@@ -230,27 +234,33 @@ public class TvdbService {
     respuesta = tvdbGetRequest(query, "es");
 
     // recorremos tv shows encontrados en TVDB
-    if (respuesta != null && respuesta.has("data")) {
-      for (JsonNode jsonTvShow : respuesta.withArray("data")) {
-        // obtenemos datos del TV Show
-        TvShow nuevaTvShow = new TvShow();
-        nuevaTvShow.tvdbId = Integer.parseInt(jsonTvShow.get("id").asText()); // id de tvdbConnection
-        nuevaTvShow.name = jsonTvShow.get("seriesName").asText();   // nombre del TV Show
-        nuevaTvShow.banner = jsonTvShow.get("banner").asText();     // banner del TV Show
-        nuevaTvShow.local = false;                                  // iniciamos por defecto a false
+    if (respuesta != null) {
+      if (respuesta.has("data")) {
+        for (JsonNode jsonTvShow : respuesta.withArray("data")) {
+          // obtenemos datos del TV Show
+          TvShow nuevaTvShow = new TvShow();
+          nuevaTvShow.tvdbId = Integer.parseInt(jsonTvShow.get("id").asText()); // id de tvdbConnection
+          nuevaTvShow.name = jsonTvShow.get("seriesName").asText();   // nombre del TV Show
+          nuevaTvShow.banner = jsonTvShow.get("banner").asText();     // banner del TV Show
+          nuevaTvShow.local = false;                                  // iniciamos por defecto a false
 
-        JsonNode fecha = jsonTvShow.get("firstAired");
-        nuevaTvShow.firstAired = parseDate(fecha);
+          JsonNode fecha = jsonTvShow.get("firstAired");
+          nuevaTvShow.firstAired = parseDate(fecha);
 
-        // finalmente la añadimos a la lista
-        tvShows.add(nuevaTvShow);
+          // finalmente la añadimos a la lista
+          tvShows.add(nuevaTvShow);
+        }
+      } else if (respuesta.has("error")) {
+        Logger.info("TVDB Service findOnTVDBby: " + respuesta.get("error").toString());
       }
+    } else {
+      Logger.error("No se ha podido hacer petición a TVDB: TVDB caída, falta de conexión, timeout de petición...");
     }
 
     return tvShows;
   }
 
-  public TvShow getTvShowTVDB(Integer tvdbId) {
+  public TvShow getTvShowTVDB(Integer tvdbId) throws InterruptedException, ExecutionException, TimeoutException {
     TvShow tvShow = null;
     JsonNode respuesta;
     String query = "https://api.thetvdb.com/series/" + tvdbId.toString();

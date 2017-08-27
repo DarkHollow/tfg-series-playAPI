@@ -59,6 +59,7 @@
     <div class="panel" id="persisted_requests_table_panel">
         <div class="panel-heading">
             <h6 class="panel-title">Peticiones aceptadas: <span class="badge badge-primary">@requestedRequests.size()</span></h6>
+            <div id="accepted-adv" class="text-center"><a data-action="close-adv"><span class="label label-striped">Para cargar los datos, pulsa en el botón <i class="icon-download"></i> de la derecha</span></a></div>
             <div class="heading-elements">
                 <ul class="icons-list">
                     <li><a href="@routes.AdminController.tvShowRequests()" data-action="get-list" class="tooltips" data-popup="tooltip" title="Recargar lista de peticiones"><i class="icon-database-refresh"></i></a></li>
@@ -86,6 +87,7 @@
     <div class="panel" id="rejected_requests_table_panel">
         <div class="panel-heading">
             <h6 class="panel-title">Peticiones rechazadas: <span class="badge badge-danger">@rejectedRequests.size()</span></h6>
+            <div id="rejected-adv" class="text-center"><a data-action="close-adv"><span class="label label-striped">Para cargar los datos, pulsa en el botón <i class="icon-download"></i> de la derecha</span></a></div>
             <div class="heading-elements">
                 <ul class="icons-list">
                     <li><a href="@routes.AdminController.tvShowRequests()" data-action="get-list" class="tooltips" data-popup="tooltip" title="Recargar lista de peticiones"><i class="icon-database-refresh"></i></a></li>
@@ -175,7 +177,7 @@
             $('.datatable-rejected').DataTable({
                 columnDefs: [{
                     orderable: false,
-                    targets: [ 2, 5 ]
+                    targets: [ 2, 6 ]
                 }]
             });
 
@@ -265,6 +267,13 @@
 
             $.when.apply(null, promises).done(function() {
                 $('#requests_table_panel').unblock();
+            }).fail(function() {
+                $('#requests_table_panel').unblock();
+                swal({
+                   title: 'Aviso',
+                   text: 'Algunas peticiones no se han podido cargar, int\u00E9ntalo de nuevo m\u00E1s tarde.',
+                   type: 'warning'
+                });
             });
         }
 

@@ -12,6 +12,7 @@ $(document).on('click', '.panel [data-action=load-persisted-requests]', function
   e.preventDefault();
   persistedRequestsTableClear();
   persistedRequestsTableLoad();
+  closeAdv('accepted-adv');
 });
 
 // mostrar datos peticiones rechazadas
@@ -19,6 +20,7 @@ $(document).on('click', '.panel [data-action=load-rejected-requests]', function(
   e.preventDefault();
   rejectedRequestsTableClear();
   rejectedRequestsTableLoad();
+  closeAdv('rejected-adv');
 });
 
 // aceptar serie
@@ -62,15 +64,11 @@ $(document).on('click', '[data-action=accept-tvShow]', function(e) {
         // hacer peticion
         let host = 'http://' + $('#host').html();
         var promises2 = [];
-        var data = JSON.stringify({"requestId": requestId});
         let promise2 = $.ajax({
-          url: host + '/admin/tvshows/requests',
+          url: host + '/api/requests/' + requestId + '/newtvshow',
           type: 'PUT',
-          data: data,
-          dataType: 'json',
           headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
           },
           success: function (response) {
@@ -143,7 +141,7 @@ $(document).on('click', '[data-action=accept-tvShow]', function(e) {
               'Error persistiendo' +
               '</div>' +
               '<ul class="media-list check-list dropdown-content-body">' +
-              '<li>' + response.responseJSON.error + '</li>' +
+              '<li>' + response + '</li>' +
               '<li class="divider"></li>' +
               '<li><button type="button" data-action="get-list" class="btn btn-labeled btn-xs bg-warning btn-group-justified"><b><i class="icon-database-refresh"></i></b> Recargar lista</button></li>' +
               '</ul>' +
@@ -156,6 +154,8 @@ $(document).on('click', '[data-action=accept-tvShow]', function(e) {
         promises2.push(promise2);
 
         $.when.apply(null, promises2).done(function() {
+          $('#requests_table_panel').unblock();
+        }).fail(function(promise) {
           $('#requests_table_panel').unblock();
         });
       } else {
@@ -207,12 +207,10 @@ $(document).on('click', '[data-action=reject-tvShow]', function(e) {
         // hacer peticion
         let host = 'http://' + $('#host').html();
         var promises2 = [];
-        var data = JSON.stringify({"requestId": requestId});
         let promise2 = $.ajax({
-          url: host + '/admin/tvshows/requests',
+          url: host + '/api/requests/' + requestId,
           type: 'PATCH',
-          data: data,
-          dataType: 'json',
+          data: JSON.stringify({ "status": "Rejected" }),
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -310,10 +308,8 @@ $(document).on('click', '[data-action=get-tvShow-data]', function(e) {
   promise = $.ajax({
     url: host + '/api/tvshows/tvdb/' + tvdbId,
     type: 'GET',
-    dataType: 'json',
     headers: {
       'Accept': 'application/json',
-      'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
     },
     success: function (response) {

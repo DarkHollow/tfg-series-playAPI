@@ -27,29 +27,33 @@ public class TvdbController extends Controller {
   @Transactional(readOnly = true)
   @Security.Authenticated(Administrator.class)
   public Result tvShowById(Integer tvdbId) {
-
-    TvShow tvShow = tvdbService.findOnTvdbByTvdbId(tvdbId);
-    if (tvShow != null) {
-      try {
-        JsonNode jsonNode = Json.parse(new ObjectMapper()
-                .writerWithView(TvShowViews.SearchTvShowTvdbId.class)
-                .writeValueAsString(tvShow));
-        // quitamos campos no relevantes
-        ObjectNode object = (ObjectNode) jsonNode;
-        object.remove("id");
-        return ok(object);
-
-      } catch (Exception ex) {
-        // si hubiese un error, devolver error interno
+    try {
+      TvShow tvShow = tvdbService.findOnTvdbByTvdbId(tvdbId);
+      if (tvShow != null) {
+        try {
+          JsonNode jsonNode = Json.parse(new ObjectMapper()
+                  .writerWithView(TvShowViews.SearchTvShowTvdbId.class)
+                  .writeValueAsString(tvShow));
+          // quitamos campos no relevantes
+          ObjectNode object = (ObjectNode) jsonNode;
+          object.remove("id");
+          return ok(object);
+        } catch (Exception ex) {
+          // si hubiese un error, devolver error interno
+          ObjectNode result = Json.newObject();
+          result.put("error", "It can't be processed");
+          return internalServerError(result);
+        }
+      } else {
         ObjectNode result = Json.newObject();
-        result.put("error", "It can't be processed");
-        return internalServerError(result);
+        result.put("error", "Not found");
+        return notFound(result);
       }
-    } else {
+    } catch (Exception ex) {
       ObjectNode result = Json.newObject();
-      result.put("error", "Not found");
-      return notFound(result);
+      result.put("error", "cannot connect with external API");
+      return status(504, result); // gateway timeout
     }
-
   }
+
 }

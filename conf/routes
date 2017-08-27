@@ -2,120 +2,51 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# An example controller showing how to use dependency injection
-GET     /count                      controllers.CountController.count
-# An example controller showing how to write asynchronous code
-GET     /message                    controllers.AsyncController.message
-
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+GET     /assets/*file                   controllers.Assets.versioned(path="/public", file: Asset)
 
 # API documentation with Swagger --
-GET     /api/doc                    controllers.Default.redirect(to = "doc/")
-GET     /api/doc/                   controllers.Assets.at(path="/public/doc", file = "index.html")
-GET     /api/doc/*file              controllers.Assets.at(path="/public/doc", file)
-
+GET     /api/doc                        controllers.Default.redirect(to = "doc/")
+GET     /api/doc/                       controllers.Assets.at(path="/public/doc", file = "index.html")
+GET     /api/doc/*file                  controllers.Assets.at(path="/public/doc", file)
 
 # API root ------------------------
-GET     /api                        controllers.Default.redirect(to = "api/")
-GET     /api/                       controllers.RootController.index
-
+GET     /api                            controllers.Default.redirect(to = "api/")
+GET     /api/                           controllers.RootController.index
 
 # TV Shows ------------------------
+GET     /api/tvshows                    controllers.TvShowController.all(search: String ?= "", tvdb: Integer ?= 0)
+POST    /api/tvshows                    controllers.TvShowController.create
+GET     /api/tvshows/:id                controllers.TvShowController.tvShowById(id: Integer)
+PUT     /api/tvshows/:id                controllers.TvShowController.updateData(id: Integer)
+DELETE  /api/tvshows/:id                controllers.TvShowController.delete(id: Integer)
 
-## all TV Shows (future pagination?)
-GET     /api/tvshows/               controllers.Default.redirect(to = "../tvShowRequests")
-GET     /api/tvshows                controllers.TvShowController.all
+# TV Show requests ----------------
+POST    /api/requests                   controllers.TvShowRequestController.create
+PATCH   /api/requests/:id               controllers.TvShowRequestController.update(id: Integer)
+PUT     /api/requests/:id/newtvshow     controllers.TvShowRequestController.newTvShow(id: Integer)
 
-## TV Show by id
-GET     /api/tvshow/:id/            controllers.TvShowController.tvShowById(id: Integer)
-GET     /api/tvshow/:id             controllers.TvShowController.tvShowById(id: Integer)
+# TV Show Votes -------------------
+GET     /api/tvshows/:tvShowId/rating   controllers.TvShowVoteController.getByTvShowUser(tvShowId: Integer)
+PUT     /api/tvshows/:tvShowId/rating   controllers.TvShowVoteController.createTvShowUser(tvShowId: Integer)
+DELETE  /api/tvshows/:tvShowId/rating   controllers.TvShowVoteController.deleteTvShowUser(tvShowId: Integer)
 
-DELETE  /api/tvshows/:id/           controllers.TvShowController.deleteTvShow(id: Integer)
-DELETE  /api/tvshows/:id            controllers.TvShowController.deleteTvShow(id: Integer)
+# The TVDB API --------------------
+GET     /api/tvshows/tvdb/:tvdbId       controllers.TvdbController.tvShowById(tvdbId: Integer)
 
-## TV Show on TVDB by tvdbId
+# Users ---------------------------
+POST    /api/user                       controllers.UserController.register()
+POST    /api/user/session               controllers.UserController.login()
+GET     /api/user/session               controllers.UserController.verifySession()
 
-GET     /api/tvshows/tvdb/:tvdbId/  controllers.TvdbController.tvShowById(tvdbId: Integer)
-GET     /api/tvshows/tvdb/:tvdbId   controllers.TvdbController.tvShowById(tvdbId: Integer)
+# Evolutions
+GET     /api/evolutions                 controllers.EvolutionController.getEvolutions(status: String ?= "")
+PATCH   /api/evolutions                 controllers.EvolutionController.applyEvolutionJSON
 
-# TV Show request ----------------
-
-## TV Shows search on TVDB by name
-GET     /api/search/TVDB/:q/        controllers.TvShowRequestController.searchTvShowTVDBbyName(q: String)
-GET     /api/search/TVDB/:q         controllers.TvShowRequestController.searchTvShowTVDBbyName(q: String)
-
-## TV Show request
-POST    /api/tvshows/requests/      controllers.TvShowRequestController.requestTvShow
-POST    /api/tvshows/requests       controllers.TvShowRequestController.requestTvShow
-
-### TV Show request acceptance (admin)
-PUT     /admin/tvshows/requests/    controllers.TvShowRequestController.acceptTvShowRequest()
-PUT     /admin/tvshows/requests     controllers.TvShowRequestController.acceptTvShowRequest()
-
-### TV Show request rejection (admin)
-PATCH     /admin/tvshows/requests/    controllers.TvShowRequestController.rejectTvShowRequest()
-PATCH     /admin/tvshows/requests     controllers.TvShowRequestController.rejectTvShowRequest()
-
-# TV Show Vote ----------------
-
-### TV Show Vote by userId and tvShowId
-GET     /api/tvshows/:tvShowId/tvshowvotes/users/:userId/   controllers.TvShowVoteController.getTvShowVoteByUserTvShow(tvShowId: Integer, userId: Integer)
-GET     /api/tvshows/:tvShowId/tvshowvotes/users/:userId    controllers.TvShowVoteController.getTvShowVoteByUserTvShow(tvShowId: Integer, userId: Integer)
-
-PUT     /api/tvshows/:tvShowId/vote/    controllers.TvShowVoteController.voteTvShow(tvShowId: Integer)
-PUT     /api/tvshows/:tvShowId/vote     controllers.TvShowVoteController.voteTvShow(tvShowId: Integer)
-
-DELETE  /api/tvshows/:tvShowId/vote/    controllers.TvShowVoteController.deleteTvShowVote(tvShowId: Integer)
-DELETE  /api/tvshows/:tvShowId/vote     controllers.TvShowVoteController.deleteTvShowVote(tvShowId: Integer)
-
-# API Search ---------------------
-
-# TV Shows search by LIKE
-GET     /api/search/tvshows/:q/     controllers.TvShowController.searchTvShowNameLike(q: String)
-GET     /api/search/tvshows/:q      controllers.TvShowController.searchTvShowNameLike(q: String)
-
-
-# Users
-
-POST    /api/user/                  controllers.UserController.register()
-POST    /api/user                   controllers.UserController.register()
-
-POST    /api/user/session/          controllers.UserController.login()
-POST    /api/user/session           controllers.UserController.login()
-
-GET     /api/user/session/          controllers.UserController.verifySession()
-GET     /api/user/session           controllers.UserController.verifySession()
-
-
-# Admin
-
-## Homepage redirects to admin
-GET     /                           controllers.Default.redirect(to = "admin/")
-
-GET     /admin/login/               controllers.AdminController.loginView()
-GET     /admin/login                controllers.AdminController.loginView()
-
-GET     /admin/                     controllers.AdminController.index()
-GET     /admin                      controllers.AdminController.index()
-
-GET     /admin/tvShows/             controllers.AdminController.tvShows()
-GET     /admin/tvShows              controllers.AdminController.tvShows()
-
-GET     /admin/tvShows/:id/         controllers.AdminController.tvShow(id: Integer)
-GET     /admin/tvShows/:id          controllers.AdminController.tvShow(id: Integer)
-
-PUT     /admin/tvshows/:id/         controllers.TvShowController.updateTvShowData(id: Integer)
-PUT     /admin/tvshows/:id          controllers.TvShowController.updateTvShowData(id: Integer)
-
-GET     /admin/tvShowRequests/      controllers.AdminController.tvShowRequests()
-GET     /admin/tvShowRequests       controllers.AdminController.tvShowRequests()
-
-GET     /admin/evolutions/          controllers.EvolutionController.getEvolutionsJSON
-GET     /admin/evolutions           controllers.EvolutionController.getEvolutionsJSON
-
-GET     /admin/evolutions/notApplied/   controllers.EvolutionController.getNotAppliedJSON
-GET     /admin/evolutions/notApplied    controllers.EvolutionController.getNotAppliedJSON
-
-PATCH   /admin/evolutions/          controllers.EvolutionController.applyEvolutionJSON
-PATCH   /admin/evolutions           controllers.EvolutionController.applyEvolutionJSON
+# Admin client
+GET     /                               controllers.Default.redirect(to = "admin/")
+GET     /admin/login                    controllers.AdminController.loginView()
+GET     /admin                          controllers.AdminController.index()
+GET     /admin/tvShows                  controllers.AdminController.tvShows()
+GET     /admin/tvShows/:id              controllers.AdminController.tvShow(id: Integer)
+GET     /admin/tvShowRequests           controllers.AdminController.tvShowRequests()

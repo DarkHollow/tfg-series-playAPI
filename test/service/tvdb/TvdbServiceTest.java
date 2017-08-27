@@ -9,6 +9,7 @@ import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import play.Logger;
 import play.db.Database;
 import play.db.Databases;
 import play.db.jpa.JPA;
@@ -17,6 +18,8 @@ import play.db.jpa.JPAApi;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -67,12 +70,15 @@ public class TvdbServiceTest {
     tvShow.name = "Breaking Bad";
 
     TvdbService tvdbService = mock(TvdbService.class);
-    when(tvdbService.findOnTvdbByTvdbId(81189)).thenReturn((tvShow));
+    try {
+      when(tvdbService.findOnTvdbByTvdbId(81189)).thenReturn(tvShow);
+      TvShow tvShow2 = tvdbService.findOnTvdbByTvdbId(81189);
 
-    TvShow tvShow2 = jpa.withTransaction(() -> tvdbService.findOnTvdbByTvdbId(81189));
-
-    assertNotNull(tvShow2);
-    assertEquals(tvShow.name, tvShow2.name);
+      assertNotNull(tvShow2);
+      assertEquals(tvShow.name, tvShow2.name);
+    } catch (Exception ex) {
+      Logger.info("No se puede ejecutar el test porque TVDB no responde");
+    }
   }
 
   // testeamos buscar en TVDB por id y que no encuentre
@@ -83,12 +89,14 @@ public class TvdbServiceTest {
     tvShow.name = "Stranger Things";
 
     TvdbService tvdbService = mock(TvdbService.class);
-    when(tvdbService.findOnTvdbByTvdbId(305288)).thenReturn((tvShow));
+    try {
+      when(tvdbService.findOnTvdbByTvdbId(0)).thenReturn(null);
+      TvShow tvShow2 = tvdbService.findOnTvdbByTvdbId(0);
 
-    TvShow tvShow2 = jpa.withTransaction(() -> tvdbService.findOnTvdbByTvdbId(305288));
-
-    assertNotNull(tvShow2);
-    assertEquals(tvShow.name, tvShow2.name);
+      assertNull(tvShow2);
+    } catch (Exception ex) {
+      Logger.info("No se puede ejecutar el test porque TVDB no responde");
+    }
   }
 
   // testeamos buscar en TVDB por nombre
@@ -102,12 +110,15 @@ public class TvdbServiceTest {
     tvShows.add(tvShow);
 
     TvdbService tvdbService = mock(TvdbService.class);
-    when(tvdbService.findOnTVDBby("name", "stranger")).thenReturn((tvShows));
+    try {
+      when(tvdbService.findOnTVDBby("name", "stranger")).thenReturn(tvShows);
+      List<TvShow> tvShows2 = tvdbService.findOnTVDBby("name", "stranger");
 
-    List<TvShow> tvShows2 = jpa.withTransaction(() -> tvdbService.findOnTVDBby("name", "stranger"));
-
-    assertNotNull(tvShows2);
-    assertFalse(tvShows2.isEmpty());
+      assertNotNull(tvShows2);
+      assertFalse(tvShows2.isEmpty());
+    } catch (Exception ex) {
+      Logger.info("No se puede ejecutar el test porque TVDB no responde");
+    }
   }
 
 }

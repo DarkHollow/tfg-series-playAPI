@@ -2,6 +2,7 @@ package service;
 
 import models.TvShow;
 import models.TvShowRequest;
+import models.User;
 import models.dao.TvShowDAO;
 import models.dao.TvShowRequestDAO;
 import models.dao.UserDAO;
@@ -26,9 +27,7 @@ import utils.Security.Password;
 import java.io.FileInputStream;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 public class TvShowRequestServiceTest {
@@ -36,6 +35,7 @@ public class TvShowRequestServiceTest {
   private static JPAApi jpa;
   private JndiDatabaseTester databaseTester;
   private static TvShowRequestService tvShowRequestService;
+  private static User user1;
 
   @Before
   public void initData() throws Exception {
@@ -48,15 +48,14 @@ public class TvShowRequestServiceTest {
     });
     jpa = JPA.createFor("memoryPersistenceUnit");
 
-    // inicializamos tvShowRequestService
+    // inicializamos tvShowRequestService y demas
+    user1 = new User();
+    user1.id = 1;
     TvShowDAO tvShowDAO = new TvShowDAO(jpa);
     TvdbService tvdbService = mock(TvdbService.class);
     TvShowService tvShowService = new TvShowService(tvShowDAO, tvdbService);
-    UserDAO userDAO = new UserDAO(jpa);
-    Password sr = new Password();
-    UserService userService = new UserService(userDAO, sr);
     TvShowRequestDAO tvShowRequestDAO = new TvShowRequestDAO(jpa);
-    tvShowRequestService = new TvShowRequestService(tvShowService, userService, tvShowRequestDAO);
+    tvShowRequestService = new TvShowRequestService(tvShowService, tvShowRequestDAO);
 
     // inicializamos base de datos de prueba
     databaseTester = new JndiDatabaseTester("DefaultDS");
@@ -81,23 +80,34 @@ public class TvShowRequestServiceTest {
 
   // testeamos pedir un tv show que no tengamos en local (resultado OK)
   @Test
-  public void testTvShowRequestRequestTvShowOk() {
-    Boolean request = jpa.withTransaction(() -> tvShowRequestService.requestTvShow(296762, 1));
-    assertTrue(request);
+  public void testTvShowRequestCreateOk() {
+    TvShowRequest request = new TvShowRequest(296762, user1);
+    TvShowRequest createdRequest = jpa.withTransaction(() -> tvShowRequestService.create(request));
+    assertNotNull(createdRequest);
   }
 
   // testeamos pedir un tv show que SÍ tengamos en local (resultado not OK)
   @Test
-  public void testTvShowRequestRequestTvShowInLocalNotOk() {
-    Boolean request = jpa.withTransaction(() -> tvShowRequestService.requestTvShow(78804, 1));
-    assertFalse(request);
+  public void testTvShowRequestCreateTvShowInLocalNotOk() {
+    TvShowRequest request = new TvShowRequest(78804, user1);
+    TvShowRequest createdRequest = jpa.withTransaction(() -> tvShowRequestService.create(request));
+    assertNull(createdRequest);
   }
 
   // testeamos pedir una tv show que no tengamos en local con user inexistente (resultado not OK)
   @Test
-  public void testTvShowRequestRequestTvShowInexistentUserNotOk() {
-    Boolean request = jpa.withTransaction(() -> tvShowRequestService.requestTvShow(296762, 2));
-    assertFalse(request);
+  public void testTvShowRequestCreateTvShowInexistentUserNotOk() {
+    user1.id = 2;
+    TvShowRequest request = new TvShowRequest(296762, user1);
+    jpa.withTransaction(() -> {
+      TvShowRequest createdRequest = null;
+      try {
+        createdRequest = tvShowRequestService.create(request);
+      } catch (Exception ex) {
+        // excepcion
+      }
+      assertNull(createdRequest);
+    });
   }
 
   // testeamos a borrar una peticion y que funcione
@@ -127,8 +137,10 @@ public class TvShowRequestServiceTest {
       }
 
       // añadimos
-      tvShowRequestService.requestTvShow(222222, 1);
-      tvShowRequestService.requestTvShow(333333, 1);
+      TvShowRequest request1 = new TvShowRequest(222222, user1);
+      TvShowRequest request2 = new TvShowRequest(333333, user1);
+      tvShowRequestService.create(request1);
+      tvShowRequestService.create(request2);
       requests.clear();
       requests = tvShowRequestService.all();
 
@@ -136,16 +148,31 @@ public class TvShowRequestServiceTest {
       requests.get(requests.size() - 2).status = TvShowRequest.Status.Requested;
       requests.get(requests.size() - 1).status = TvShowRequest.Status.Processing;
 
+      // obtenemos peticiones pending
+      requests.clear();
+      requests = tvShowRequestService.getPending();
+
       assertEquals( 2, requests.size());
     });
   }
 
-  // testeamos rechazar una peticion
+  // testeamos a actualizar una petición: user null, status string
   @Test
-  public void testTvShowRequestReject() {
+  public void testTvShowRequestUpdateUserNullStatusString() {
     jpa.withTransaction(() -> {
-      tvShowRequestService.reject(1);
-      assertEquals(TvShowRequest.Status.Rejected, tvShowRequestService.findById(1).status);
+      TvShowRequest request = tvShowRequestService.findById(1);
+      tvShowRequestService.update(request, null, "Processing");
+      assertEquals(TvShowRequest.Status.Processing, tvShowRequestService.findById(1).status);
+    });
+  }
+
+  // testeamos a actualizar una petición: user not null, status Status
+  @Test
+  public void testTvShowRequestUpdateUserStatus() {
+    jpa.withTransaction(() -> {
+      TvShowRequest request = tvShowRequestService.findById(1);
+      tvShowRequestService.update(request, user1, TvShowRequest.Status.Processing);
+      assertEquals(TvShowRequest.Status.Processing, tvShowRequestService.findById(1).status);
     });
   }
 

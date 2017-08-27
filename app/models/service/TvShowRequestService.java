@@ -1,32 +1,49 @@
 package models.service;
 
 import com.google.inject.Inject;
-import models.TvShow;
 import models.TvShowRequest;
+import models.TvShowRequest.Status;
 import models.User;
 import models.dao.TvShowRequestDAO;
 import play.Logger;
 
-import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TvShowRequestService {
 
   private final TvShowService tvShowService;
-  private final UserService userService;
   private final TvShowRequestDAO rqDAO;
 
   @Inject
-  public TvShowRequestService(TvShowService tvShowService, UserService userService, TvShowRequestDAO rqDAO) {
+  public TvShowRequestService(TvShowService tvShowService, TvShowRequestDAO rqDAO) {
     this.tvShowService = tvShowService;
-    this.userService = userService;
     this.rqDAO = rqDAO;
   }
 
   // create
-  public TvShowRequest createRequest(TvShowRequest request) {
-    return rqDAO.create(request);
+  public TvShowRequest create(TvShowRequest request) {
+    // comprobamos que la serie no exista ya
+    if (tvShowService.findByTvdbId(request.tvdbId) == null) {
+      // comprobar si existe ya petición para actualizarla
+      TvShowRequest actualRequest = findTvShowRequestByTvdbId(request.tvdbId);
+      if (actualRequest != null) {
+        if (update(actualRequest, null, Status.Processing) != null) {
+          return update(actualRequest, request.user, Status.Requested);
+        } else {
+          Logger.error("TvShowRequest Service - create: no se puede actualizar request ya existente");
+          return null;
+        }
+      } else {
+        // crear request nueva
+        request.status = Status.Requested;
+        request.requestCount = 1;
+        return rqDAO.create(request);
+      }
+    } else {
+      Logger.error("TvShowRequest Service - create: la serie ya existe");
+      return null;
+    }
   }
 
   // obtener peticion por id
@@ -69,57 +86,106 @@ public class TvShowRequestService {
   // buscar peticiones por id de TVDB
   public TvShowRequest findTvShowRequestByTvdbId(Integer tvdbId) { return rqDAO.findTvShowRequetByTvdbId(tvdbId); }
 
-  // petición TV Show (si existe actualizar, si no existe crear)
-  public Boolean requestTvShow(Integer tvdbId, Integer userId) {
-    Boolean result = false;
-
-    // comprobamos que no esté en nuetra base de datos ya
-    if (tvShowService.findByTvdbId(tvdbId) == null) {
-      // encontrar al user
-      User user = userService.find(userId);
-      if (user != null) {
-        // comprobar si existe ya petición para actualizarla
-        TvShowRequest actualRequest = findTvShowRequestByTvdbId(tvdbId);
-        if (actualRequest != null) {
-          // como ya existe, si el estado es rejected o deleted, la actualizamos
-          if (actualRequest.status.equals(TvShowRequest.Status.Rejected) || actualRequest.status.equals(TvShowRequest.Status.Deleted)) {
-            actualRequest.lastStatus = actualRequest.status;
-            actualRequest.status = TvShowRequest.Status.Requested;
-            actualRequest.requestCount = actualRequest.requestCount + 1;
-            actualRequest.user = user;
-            result = true;
-          }
-        } else {
-          // no existe petición de esta serie, crearla
-          TvShowRequest request = new TvShowRequest(tvdbId, user);
-          request.status = TvShowRequest.Status.Requested;
-          request.requestCount = 1;
-          try {
-            request = createRequest(request);
-            if (request != null) {
-              result = true;
+  // update peticion
+  public TvShowRequest update(TvShowRequest request, User user, Status status) {
+    if (request != null) {
+      // comprobamos status
+      if (status != null) {
+        Status actualStatus = request.status;
+        // cambios posibles (los ponemos por si el status fuera no válido!)
+        switch (status) {
+          case Requested:
+            if (!(actualStatus.equals(Status.Requested) ||
+                    actualStatus.equals(Status.Processing))) {
+              return null;
             }
-          } catch (Exception ex) {
-            // problema al crear
-            Logger.info("TvShowRequestService - requestTvShow() Exception: " + ex.getClass());
-          }
+            break;
+          case Processing:
+            if (!(actualStatus.equals(Status.Requested) ||
+                    actualStatus.equals(Status.Processing) ||
+                    actualStatus.equals(Status.Persisted) ||
+                    actualStatus.equals(Status.Rejected) ||
+                    actualStatus.equals(Status.Deleted))) {
+              return null;
+            }
+            break;
+          case Persisted:
+            if (!(actualStatus.equals(Status.Persisted) ||
+                    actualStatus.equals(Status.Processing))) {
+              return null;
+            }
+            break;
+          case Rejected:
+            if (!(actualStatus.equals(Status.Rejected) ||
+                    actualStatus.equals(Status.Processing))) {
+              return null;
+            }
+            break;
+          case Deleted:
+            if (!(actualStatus.equals(Status.Deleted) ||
+                    actualStatus.equals(Status.Processing))) {
+              return null;
+            }
+            break;
+          default:
+            Logger.error("Request Service update - Status de petición no reconocido");
+            return null;
         }
+
+        // si el estado estado anterior es rejected or deleted y el nuevo no es processing:
+        // actualizar usuario y contador + 1, porque significa que el usuario está volviendo a pedir serie
+        if (user != null &&
+                status != Status.Processing &&
+                (request.lastStatus.equals(Status.Rejected) || request.lastStatus.equals(Status.Deleted))) {
+          request.user = user;
+          request.requestCount++;
+        }
+
+        // guardamos en lastStatus el estado anterior siempre que el actual no sea processing,
+        // o que el nuevo sea igual que el actual
+        if (actualStatus != Status.Processing) {
+          request.lastStatus = request.status;
+        }
+        request.status = status;
+        return request;
+      } else {
+        // status null
+        return null;
+      }
+    } else {
+      Logger.error("Request Service update - request null");
+      return null;
+    }
+  }
+
+  // update peticion status string
+  public TvShowRequest update(TvShowRequest request, User user, String status) {
+    Status newStatus = null;
+    // comprobamos si hay status nuevo a transformar
+    if (status != null) {
+      switch (status) {
+        case "Requested":
+          newStatus = Status.Requested;
+          break;
+        case "Processing":
+          newStatus = Status.Processing;
+          break;
+        case "Persisted":
+          newStatus = Status.Persisted;
+          break;
+        case "Rejected":
+          newStatus = Status.Rejected;
+          break;
+        case "Deleted":
+          newStatus = Status.Deleted;
+          break;
+        default:
+          Logger.error("Request Service update - Status de petición no reconocido");
+          return null;
       }
     }
 
-    return result;
-  }
-
-  // rechazar peticion
-  public Boolean reject(Integer id) {
-    TvShowRequest tvShowRequest = rqDAO.find(id);
-    if (tvShowRequest != null) {
-      tvShowRequest.lastStatus = tvShowRequest.status;
-      tvShowRequest.status = TvShowRequest.Status.Rejected;
-      return true;
-    } else {
-      return false;
-    }
+    return update(request, user, newStatus);
   }
 
   // delete por id
@@ -136,16 +202,19 @@ public class TvShowRequestService {
   // delete TV Show, necesario para cuando se borra un TV Show, cambia el estado de la petición a deleted
   // no borra la petición
   public Boolean deleteTvShow(Integer tvdbId) {
+    Boolean result = false;
     TvShowRequest request = findTvShowRequestByTvdbId(tvdbId);
     if (request != null) {
-      request.lastStatus = request.status;
-      request.status = TvShowRequest.Status.Deleted;
-      return true;
+      if (update(request, null, Status.Deleted) != null) {
+        result = true;
+      } else {
+        Logger.error("TvShowRequestService - delete: no se ha podido cambiar el estado de la petición a Deleted");
+      }
     } else {
-      // no existe la peticion ?
-      Logger.error("TvShowRequestService - deleteTvShow: no se ha podido cambiar el estado de la petición a Deleted");
-      return false;
+      // no existe la peticion
+      Logger.error("TvShowRequestService - delete: no existe la petición");
     }
+    return result;
   }
 
 }

@@ -47,7 +47,6 @@ $(document).on('click', '[data-action=get-deleted-tvShow-data]', function(e) {
     dataType: 'json',
     headers: {
       'Accept': 'application/json',
-      'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
     },
     success: function (response) {
@@ -80,7 +79,7 @@ $(document).on('click', '[data-action=get-deleted-tvShow-data]', function(e) {
 
 });
 
-// cargar datos de una serie eliminada (boton descargar datos)
+// reaprobar serie eliminada
 $(document).on('click', '[data-action=reaccept-tvShow]', function(e) {
   console.log('reaprobar serie eliminada');
   e.preventDefault();
@@ -136,16 +135,11 @@ $(document).on('click', '[data-action=reaccept-tvShow]', function(e) {
 
         // hacer peticion
         var promises2 = [];
-        var data = JSON.stringify({"requestId": requestId});
-        console.log(data);
         let promise2 = $.ajax({
-          url: host + '/admin/tvshows/requests',
+          url: host + '/api/requests/' + requestId + '/newtvshow',
           type: 'PUT',
-          data: data,
-          dataType: 'json',
           headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
           },
           success: function (response) {
@@ -243,31 +237,6 @@ $(document).on('click', '[data-action=reaccept-tvShow]', function(e) {
     });
 
 });
-
-// close advert
-// cargar datos de una serie eliminada (boton descargar datos)
-$(document).on('click', '[data-action=close-adv]', function(e) {
-  e.preventDefault();
-  var elementId = $(this).parent().attr('id');
-  closeAdv(elementId);
-});
-
-function closeAdv(id) {
-  var $advClose = $('#' + id);
-
-  containerHeight(); // recalculate page height
-
-  $advClose.slideUp(150, function() {
-    $(this).remove();
-  });
-}
-
-// Calculate min height
-function containerHeight() {
-  var availableHeight = $(window).height() - $('.page-container').offset().top - $('.navbar-fixed-bottom').outerHeight();
-
-  $('.page-container').attr('style', 'min-height:' + availableHeight + 'px');
-}
 
 $(function() {
 

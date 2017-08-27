@@ -244,7 +244,7 @@ public class TvShowController extends Controller {
 
   @Transactional
   @Security.Authenticated(Administrator.class)
-  public Result updateTvShowData(Integer id) {
+  public Result updateData(Integer id) {
     ObjectNode result = Json.newObject();
     TvShow tvShow = tvShowService.find(id);
 
@@ -341,7 +341,7 @@ public class TvShowController extends Controller {
 
   @Transactional
   @Security.Authenticated(Administrator.class)
-  public Result deleteTvShow(Integer id) {
+  public Result delete(Integer id) {
     ObjectNode result = Json.newObject();
     Integer tvdbId = tvShowService.find(id).tvdbId;
     TvShowRequest request = tvShowRequestService.findTvShowRequestByTvdbId(tvdbId);

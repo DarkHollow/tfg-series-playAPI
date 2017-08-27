@@ -208,11 +208,11 @@ public class TvShowRequestService {
       if (update(request, null, Status.Deleted) != null) {
         result = true;
       } else {
-        Logger.error("TvShowRequestService - deleteTvShow: no se ha podido cambiar el estado de la petición a Deleted");
+        Logger.error("TvShowRequestService - delete: no se ha podido cambiar el estado de la petición a Deleted");
       }
     } else {
       // no existe la peticion
-      Logger.error("TvShowRequestService - deleteTvShow: no existe la petición");
+      Logger.error("TvShowRequestService - delete: no existe la petición");
     }
     return result;
   }

@@ -1,4 +1,4 @@
-package service.tvdb;
+package service.external;
 
 import models.TvShow;
 import models.service.external.TvdbConnection;

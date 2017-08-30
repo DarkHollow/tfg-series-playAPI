@@ -1,4 +1,4 @@
-package service.tvdb;
+package service.external;
 
 import models.service.external.TvdbConnection;
 import org.junit.Test;

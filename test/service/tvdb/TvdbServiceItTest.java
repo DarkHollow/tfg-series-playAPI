@@ -1,8 +1,8 @@
 package service.tvdb;
 
 import models.TvShow;
-import models.service.tvdb.TvdbConnection;
-import models.service.tvdb.TvdbService;
+import models.service.external.TvdbConnection;
+import models.service.external.TvdbService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
@@ -23,8 +23,6 @@ import play.libs.ws.WSClient;
 import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;

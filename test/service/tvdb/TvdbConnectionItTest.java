@@ -1,6 +1,6 @@
 package service.tvdb;
 
-import models.service.tvdb.TvdbConnection;
+import models.service.external.TvdbConnection;
 import org.junit.Test;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import play.Logger;

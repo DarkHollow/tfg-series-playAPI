@@ -9,7 +9,7 @@ import models.dao.UserDAO;
 import models.service.TvShowService;
 import models.service.TvShowVoteService;
 import models.service.UserService;
-import models.service.tvdb.TvdbService;
+import models.service.external.TvdbService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;

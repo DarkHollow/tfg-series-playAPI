@@ -1,4 +1,4 @@
-package models.service.tvdb;
+package models.service.external;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;

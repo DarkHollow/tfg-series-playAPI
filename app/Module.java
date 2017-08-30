@@ -1,6 +1,6 @@
 import actors.TvdbActor;
 import com.google.inject.AbstractModule;
-import models.service.tvdb.TvdbConnection;
+import models.service.external.TvdbConnection;
 import play.libs.akka.AkkaGuiceSupport;
 
 import java.time.Clock;

@@ -1,15 +1,12 @@
 package service;
 
-import models.TvShow;
 import models.TvShowRequest;
 import models.User;
 import models.dao.TvShowDAO;
 import models.dao.TvShowRequestDAO;
-import models.dao.UserDAO;
 import models.service.TvShowRequestService;
 import models.service.TvShowService;
-import models.service.UserService;
-import models.service.tvdb.TvdbService;
+import models.service.external.TvdbService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
@@ -17,12 +14,10 @@ import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.theories.suppliers.TestedOn;
 import play.db.Database;
 import play.db.Databases;
 import play.db.jpa.JPA;
 import play.db.jpa.JPAApi;
-import utils.Security.Password;
 
 import java.io.FileInputStream;
 import java.util.List;

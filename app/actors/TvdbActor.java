@@ -1,7 +1,7 @@
 package actors;
 
 import akka.actor.*;
-import models.service.tvdb.TvdbConnection;
+import models.service.external.TvdbConnection;
 import java.util.concurrent.TimeUnit;
 
 import scala.concurrent.duration.Duration;

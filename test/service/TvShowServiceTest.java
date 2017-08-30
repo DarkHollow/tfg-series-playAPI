@@ -3,7 +3,7 @@ package service;
 import models.TvShow;
 import models.dao.TvShowDAO;
 import models.service.TvShowService;
-import models.service.tvdb.TvdbService;
+import models.service.external.TvdbService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;

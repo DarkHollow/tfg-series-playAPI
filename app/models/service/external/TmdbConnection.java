@@ -19,6 +19,8 @@ public class TmdbConnection {
 
     if (apiKey != null && !apiKey.isEmpty()) {
       Logger.info("TmdbConnection - API key obtenida");
+    } else {
+      Logger.warn("TmdbConnection - API key no obtenida");
     }
   }
 

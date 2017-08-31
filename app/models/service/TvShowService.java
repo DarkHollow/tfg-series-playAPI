@@ -3,7 +3,7 @@ package models.service;
 import com.google.inject.Inject;
 import models.TvShow;
 import models.dao.TvShowDAO;
-import models.service.tvdb.TvdbService;
+import models.service.external.TvdbService;
 import org.apache.commons.io.FileUtils;
 import play.Logger;
 

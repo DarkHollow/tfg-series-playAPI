@@ -11,7 +11,7 @@ import models.TvShowRequest;
 import models.service.TvShowRequestService;
 import models.service.TvShowService;
 import models.service.UserService;
-import models.service.tvdb.TvdbService;
+import models.service.external.TvdbService;
 import play.Logger;
 import play.data.DynamicForm;
 import play.data.FormFactory;

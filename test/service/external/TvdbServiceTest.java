@@ -1,7 +1,7 @@
-package service.tvdb;
+package service.external;
 
 import models.TvShow;
-import models.service.tvdb.TvdbService;
+import models.service.external.TvdbService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
@@ -18,8 +18,6 @@ import play.db.jpa.JPAApi;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;

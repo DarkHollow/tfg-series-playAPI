@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import json.TvShowViews;
 import models.TvShow;
-import models.service.tvdb.TvdbService;
+import models.service.external.TvdbService;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;

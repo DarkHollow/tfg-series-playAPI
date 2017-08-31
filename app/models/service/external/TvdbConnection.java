@@ -1,4 +1,4 @@
-package models.service.tvdb;
+package models.service.external;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -41,23 +41,23 @@ public class TvdbConnection {
 
   // log in TvdbConnection
   private void loginTVDB() {
-    Logger.info("Haciendo login en TvdbConnection...");
+    Logger.info("TvdbConnection - haciendo login en The TVDB API...");
     CompletionStage<JsonNode> stage = ws.url("https://api.thetvdb.com/login")
                                            .post(tvdbaccount)
                                            .thenApply(WSResponse::asJson);
     try {
       JsonNode respuesta = stage.toCompletableFuture().get(15, TimeUnit.SECONDS);
       token = respuesta.get("token").asText();
-      Logger.info("Token obtenido");
+      Logger.info("TvdbConnection - token obtenido");
     } catch (Exception ex) {
-      Logger.error("Excepción: no se ha podido hacer log en TvdbConnection");
+      Logger.error("TvdbConnection - Excepción: no se ha podido hacer log en TvdbConnection");
       System.out.println(ex.getMessage());
     }
   }
 
   // refresh login token
   public void refreshToken() {
-    Logger.info("Refrescando token en TvdbConnection...");
+    Logger.info("TvdbConnection - refrescando token de The TVDB API...");
     CompletionStage<JsonNode> stage = ws.url("https://api.thetvdb.com/refresh_token")
                                         .setHeader("Authorization", "Bearer " + token)
                                         .get()
@@ -70,12 +70,12 @@ public class TvdbConnection {
         loginTVDB();
       }
       if (token == null || token.equals("")) {
-        Logger.info("Token actualizado");
+        Logger.info("TvdbConnection - token actualizado");
       } else {
-        Logger.error("no se ha podido resfrescar token de TvdbConnection");
+        Logger.error("TvdbConnection - no se ha podido resfrescar token de TvdbConnection");
       }
     } catch (Exception ex) {
-      Logger.error("Excepción: no se ha podido resfrescar token de TvdbConnection");
+      Logger.error("TvdbConnection - Excepción: no se ha podido resfrescar token de TvdbConnection");
       System.out.println(ex.getMessage());
     }
   }

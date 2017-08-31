@@ -10,7 +10,7 @@ import models.TvShow;
 import models.TvShowRequest;
 import models.service.TvShowRequestService;
 import models.service.TvShowService;
-import models.service.tvdb.TvdbService;
+import models.service.external.TvdbService;
 import play.Logger;
 import play.data.DynamicForm;
 import play.data.Form;
@@ -22,7 +22,6 @@ import play.mvc.Result;
 import play.mvc.Security;
 import utils.Security.Administrator;
 import utils.Security.Roles;
-import utils.Security.User;
 
 import java.util.List;
 

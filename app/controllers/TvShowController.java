@@ -342,35 +342,42 @@ public class TvShowController extends Controller {
   @Security.Authenticated(Administrator.class)
   public Result delete(Integer id) {
     ObjectNode result = Json.newObject();
-    Integer tvdbId = tvShowService.find(id).tvdbId;
-    TvShowRequest request = tvShowRequestService.findTvShowRequestByTvdbId(tvdbId);
-    if (request != null) {
-      TvShowRequest.Status actualStatus = request.status;
-      if (tvShowRequestService.update(request, null, TvShowRequest.Status.Processing) != null) {
-        if (tvShowService.delete(id)) {
-          result.put("ok", "tv show deleted");
-          result.put("message", "serie eliminada");
-          // cambiar estado de su petición
-          if (tvShowRequestService.deleteTvShow(tvdbId)) {
-            result.put("request", "petición pasada a Deleted");
+    TvShow tvShow = tvShowService.find(id);
+    if (tvShow != null) {
+      Integer tvdbId = tvShow.tvdbId;
+      TvShowRequest request = tvShowRequestService.findTvShowRequestByTvdbId(tvdbId);
+      if (request != null) {
+        TvShowRequest.Status actualStatus = request.status;
+        if (tvShowRequestService.update(request, null, TvShowRequest.Status.Processing) != null) {
+          if (tvShowService.delete(id)) {
+            result.put("ok", "tv show deleted");
+            result.put("message", "serie eliminada");
+            // cambiar estado de su petición
+            if (tvShowRequestService.deleteTvShow(tvdbId)) {
+              result.put("request", "petición pasada a Deleted");
+            } else {
+              result.put("request", "no se ha encontrado la request");
+            }
           } else {
-            result.put("request", "no se ha encontrado la request");
+            result.put("error", "tv show not deleted");
+            result.put("message", "serie no eliminada");
+            tvShowRequestService.update(request, null, actualStatus);
+            return notFound(result);
           }
+          return ok(result);
         } else {
-          result.put("error", "tv show not deleted");
-          result.put("message", "serie no eliminada");
-          tvShowRequestService.update(request, null, actualStatus);
-          return notFound(result);
+          result.put("error", "request cannot be updated");
+          return internalServerError(result);
         }
-        return ok(result);
       } else {
-        result.put("error", "request cannot be updated");
+        // la serie no tiene request
+        result.put("error", "tv show doesn't have request");
         return internalServerError(result);
       }
     } else {
-      // la serie no tiene request
-      result.put("error", "tv show doesn't have request");
-      return internalServerError(result);
+      result.put("error", "tv show not found");
+      return notFound(result);
     }
   }
+
 }

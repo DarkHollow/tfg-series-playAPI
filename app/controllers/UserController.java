@@ -45,6 +45,7 @@ public class UserController extends Controller {
     try {
       email = String.valueOf(requestForm.get("email"));
       password = String.valueOf(requestForm.get("password"));
+      password = password.toLowerCase();
       name = String.valueOf(requestForm.get("name"));
     } catch (Exception ex) {
       result.put("error", "email/password/name null or not string");
@@ -132,6 +133,7 @@ public class UserController extends Controller {
     try {
       email = String.valueOf(requestForm.get("email"));
       password = String.valueOf(requestForm.get("password"));
+      password = password.toLowerCase();
     } catch (Exception ex) {
       result.put("error", "email/password null or not string");
       result.put("type", "bad request");

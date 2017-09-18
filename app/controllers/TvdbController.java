@@ -37,6 +37,9 @@ public class TvdbController extends Controller {
           // quitamos campos no relevantes
           ObjectNode object = (ObjectNode) jsonNode;
           object.remove("id");
+          object.remove("score");
+          object.remove("voteCount");
+
           return ok(object);
         } catch (Exception ex) {
           // si hubiese un error, devolver error interno

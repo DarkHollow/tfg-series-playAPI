@@ -285,7 +285,7 @@ public class TvShowRequestController extends Controller {
       } else {
         // la request no existe ?
         result.put("error", "request cannot be find");
-        return badRequest(result);
+        return notFound(result);
       }
     } else {
       // peticion erronea ? tvdbId es null

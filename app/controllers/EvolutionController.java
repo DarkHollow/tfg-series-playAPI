@@ -83,7 +83,6 @@ public class EvolutionController extends Controller {
     } else {
       // si no hay evolution no aplicada
       result.put("newVersion", "none");
-      return notFound(result);
     }
 
     return ok(result);

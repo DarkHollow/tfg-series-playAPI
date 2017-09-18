@@ -70,9 +70,9 @@ public class TvdbConnection {
         loginTVDB();
       }
       if (token == null || token.equals("")) {
-        Logger.info("TvdbConnection - token actualizado");
-      } else {
         Logger.error("TvdbConnection - no se ha podido resfrescar token de TvdbConnection");
+      } else {
+        Logger.info("TvdbConnection - token actualizado");
       }
     } catch (Exception ex) {
       Logger.error("TvdbConnection - Excepción: no se ha podido resfrescar token de TvdbConnection");

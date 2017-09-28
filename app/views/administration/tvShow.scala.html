@@ -1,0 +1,354 @@
+@import models.service.EvolutionService
+@(title: String, route: String, tvShow: TvShow)(implicit evolutionService: EvolutionService)
+
+@administration.adminMain(title, route) {
+
+    <!-- Botón atrás -->
+    <ul class="fab-menu fab-menu-absolute fab-menu-top-left affix" id="affixed-back-button-left">
+        <li>
+            <a href="@routes.AdminController.tvShows()" class="ajaxLink fab-menu-btn btn bg-indigo-400 btn-float btn-rounded btn-icon">
+                <i class="fab-icon-open icon-arrow-left8"></i>
+                <i class="fab-icon-open icon-arrow-left8"></i>
+            </a>
+        </li>
+    </ul>
+    <!-- /botón atrás -->
+
+    <!-- Panel serie -->
+    <div id="tvShow_panel" class="panel">
+        <div class="panel-heading">
+            <h6 class="panel-title">Serie: @tvShow.name</h6>
+        </div>
+        <div class="panel-body padTop0">
+            <div class="row">
+                <div class="col-sm-8">
+                    <small class="display-block">Datos generales</small>
+                    <br />
+                    <ul class="media-list content-group">
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Id</div>
+                            <div class="media-body">
+                                <div class="media-content">@tvShow.id</div>
+                            </div>
+                        </li>
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Nombre</div>
+                            <div class="media-body">
+                                <div class="media-content">@tvShow.name</div>
+                            </div>
+                        </li>
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Sinopsis</div>
+                            <div class="media-body">
+                                <div class="media-content">@tvShow.overview</div>
+                            </div>
+                        </li>
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Estreno</div>
+                            <div class="media-body">
+                                @if(tvShow.firstAired != null) {
+                                    <div class="media-content">@tvShow.firstAired.format("dd-MM-yyyy")</div>
+                                }else{
+                                    <div class="media-content"></div>
+                                }
+                            </div>
+                        </li>
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Network</div>
+                            <div class="media-body">
+                                <div class="media-content">@tvShow.network</div>
+                            </div>
+                        </li>
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Rating</div>
+                            <div class="media-body">
+                                <div class="media-content">@tvShow.rating</div>
+                            </div>
+                        </li>
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Runtime</div>
+                            <div class="media-body">
+                                <div class="media-content">@tvShow.runtime</div>
+                            </div>
+                        </li>
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Género</div>
+                            <div class="media-body">
+                                @if(tvShow.genre != null) {
+                                    <div class="media-content">@tvShow.genre.toString.replaceAll("\"", "").replaceAll("\\[", "").replaceAll("\\]", "")</div>
+                                }else{
+                                    <div class="media-content"></div>
+                                }
+                            </div>
+                        </li>
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Estado</div>
+                            <div class="media-body">
+                                <div class="media-content">@tvShow.status</div>
+                            </div>
+                        </li>
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Nota media</div>
+                            <div class="media-body">
+                                <div class="media-content">@tvShow.score</div>
+                            </div>
+                        </li>
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Núm. votos</div>
+                            <div class="media-body">
+                                <div class="media-content">@tvShow.voteCount</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Previsualizacion movil -->
+                <div class="col-sm-4">
+                    <small class="display-block">Previsualización móvil</small>
+                    <br />
+
+                    <div class="smartphone">
+
+                        <div class="smartphone-header">
+                            <div class="fanart-box">
+                                @if(tvShow.fanart != null && tvShow.fanart != "") {
+                                    <img class="fanart img-responsive" src="@{ "http://".concat(requestHeader.host).concat(tvShow.fanart.substring(1)) }" />
+                                }else{
+                                    <img class="fanart img-responsive" src="@{ "http://".concat(requestHeader.host).concat("/assets/images/placeholderFanart.jpg") }" />
+                                }
+                            </div>
+                            <div class="poster-box">
+                                @if(tvShow.poster != null && tvShow.poster != "") {
+                                    <img class="poster img-responsive" src="@{ "http://".concat(requestHeader.host).concat(tvShow.poster.substring(1)) }" />
+                                }else{
+                                    <img class="poster img-responsive" src="@{ "http://".concat(requestHeader.host).concat("/assets/images/placeholderPoster.jpg") }" />
+                                }
+                            </div>
+                            <div class="title-box">
+                                @if(tvShow.name != null && tvShow.name != "") {
+                                    <span>@tvShow.name</span>
+                                }else{
+                                    <span>&nbsp;</span>
+                                }
+                            </div>
+                            <div class="subtitle-box">
+                                @if(tvShow.firstAired != null) {
+                                    <span>@tvShow.firstAired.format("yyyy")</span>
+                                }else{
+                                    <span>&nbsp;</span>
+                                }
+                                @if(tvShow.rating != null && tvShow.rating != "") {
+                                    <span>@tvShow.rating</span>
+                                }else{
+                                    <span>&nbsp;</span>
+                                }
+                            </div>
+                            <div class="genre-box">
+                                @if(tvShow.genre != null && !tvShow.genre.isEmpty) {
+                                    <span>@{ tvShow.genre.toString.replaceAll("\"", "").replaceAll("\\[", "").replaceAll("\\]", "") }</span>
+                                }else{
+                                    <span>&nbsp;</span>
+                                }
+                            </div>
+                            <div class="runtime-box">
+                                @if(tvShow.runtime != null && tvShow.runtime != "") {
+                                    <i class="icon-watch2 small"></i>
+                                    <span>@tvShow.runtime min</span>
+                                }else{
+                                    <i class="icon- small"></i>
+                                    <span>&nbsp;</span>
+                                }
+                            </div>
+                            <div class="network-box">
+                                @if(tvShow.network != null && tvShow.network != "") {
+                                    <i class="icon-tv small"></i>
+                                    <span>@tvShow.network</span>
+                                }else{
+                                    <i class="icon- small"></i>
+                                    <span>&nbsp;</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="smartphone-body">
+                            <div class="scores-box">
+                                <div class="score-avg">
+                                    @if(tvShow.score == null || tvShow.score == 0) {
+                                        <i class="icon-star-empty3 text-warning-300"></i> <span class="text-grey-600">Sin votos</span>
+                                    }else{
+                                        <i class="icon-star-full2 text-warning-300"></i> <span class="text-white-07">@tvShow.score <span class="text-green-600">(@tvShow.voteCount)</span></span>
+                                    }
+                                </div>
+                                <div class="score-user">
+                                    <i class="icon-star-full2 text-blue-300"></i> <span class="text-white-07">8</span>
+                                </div>
+                            </div>
+
+                            <div class="overview-box">
+                                @if(tvShow.overview != null && tvShow.overview != "" && tvShow.overview != "null") {
+                                    <p>@tvShow.overview</p>
+                                }else{
+                                    <p>
+                                        <br /><br />
+                                    </p>
+                                }
+
+                            </div>
+                            <div class="status-box">
+                                @if(tvShow.status != null) {
+                                    <p><span>Estado</span> @tvShow.status</p>
+                                }else{
+                                    <p><span>Estado</span> Desconocido</p>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="smartphone-footer"></div>
+
+                    </div>
+
+                </div>
+                <!-- /Previsualizacion movil -->
+
+            </div>
+
+            <br />
+            <div class="row">
+                <small class="display-block">Imágenes</small>
+                <br />
+
+                <div class="col-sm-3">
+                    <ul class="media-list content-group">
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Póster</div>
+                            <div class="media-body">
+                                <div class="media-content">
+                                    @if(tvShow.poster != null) {
+                                        <a target="_blank" href="@{ "http://".concat(requestHeader.host).concat(tvShow.poster.substring(1)) }">
+                                            <img class="tvShow-img tvShow-poster img-responsive" src="@{ "http://".concat(requestHeader.host).concat(tvShow.poster.substring(1)) }" />
+                                        </a>
+                                    }else{
+                                        <span>No tenemos póster</span>
+                                    }
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-sm-4">
+                    <ul class="media-list content-group">
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Banner</div>
+                            <div class="media-body">
+                                <div class="media-content">
+                                    @if(tvShow.banner != null) {
+                                        <a target="_blank" href="@{ "http://".concat(requestHeader.host).concat(tvShow.banner.substring(1)) }">
+                                            <img class="tvShow-img img-responsive" src="@{ "http://".concat(requestHeader.host).concat(tvShow.banner.substring(1)) }" />
+                                        </a>
+                                    }else{
+                                        <span>No tenemos banner</span>
+                                    }
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-sm-4">
+                    <ul class="media-list content-group">
+                        <li class="media">
+                            <div class="media-left col-sm-2 text-semibold">Fanart</div>
+                            <div class="media-body">
+                                <div class="media-content">
+                                    @if(tvShow.fanart != null) {
+                                        <a target="_blank" href="@{ "http://".concat(requestHeader.host).concat(tvShow.fanart.substring(1)) }">
+                                            <img class="tvShow-img img-responsive" src="@{ "http://".concat(requestHeader.host).concat(tvShow.fanart.substring(1)) }" />
+                                        </a>
+                                    }else{
+                                        <span>No tenemos fanart</span>
+                                    }
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+        <!-- /panel body -->
+
+        <!-- panel footer -->
+        <div class="panel-footer">
+            <div class="heading-elements">
+                <small class="heading-text">Acciones</small>
+
+                <div class="heading-btn pull-left">
+                    <button data-id="@tvShow.id" data-action="download-data" data-host="@requestHeader.host" data-reload="@routes.AdminController.tvShow(tvShow.id)" type="button" class="btn bg-green btn-labeled">
+                        <b><i class="icon-download"></i></b>
+                        Descargar datos de nuevo
+                    </button>
+
+                    <button data-id="@tvShow.id" data-action="download-images" data-host="@requestHeader.host" data-reload="@routes.AdminController.tvShow(tvShow.id)" type="button" class="btn bg-green-800 btn-labeled">
+                        <b><i class="icon-image2"></i></b>
+                        Descargar imágenes de nuevo
+                    </button>
+                </div>
+
+                <div class="heading-btn pull-right">
+                    <button data-id="@tvShow.id" data-action="delete-tvShow" data-host="@requestHeader.host" data-redirect="@routes.AdminController.tvShows()" type="button" class="btn bg-danger btn-labeled">
+                        <b><i class="icon-eraser"></i></b>
+                        Eliminar serie
+                    </button>
+                </div>
+
+            </div>
+        </div>
+        <!-- /panel footer -->
+
+    </div>
+    <!-- Fin panel -->
+    <script>
+
+        // tooltips
+        $('body').tooltip({
+            selector: '.tooltips'
+        });
+
+        // ocultar tooltip
+        $(document).on('click', '[data-popup="tooltip"]', function() {
+            $('[data-popup="tooltip"]').tooltip('hide');
+        });
+
+        // on page ready
+        $(document).ready(function () {
+
+        });
+
+        $(function() {
+            // Add bottom spacing if reached bottom,
+            // to avoid footer overlapping
+            // -------------------------
+            $(window).scroll(function() {
+                if($(window).scrollTop() + $(window).height() > $(document).height() - 40) {
+                    $('.fab-menu-bottom-left, .fab-menu-bottom-right').addClass('reached-bottom');
+                }
+                else {
+                    $('.fab-menu-bottom-left, .fab-menu-bottom-right').removeClass('reached-bottom');
+                }
+            });
+
+
+            // Affix
+            // -------------------------
+            // Left alignment
+            $('#affixed-back-button-left').affix({
+                offset: {
+                    top: $('#affixed-back-button-left').offset().top - 20
+                }
+            });
+
+        });
+
+    </script>
+}

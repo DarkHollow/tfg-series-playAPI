@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+  <User id="1" email="email1" password="password1"
+        name="nombre1" registrationDate="2017-02-26" />
+
+</dataset>

@@ -1,13 +1,10 @@
+import actors.TvdbActor;
 import com.google.inject.AbstractModule;
-import java.time.Clock;
-
-import services.ApplicationTimer;
-import services.AtomicCounter;
-import services.Counter;
-
-import utils.TVDB;
-import actors.TVDBActor;
+import models.service.external.TmdbConnection;
+import models.service.external.TvdbConnection;
 import play.libs.akka.AkkaGuiceSupport;
+
+import java.time.Clock;
 
 /**
  * This class is a Guice module that tells Guice how to bind several
@@ -25,15 +22,14 @@ public class Module extends AbstractModule implements AkkaGuiceSupport {
     public void configure() {
         // Use the system clock as the default implementation of Clock
         bind(Clock.class).toInstance(Clock.systemDefaultZone());
-        // Ask Guice to create an instance of ApplicationTimer when the
-        // application starts.
-        bind(ApplicationTimer.class).asEagerSingleton();
-        // Set AtomicCounter as the implementation for Counter.
-        bind(Counter.class).to(AtomicCounter.class);
-        // Inicializar la clase TVDB para hacer login y mas
-        bind(TVDB.class).asEagerSingleton();
-        // bindeamos el actor de TVDB
-        bindActor(TVDBActor.class, "TVDBActor");
+
+        // Inicializar la clase TvdbConnection para hacer login y mas
+        bind(TvdbConnection.class).asEagerSingleton();
+        // bindeamos el actor de TvdbConnection
+        bindActor(TvdbActor.class, "TvdbActor");
+
+        // Inicializar la clase TmdbConnection
+        bind(TmdbConnection.class).asEagerSingleton();
     }
 
 }

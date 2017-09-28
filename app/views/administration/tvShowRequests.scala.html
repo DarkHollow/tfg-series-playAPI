@@ -1,0 +1,363 @@
+@import java.util
+@import models.service.EvolutionService
+@(title: String, route: String, pendingRequests: util.List[TvShowRequest], requestedRequests: util.List[TvShowRequest], rejectedRequests: util.List[TvShowRequest])(implicit evolutionService: EvolutionService)
+
+@administration.adminMain(title, route) {
+    <span id="host" hidden>@requestHeader.host</span>
+
+    <!-- Botón atrás -->
+    <ul class="fab-menu fab-menu-absolute fab-menu-top-left affix" id="affixed-back-button-left">
+        <li>
+            <a href="@routes.AdminController.index()" class="ajaxLink fab-menu-btn btn bg-indigo-400 btn-float btn-rounded btn-icon">
+                <i class="fab-icon-open icon-arrow-left8"></i>
+                <i class="fab-icon-open icon-arrow-left8"></i>
+            </a>
+        </li>
+    </ul>
+    <!-- /botón atrás -->
+
+    <!-- Panel y tabla de peticiones pendientes (requeted y processing) -->
+    @if(pendingRequests.size() == 0) {
+        <div class="panel" id="requests_table_panel">
+    } else {
+        <div class="panel" id="requests_table_panel">
+    }
+        <div class="panel-heading">
+            <h6 class="panel-title">Peticiones de series nuevas: <span class="badge badge-warning">@pendingRequests.size()</span></h6>
+            <div class="heading-elements">
+                <ul class="icons-list">
+                    <li><a href="@routes.AdminController.tvShowRequests()" data-action="get-list" class="tooltips" data-popup="tooltip" title="Recargar lista de peticiones"><i class="icon-database-refresh"></i></a></li>
+                    <li><a href="#" data-action="get-tvdb-data" class="tooltips" data-popup="tooltip" title="Obtener datos"><i class="icon-download"></i></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="panel-body padTop0">
+            <!-- TABLA -->
+            <table id="requests_table" class="table datatable-pending table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID de TVDB</th>
+                        <th>Título</th>
+                        <th>Banner</th>
+                        <th>Estreno</th>
+                        <th>Solicitante</th>
+                        <th>Veces</th>
+                        <th>F. solicitud</th>
+                        <th>Estado anterior</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+            </table>
+
+            <!-- /style combinations -->
+            <!-- FIN TABLA -->
+        </div>
+    </div>
+    <!-- Fin panel y tabla de peticiones pendientes -->
+
+    <!-- Panel y tabla de peticiones aceptadas -->
+    <div class="panel" id="persisted_requests_table_panel">
+        <div class="panel-heading">
+            <h6 class="panel-title">Peticiones aceptadas: <span class="badge badge-primary">@requestedRequests.size()</span></h6>
+            <div id="accepted-adv" class="text-center"><a data-action="close-adv"><span class="label label-striped">Para cargar los datos, pulsa en el botón <i class="icon-download"></i> de la derecha</span></a></div>
+            <div class="heading-elements">
+                <ul class="icons-list">
+                    <li><a href="@routes.AdminController.tvShowRequests()" data-action="get-list" class="tooltips" data-popup="tooltip" title="Recargar lista de peticiones"><i class="icon-database-refresh"></i></a></li>
+                    <li><a href="#" data-action="load-persisted-requests" class="tooltips" data-popup="tooltip" title="Obtener datos"><i class="icon-download"></i></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="panel-body padTop0">
+            <!-- TABLA -->
+            <table id="persisted_requests_table" class="table datatable-persisted table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID de TVDB</th>
+                        <th>Solicitante</th>
+                        <th>Fecha solicitud</th>
+                    </tr>
+                </thead>
+            </table>
+            <!-- FIN TABLA -->
+        </div>
+    </div>
+    <!-- Fin panel y tabla de peticiones aceptadas -->
+
+    <!-- Panel y tabla de peticiones rechazadas -->
+    <div class="panel" id="rejected_requests_table_panel">
+        <div class="panel-heading">
+            <h6 class="panel-title">Peticiones rechazadas: <span class="badge badge-danger">@rejectedRequests.size()</span></h6>
+            <div id="rejected-adv" class="text-center"><a data-action="close-adv"><span class="label label-striped">Para cargar los datos, pulsa en el botón <i class="icon-download"></i> de la derecha</span></a></div>
+            <div class="heading-elements">
+                <ul class="icons-list">
+                    <li><a href="@routes.AdminController.tvShowRequests()" data-action="get-list" class="tooltips" data-popup="tooltip" title="Recargar lista de peticiones"><i class="icon-database-refresh"></i></a></li>
+                    <li><a href="#" data-action="load-rejected-requests" class="tooltips" data-popup="tooltip" title="Obtener datos"><i class="icon-download"></i></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="panel-body padTop0">
+            <!-- TABLA -->
+            <table id="rejected_requests_table" class="table datatable-rejected table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID de TVDB</th>
+                        <th>Título</th>
+                        <th>Banner</th>
+                        <th>Estreno</th>
+                        <th>Solicitante</th>
+                        <th>Fecha solicitud</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+            </table>
+            <!-- FIN TABLA -->
+        </div>
+    </div>
+    <!-- Fin panel y tabla de peticiones rechazadas -->
+
+    <script>
+
+        // tooltips
+        $('body').tooltip({
+            selector: '.tooltips'
+        });
+
+        // ocultar tooltip
+        $(document).on('click', '[data-popup="tooltip"]', function() {
+            $('[data-popup="tooltip"]').tooltip('hide');
+        });
+
+        $(function() {
+            // Add bottom spacing if reached bottom,
+            // to avoid footer overlapping
+            // -------------------------
+            $(window).scroll(function() {
+                if($(window).scrollTop() + $(window).height() > $(document).height() - 40) {
+                    $('.fab-menu-bottom-left, .fab-menu-bottom-right').addClass('reached-bottom');
+                }
+                else {
+                    $('.fab-menu-bottom-left, .fab-menu-bottom-right').removeClass('reached-bottom');
+                }
+            });
+
+
+            // Affix
+            // -------------------------
+            // Left alignment
+            $('#affixed-back-button-left').affix({
+                offset: {
+                    top: $('#affixed-back-button-left').offset().top - 20
+                }
+            });
+
+        });
+
+        // on page ready
+        $(document).ready(function () {
+
+            // Settings Tablas
+
+            // pending datatable
+            $('.datatable-pending').DataTable({
+                columnDefs: [{
+                    orderable: false,
+                    targets: [ 2, 6 ]
+                }]
+            });
+
+            // pending datatable
+            $('.datatable-persisted').DataTable({
+                /*columnDefs: [{
+                    orderable: false,
+                    targets: [ 3 ]
+                }]*/
+            });
+
+            // pending datatable
+            $('.datatable-rejected').DataTable({
+                columnDefs: [{
+                    orderable: false,
+                    targets: [ 2, 6 ]
+                }]
+            });
+
+            // Cargar datos tabla principal
+            requestsTableLoad();
+        });
+
+        // clear requests data
+        function requestsTableClear() {
+            $('#requests_table').DataTable().clear().draw();
+        }
+
+        // get requests data
+        function requestsTableLoad() {
+            $('#requests_table_panel').block({
+                message: '<i class="icon-spinner9 spinner"></i>',
+                overlayCSS: {
+                    backgroundColor: '#fff',
+                    opacity: 0.8,
+                    cursor: 'wait'
+                },
+                css: {
+                    border: 0,
+                    padding: 0,
+                    backgroundColor: 'none'
+                }
+            });
+            let host = 'http://' + '@requestHeader.host';
+            var promises = [];
+            @for(request <- pendingRequests) {
+                promise = $.ajax({
+                    url: host + '/api/tvshows/tvdb/' + @request.tvdbId,
+                    type: 'GET',
+                    dataType: 'json',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + window.localStorage.getItem('jwt')
+                    },
+                    success: function (response) {
+                        var row = '';
+                        row +=
+                                '<tr>' +
+                                    '<td><a class="tooltips" data-popup="tooltip" title="Ver en TVDB" data-placement="left" target="_blank" href="http://thetvdb.com/?tab=series&id=' + response.tvdbId + '">' + response.tvdbId + '</a></td>' +
+                                    '<td>' + response.name + '</td>' +
+                                '<td>';
+
+                        if (response.banner !== "") {
+                            row += '<a href="http://thetvdb.com/banners/' + response.banner + '" target="_blank"><img class="img-responsive center-block" style="max-height: 65px;" src="http://thetvdb.com/banners/' + response.banner + '" /></a>';
+                        } else {
+                            row += '<img class="img-responsive center-block" style="max-height: 65px;" src="@routes.Assets.versioned("images/placeholderBanner.png")" />';
+                        }
+                        row +=
+                                '</td>' +
+                                '<td>' + response.firstAired + '</td>' +
+                                '<td>' + '@request.user.email' + '</td>' +
+                                '<td class="text-center">' + '@request.requestCount' + '</td>' +
+                                '<td>' + '@request.requestDate.toString' + '</td>' +
+                                '<td>' + '@request.lastStatus' + '</td>';
+
+                        let status;
+                        if (@request.status.equals(TvShowRequest.Status.Requested)) {
+                            status = '<ul class="icons-list">' +
+                                    '<li class="dropdown">' +
+                                    '<a href="#" class="dropdown-toggle tooltips" data-toggle="dropdown" data-popup="tooltip" title="Acciones">' +
+                                    '<i class="icon-menu9"></i>' +
+                                    '</a>' +
+                                    '<ul class="dropdown-menu dropdown-menu-right">' +
+                                    '<li><a data-action="accept-tvShow" href="@request.id"> <i class="icon-checkmark4 text-green"></i> Aceptar</a></li>' +
+                                    '<li><a data-action="reject-tvShow" href="@request.id"> <i class="icon-cross2 text-danger"></i> Rechazar</a></li>' +
+                                    '</ul>' +
+                                    '</li>' +
+                                    '</ul>';
+                        } else {
+                            status = '<i class="icon-spinner9 spinner"></i>';
+                        }
+                        row +=
+                            '<td style="text-align: center;" id="status-@request.id">' + status + '</td>' +
+                            '</tr>';
+
+                        // añadir fila a la tabla
+                        $('#requests_table').DataTable().row.add($(row)).draw();
+                    }
+                });
+                promises.push(promise);
+            }
+
+            $.when.apply(null, promises).done(function() {
+                $('#requests_table_panel').unblock();
+            }).fail(function() {
+                $('#requests_table_panel').unblock();
+                swal({
+                   title: 'Aviso',
+                   text: 'Algunas peticiones no se han podido cargar, int\u00E9ntalo de nuevo m\u00E1s tarde.',
+                   type: 'warning'
+                });
+            });
+        }
+
+        // PERSISTED REQUESTS
+
+        // clear persisted requests data
+        function persistedRequestsTableClear() {
+            $('#persisted_requests_table').DataTable().clear().draw();
+        }
+
+        // load persisted requests data
+        function persistedRequestsTableLoad() {
+            $('#persisted_requests_table_panel').block({
+                message: '<i class="icon-spinner9 spinner"></i>',
+                overlayCSS: {
+                    backgroundColor: '#fff',
+                    opacity: 0.8,
+                    cursor: 'wait'
+                },
+                css: {
+                    border: 0,
+                    padding: 0,
+                    backgroundColor: 'none'
+                }
+            });
+
+            @for(request <- requestedRequests) {
+                var row = '';
+                row +=
+                        '<tr>' +
+                            '<td><a class="tooltips" data-popup="tooltip" title="Ver en TVDB" data-placement="left" target="_blank" href="http://thetvdb.com/?tab=series&id=' + @request.tvdbId + '">' + @request.tvdbId + '</a></td>' +
+                            '<td>' + '@request.user.email' + '</td>' +
+                            '<td>' + '@request.requestDate.toString' + '</td>' +
+                        '</tr>';
+
+                // añadir fila a la tabla
+                $('#persisted_requests_table').DataTable().row.add($(row)).draw();
+            }
+
+                $('#persisted_requests_table_panel').unblock();
+        }
+
+        // REJECTED REQUESTS
+
+        // clear rejected requests data
+        function rejectedRequestsTableClear() {
+            $('#rejected_requests_table').DataTable().clear().draw();
+        }
+
+        // load rejected requests data
+        function rejectedRequestsTableLoad() {
+            $('#rejected_requests_table_panel').block({
+                message: '<i class="icon-spinner9 spinner"></i>',
+                overlayCSS: {
+                    backgroundColor: '#fff',
+                    opacity: 0.8,
+                    cursor: 'wait'
+                },
+                css: {
+                    border: 0,
+                    padding: 0,
+                    backgroundColor: 'none'
+                }
+            });
+
+            @for(request <- rejectedRequests) {
+                var row = '';
+                row +=
+                        '<tr>' +
+                            '<td><a class="tooltips" data-popup="tooltip" title="Ver en TVDB" data-placement="left" target="_blank" href="http://thetvdb.com/?tab=series&id=' + @request.tvdbId + '">' + @request.tvdbId + '</a></td>' +
+                            '<td id="name-@request.id"></td>' +
+                            '<td id="banner-@request.id"></td>' +
+                            '<td id="firstAired-@request.id"></td>' +
+                            '<td>' + '@request.user.email' + '</td>' +
+                            '<td>' + '@request.requestDate.toString' + '</td>' +
+                            '<td id="actions-@request.id" style="text-align: center;"><button type="button" data-id="@request.id" data-tvdbid="@request.tvdbId" data-action="get-tvShow-data" class="btn btn-labeled btn-xs bg-green-300"><b><i class="icon-download"></i></b> Descargar datos</button></td>' +
+                        '</tr>';
+
+                // añadir fila a la tabla
+                $('#rejected_requests_table').DataTable().row.add($(row)).draw();
+            }
+
+            $('#rejected_requests_table_panel').unblock();
+        }
+
+    </script>
+}

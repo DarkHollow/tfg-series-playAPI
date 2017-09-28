@@ -5,7 +5,7 @@ TFG - Series playAPI
 Branches
 ========
 
-## master [![Build Status](https://travis-ci.org/DarkHollow/tfg-series-playAPI.svg?branch=master)](https://travis-ci.org/DarkHollow/tfg-series-playAPI) [![Version](https://img.shields.io/badge/release-v0.10.0-blue.svg?ts=1)](https://github.com/DarkHollow/tfg-series-playAPI/releases/tag/v0.1.0) [![Documentation](https://img.shields.io/badge/doc-v0.10.0-green.svg?ts=1)](#documentation)
+## master [![Build Status](https://travis-ci.org/DarkHollow/tfg-series-playAPI.svg?branch=master)](https://travis-ci.org/DarkHollow/tfg-series-playAPI) [![Version](https://img.shields.io/badge/release-v0.10.0-blue.svg?ts=1)](https://github.com/DarkHollow/tfg-series-playAPI/releases/tag/v0.10.0) [![Documentation](https://img.shields.io/badge/doc-v0.10.0-green.svg?ts=1)](#documentation)
 
 ##### Actual version `v0.10.0`
 [![Release](https://darkhollow.github.io/tfg-series-playAPI/rocket.svg) v0.10.0](https://github.com/DarkHollow/tfg-series-playAPI/releases/tag/v0.10.0)
@@ -34,7 +34,7 @@ Including:
   - `Play Framework` upgraded to v2.5.12
   - `Swagger UI` upgraded to v3.1.7
 - Many improvements and code enhacements
-- Many improvements of API responses (work in progress)M
+- Many improvements of API responses (work in progress)
 
 
 ##### Version `v0.1.0`
@@ -93,7 +93,7 @@ Including:
 ##### sprint 1
 - [![Merge](https://darkhollow.github.io/tfg-series-playAPI/pull-request-green.svg) f1-persistencia](https://github.com/DarkHollow/tfg-series-playAPI/commit/afae5affa2267e11c7a0213d91c4126007203b21) [![Success](https://darkhollow.github.io/tfg-series-playAPI/check-green.svg)](https://travis-ci.org/DarkHollow/tfg-series-playAPI/builds/169117350) added persistence with MySQL
 - [![Merge](https://darkhollow.github.io/tfg-series-playAPI/pull-request-green.svg) f2-loginTVDB](https://github.com/DarkHollow/tfg-series-playAPI/commit/0d770990d298835e057b4ef3279df0230bfa7b0a) [![Success](https://darkhollow.github.io/tfg-series-playAPI/check-green.svg)](https://travis-ci.org/DarkHollow/tfg-series-playAPI/builds/171504480) added log in TVDB on start up and refresh every 12h
-- [![Merge](https://darkhollow.github.io/tfg-series-playAPI/pull-request-green.svg) documentacion-swagger](https://github.com/DarkHollow/tfg-series-playAPI/commit/9049dee28153efd6c02b133f2526655eeb4b3dd7) [![Success](https://darkhollow.github.io/tfg-series-playAPI/check-green.svg)](https://travis-ci.org/DarkHollow/tfg-seriews-playAPI/builds/177389040) added Swagger Documentation at http://localhost:9000/api/doc
+- [![Merge](https://darkhollow.github.io/tfg-series-playAPI/pull-request-green.svg) documentacion-swagger](https://github.com/DarkHollow/tfg-series-playAPI/commit/9049dee28153efd6c02b133f2526655eeb4b3dd7) [![Success](https://darkhollow.github.io/tfg-series-playAPI/check-green.svg)](https://travis-ci.org/DarkHollow/tfg-seriews-playAPI/builds/177389040) added Swagger Documentation at http://localhost:9000/api/docs
 - [![Merge](https://darkhollow.github.io/tfg-series-playAPI/pull-request-green.svg) documentacion-swagger-offline](https://github.com/DarkHollow/tfg-series-playAPI/commit/5192f336f768d48a8061d292de8adf850ca1a190) [![Success](https://darkhollow.github.io/tfg-series-playAPI/check-green.svg)](https://travis-ci.org/DarkHollow/tfg-series-playAPI/builds/177477812) added Swagger Documentation Offline at <http://darkhollow.github.com/tfg-series-playAPI>
 
 

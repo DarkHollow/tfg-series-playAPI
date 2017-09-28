@@ -8,7 +8,7 @@ Branches
 ## master [![Build Status](https://travis-ci.org/DarkHollow/tfg-series-playAPI.svg?branch=master)](https://travis-ci.org/DarkHollow/tfg-series-playAPI) [![Version](https://img.shields.io/badge/release-v0.1.0-blue.svg?ts=1)](https://github.com/DarkHollow/tfg-series-playAPI/releases/tag/v0.1.0) [![Documentation](https://img.shields.io/badge/doc-v0.1.0-green.svg?ts=1)](#documentation)
 
 ##### Actual version `v0.10.0`
-[![Release](/docs/rocket.png) v0.10.0](https://github.com/DarkHollow/tfg-series-playAPI/releases/tag/v0.10.0)
+[![Release](https://darkhollow.github.io/tfg-series-playAPI/rocket.svg) v0.10.0](https://github.com/DarkHollow/tfg-series-playAPI/releases/tag/v0.10.0)
 Including:
 - Register and login
 - TV Show requests
@@ -38,10 +38,6 @@ Including:
 
 
 ##### Version `v0.1.0`
-[![Release](https://darkhollow.github.io/tfg-series-playAPI/rocket.svg) v0.1.0](https://github.com/DarkHollow/tfg-series-playAPI/releases/tag/v0.1.0)
-=======
-
-##### Actual version `v0.1.0`
 [![Release](https://darkhollow.github.io/tfg-series-playAPI/rocket.svg) v0.1.0](https://github.com/DarkHollow/tfg-series-playAPI/releases/tag/v0.1.0)
 Including:
 - Extended `TvShow` entity implemented

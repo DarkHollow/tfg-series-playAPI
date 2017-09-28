@@ -1,0 +1,119 @@
+@import models.service.EvolutionService
+@(title: String, route: String, tvShowCount: Integer, deletedTvShowCount: Integer, requestsCount: Integer, pendingRequestsCount: Integer, persistedRequestsCount: Integer, rejectedRequestsCount: Integer)(implicit evolutionService: EvolutionService)
+
+@administration.adminMain(title, route) {
+
+    <div class="panel">
+        <div class="panel-heading">
+            <h6 class="panel-title">Bienvenido</h6>
+        </div>
+        <div class="panel-body">
+            <p>Este es el panel de administración de Trending Series</p>
+        </div>
+    </div>
+
+    @if(pendingRequestsCount > 0){
+        <!-- info alert -->
+        <div class="alert alert-info alert-styled-left">
+            <button type="button" class="close" data-dismiss="alert"><span>&times;</span><span class="sr-only">Cerrar</span></button>
+            ¡Nuevas peticiones de series! @pendingRequestsCount @if(pendingRequestsCount==1){ petición debe ser revisada. } else { peticiones deben ser revisadas. }
+        </div>
+        <!-- /info alert -->
+    }
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel">
+                <div class="panel-heading">
+                    <h6 class="panel-title"><a class="ajaxLink" href="@routes.AdminController.tvShows()"><i class="icon-tv position-left"></i> <span class="media-middle">Series</span><span class="label label-striped position-right">@{ tvShowCount + deletedTvShowCount } en total</span></a></h6>
+                </div>
+                <div class="panel-body" style="padding-top: 0;">
+                    <ul class="menu-list dd-menu">
+
+                        <li class="media">
+                            <a class="ajaxLink dd-parent-a" href="@routes.AdminController.tvShows()">
+                                <div class="media-left media-top">
+                                    <span class="btn text-warning btn-flat btn-rounded btn-icon btn-xs">
+                                        <span class="badge badge-info">@tvShowCount</span>
+                                    </span>
+                                </div>
+                                <div class="media-body">
+                                    Series en el sistema
+                                    <div class="media-annotation">Series que son accesibles que habitan la base de datos</div>
+                                </div>
+                            </a>
+                        </li>
+
+                        <li class="media">
+                            <a class="ajaxLink dd-parent-a">
+                                <div class="media-left media-top">
+                                    <span class="btn text-warning btn-flat btn-rounded btn-icon btn-xs">
+                                        <span class="badge badge-danger">@deletedTvShowCount</span>
+                                    </span>
+                                </div>
+                                <div class="media-body">
+                                    Series eliminadas
+                                    <div class="media-annotation">Series que han sido eliminadas</div>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="panel">
+                <div class="panel-heading">
+                    <h6 class="panel-title"><a class="ajaxLink" href="@routes.AdminController.tvShowRequests()"><i class="icon-add position-left"></i> <span class="media-middle">Peticiones</span><span class="label label-striped position-right">@{ requestsCount - deletedTvShowCount } en total</span></a></h6>
+                </div>
+                <div class="panel-body" style="padding-top: 0;">
+                    <ul class="menu-list dd-menu">
+
+                        <li class="media">
+                            <a class="ajaxLink dd-parent-a" href="@routes.AdminController.tvShowRequests()">
+                                <div class="media-left media-top">
+                                    <span class="btn text-warning btn-flat btn-rounded btn-icon btn-xs">
+                                        <span class="badge badge-warning">@pendingRequestsCount</span>
+                                    </span>
+                                </div>
+                                <div class="media-body">
+                                    Peticiones pendientes
+                                    <div class="media-annotation">Peticiones que deben ser revisadas</div>
+                                </div>
+                            </a>
+                        </li>
+
+                        <li class="media">
+                            <a class="ajaxLink dd-parent-a" href="@routes.AdminController.tvShowRequests()">
+                                <div class="media-left media-top">
+                                    <span class="btn text-info btn-flat btn-rounded btn-icon btn-xs">
+                                        <span class="badge badge-info">@persistedRequestsCount</span>
+                                    </span>
+                                </div>
+                                <div class="media-body">
+                                    Peticiones aceptadas
+                                    <div class="media-annotation">Peticiones que han sido aprobadas y persistidas</div>
+                                </div>
+                            </a>
+                        </li>
+
+                        <li class="media">
+                            <a class="ajaxLink dd-parent-a" href="@routes.AdminController.tvShowRequests()">
+                                <div class="media-left media-top">
+                                    <span class="btn text-danger btn-flat btn-rounded btn-icon btn-xs">
+                                        <span class="badge badge-danger">@rejectedRequestsCount</span>
+                                    </span>
+                                </div>
+                                <div class="media-body">
+                                    Peticiones rechazadas
+                                    <div class="media-annotation">Peticiones que han sido rechazadas</div>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,325 @@
+@font-face {
+    font-family: 'Blacklisted';
+    src: url('../stylesheets/extras/Blacklisted.ttf');
+}
+
+.blacklisted {
+    font-family: 'Blacklisted', 'Roboto', serif;
+}
+
+.main-title {
+    font-size: 40px;
+}
+
+.response-message {
+    color: red;
+}
+
+.validation-error-label-trending,
+.validation-valid-label-trending {
+    margin-top: 7px;
+    margin-bottom: 7px;
+    display: block;
+    color: #F44336;
+    position: relative;
+    padding-left: 26px;
+}
+.validation-valid-label-trending {
+    color: #4CAF50;
+}
+.validation-error-label-trending:before,
+.validation-valid-label-trending:before {
+    font-family: 'icomoon';
+    position: absolute;
+    top: 2px;
+    left: 0;
+    display: inline-block;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 16px;
+}
+.validation-error-label-trending:empty,
+.validation-valid-label-trending:empty {
+    display: none;
+}
+.validation-error-label-trending:before {
+    content: '\ed63';
+}
+.validation-valid-label-trending:before {
+    content: '\ee73';
+}
+
+.padTop0 {
+    padding-top: 0;
+}
+
+.check-list li {
+    padding-bottom: 3px;
+}
+
+.check-list li:last-child {
+    padding-bottom: 0;
+}
+
+.td-poster {
+    padding: 0 !important;
+    width: 104px !important;
+    text-align: center;
+}
+
+.tvShowListPoster {
+    height: 150px;
+    width: 102px;
+    margin: 0;
+    padding: 0;
+}
+
+.hr-mini {
+    display: block;
+    height: 1px;
+    border: 0;
+    margin: 1em 0;
+    padding: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.btn-action {
+    width: 90%;
+    margin-left: 9px;
+}
+
+/* tvShow */
+.tvShow-img {
+    padding: 4px;
+    background-color: #eaeaea;
+    border: 1px solid #cdcdcd;
+    border-radius: 4px;
+    margin-right: 0 !important;
+    max-height: 200px;
+}
+
+.tvShow-poster {
+    margin-left: 24px;
+}
+
+@font-face {
+    font-family: 'Blacklisted';
+    src: url('../stylesheets/extras/Blacklisted.ttf');
+}
+
+.blacklisted {
+    font-family: 'Blacklisted', 'Roboto', serif;
+}
+
+.main-title {
+    font-size: 40px;
+}
+
+.response-message {
+    color: red;
+}
+
+.validation-error-label-trending,
+.validation-valid-label-trending {
+    margin-top: 7px;
+    margin-bottom: 7px;
+    display: block;
+    color: #F44336;
+    position: relative;
+    padding-left: 26px;
+}
+.validation-valid-label-trending {
+    color: #4CAF50;
+}
+.validation-error-label-trending:before,
+.validation-valid-label-trending:before {
+    font-family: 'icomoon';
+    position: absolute;
+    top: 2px;
+    left: 0;
+    display: inline-block;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 16px;
+}
+.validation-error-label-trending:empty,
+.validation-valid-label-trending:empty {
+    display: none;
+}
+.validation-error-label-trending:before {
+    content: '\ed63';
+}
+.validation-valid-label-trending:before {
+    content: '\ee73';
+}
+
+.padTop0 {
+    padding-top: 0;
+}
+
+.check-list li {
+    padding-bottom: 3px;
+}
+
+.check-list li:last-child {
+    padding-bottom: 0;
+}
+
+.td-poster {
+    padding: 0 !important;
+    width: 104px !important;
+    text-align: center;
+}
+
+.tvShowListPoster {
+    height: 150px;
+    width: 102px;
+    margin: 0;
+    padding: 0;
+}
+
+.hr-mini {
+    display: block;
+    height: 1px;
+    border: 0;
+    margin: 1em 0;
+    padding: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.btn-action {
+    width: 90%;
+    margin-left: 9px;
+}
+
+/* tvShow */
+.tvShow-img {
+    padding: 4px;
+    background-color: #eaeaea;
+    border: 1px solid #cdcdcd;
+    border-radius: 4px;
+    margin-right: 0 !important;
+    max-height: 200px;
+}
+
+.tvShow-poster {
+    margin-left: 24px;
+}
+
+/* Prototipo móvil */
+
+.smartphone {
+    position: relative;
+    height: 400px;
+    width: 300px;
+    background-color: #272727;
+}
+
+.smartphone-header {}
+
+.fanart-box {}
+
+.fanart {
+    opacity: 0.2;
+}
+
+.poster-box {
+    background-color: transparent;
+}
+
+.poster {
+    height: 130px;
+    margin-top: -100px;
+    margin-left: 10px;
+    outline: 1px solid rgba(255,255,255,0.3);
+    outline-offset: -1px;
+}
+
+.title-box {
+    margin-left: 105px;
+    margin-top: -52px;
+    color: #eae5ec;
+}
+
+.subtitle-box {
+    margin-left: 105px;
+    margin-top: 6px;
+    color: #eae5ec;
+    font-size: 0.9rem;
+}
+
+.genre-box {
+    margin-left: 105px;
+    margin-top: 1px;
+    color: #eae5ec;
+    font-size: 0.9rem;
+}
+
+.runtime-box {
+    margin-top: -28px;
+    margin-right: 10px;
+    text-align: right;
+    color: #eae5ec;
+    font-size: 0.9rem;
+}
+
+.network-box {
+    margin-top: 3px;
+    margin-right: 10px;
+    text-align: right;
+    color: #eae5ec;
+    font-size: 0.9rem;
+}
+
+.score-avg {
+    margin-top: 12px;
+    margin-left: 50px;
+}
+
+.score-user {
+    margin-top: -20px;
+    margin-left: 180px;
+}
+
+.overview-box {
+    padding: 10px;
+    color: #eae5ec;
+}
+
+.overview-box p {
+    max-height: 80px;
+    overflow: hidden;
+}
+
+.status-box {
+    padding: 10px;
+    color: #eae5ec;
+}
+
+.status-box span {
+    margin-right: 4px;
+    color: #bdb9bf;
+}
+
+.smartphone-footer {
+    position: absolute;
+    bottom: 0;
+    height: 60px;
+    width: 100%;
+    background: linear-gradient(#272727, #FFFFFF);
+}
+
+.aviso-body {
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 12px;
+}
+
+.modal-full-rob {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    padding-top: 200px;
+}

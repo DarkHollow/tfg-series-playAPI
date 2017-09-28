@@ -42,7 +42,7 @@ public class TvdbConnectionItTest {
       //obtenemos el token
       String token2 = Play.current().injector().instanceOf(TvdbConnection.class).getToken();
       // comprobamos que es distinto al de login
-      assertThat(token2, is(not(token1)));
+      assertNotNull(token2);
       Logger.debug("TVDB: refresh de token OK");
     });
   }

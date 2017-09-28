@@ -5,7 +5,7 @@ TFG - Series playAPI
 Branches
 ========
 
-## master [![Build Status](https://travis-ci.org/DarkHollow/tfg-series-playAPI.svg?branch=master)](https://travis-ci.org/DarkHollow/tfg-series-playAPI) [![Version](https://img.shields.io/badge/release-v0.1.0-blue.svg)](https://github.com/DarkHollow/tfg-series-playAPI/releases/tag/v0.1.0) [![Documentation](https://img.shields.io/badge/doc-v0.1.0-green.svg)](#documentation)
+## master [![Build Status](https://travis-ci.org/DarkHollow/tfg-series-playAPI.svg?branch=master)](https://travis-ci.org/DarkHollow/tfg-series-playAPI) [![Version](https://img.shields.io/badge/release-v0.1.0-blue.svg?ts=1)](https://github.com/DarkHollow/tfg-series-playAPI/releases/tag/v0.1.0) [![Documentation](https://img.shields.io/badge/doc-v0.1.0-green.svg?ts=1)](#documentation)
 
 ##### Actual version `v0.10.0`
 [![Release](/docs/rocket.png) v0.10.0](https://github.com/DarkHollow/tfg-series-playAPI/releases/tag/v0.10.0)
@@ -38,7 +38,11 @@ Including:
 
 
 ##### Version `v0.1.0`
-[![Release](/docs/rocket.png) v0.1.0](https://github.com/DarkHollow/tfg-series-playAPI/releases/tag/v0.1.0)
+[![Release](https://darkhollow.github.io/tfg-series-playAPI/rocket.svg) v0.1.0](https://github.com/DarkHollow/tfg-series-playAPI/releases/tag/v0.1.0)
+=======
+
+##### Actual version `v0.1.0`
+[![Release](https://darkhollow.github.io/tfg-series-playAPI/rocket.svg) v0.1.0](https://github.com/DarkHollow/tfg-series-playAPI/releases/tag/v0.1.0)
 Including:
 - Extended `TvShow` entity implemented
 - Search tvShows implemented (search all, search by id, search by name like)
@@ -49,7 +53,7 @@ Including:
 
 
 ##### Base version `v0.0.1`
-[![Release](/docs/rocket.png) v0.0.1](https://github.com/DarkHollow/tfg-series-playAPI/releases/tag/v0.0.1)
+[![Release](https://darkhollow.github.io/tfg-series-playAPI/rocket.svg) v0.0.1](https://github.com/DarkHollow/tfg-series-playAPI/releases/tag/v0.0.1)
 Including:
 - Persistence with MySQL
 - Log in TVDB on start up and refresh 12h
@@ -58,43 +62,43 @@ Including:
 
 
 ##### Initial version `v0.0.0`
-[![Release](/docs/rocket.png) v0.0.0](https://github.com/DarkHollow/tfg-series-playAPI/releases/tag/v0.0.0)
+[![Release](https://darkhollow.github.io/tfg-series-playAPI/rocket.svg) v0.0.0](https://github.com/DarkHollow/tfg-series-playAPI/releases/tag/v0.0.0)
 
 
 ## develop [![Build Status](https://travis-ci.org/DarkHollow/tfg-series-playAPI.svg?branch=develop)](https://travis-ci.org/DarkHollow/tfg-series-playAPI)
 
 ##### sprint 2
-- Feature 2 - Request TV Show
+- ![Pull Request done](https://darkhollow.github.io/tfg-series-playAPI/pull-request-green.svg) Feature 2 - Request TV Show
   - Search for TV Shows in the system
   - Search for TV Shows outside the system that are not in the system
   - Request TV Shows found outside the system that are not in the system
-- Feature 3 - Register and login
+- ![Pull Request done](https://darkhollow.github.io/tfg-series-playAPI/pull-request-green.svg) Feature 3 - Register and login
   - JWT
   - Password security
-- Feature 4 - Administration
+- ![Pull Request done](https://darkhollow.github.io/tfg-series-playAPI/pull-request-green.svg) Feature 4 - Administration
   - Administration web with login for only administrators
   - General statistics summary index page
   - Request management - see, accept, reject, delete
-- Feature 5 - Inheritance and role management
-- Feature 6 - Administration
+- ![Pull Request done](https://darkhollow.github.io/tfg-series-playAPI/pull-request-green.svg) Feature 5 - Inheritance and role management
+- ![Pull Request done](https://darkhollow.github.io/tfg-series-playAPI/pull-request-green.svg) Feature 6 - Administration
   - Improved administration web
   - TV Show management - see, update, delete, smartphone preview
-- Feature 7 - Requests counter and improvements
-- Feature 8 - Database version control
-- Feature 9 - Heroku deploy
-- Feature 10 - Rate TV Shows
+- ![Pull Request done](https://darkhollow.github.io/tfg-series-playAPI/pull-request-green.svg) Feature 7 - Requests counter and improvements
+- ![Pull Request done](https://darkhollow.github.io/tfg-series-playAPI/pull-request-green.svg) Feature 8 - Database version control
+- ![Pull Request done](https://darkhollow.github.io/tfg-series-playAPI/pull-request-green.svg) Feature 9 - Heroku deploy
+- ![Pull Request done](https://darkhollow.github.io/tfg-series-playAPI/pull-request-green.svg) Feature 10 - Rate TV Shows
   - Global rating - see
   - Personal rating - see, create, update, delete
-- Many fixes
-- Refactored routes and controllers functions to be `REST`
-- Upgraded Play Framework and Swagger UI
+- ![Pull Request done](https://darkhollow.github.io/tfg-series-playAPI/pull-request-green.svg) Many fixes
+- ![Pull Request done](https://darkhollow.github.io/tfg-series-playAPI/pull-request-green.svg) Refactored routes and controllers functions to be `REST`
+- ![Pull Request done](https://darkhollow.github.io/tfg-series-playAPI/pull-request-green.svg) Upgraded Play Framework and Swagger UI
 
 
 ##### sprint 1
-- [![Merge](/docs/git-merge.png) f1-persistencia](https://github.com/DarkHollow/tfg-series-playAPI/commit/afae5affa2267e11c7a0213d91c4126007203b21) [![Success](/docs/check.png)](https://travis-ci.org/DarkHollow/tfg-series-playAPI/builds/169117350) added persistence with MySQL
-- [![Merge](/docs/git-merge.png) f2-loginTVDB](https://github.com/DarkHollow/tfg-series-playAPI/commit/0d770990d298835e057b4ef3279df0230bfa7b0a) [![Success](/docs/check.png)](https://travis-ci.org/DarkHollow/tfg-series-playAPI/builds/171504480) added log in TVDB on start up and refresh every 12h
-- [![Merge](/docs/git-merge.png) documentacion-swagger](https://github.com/DarkHollow/tfg-series-playAPI/commit/9049dee28153efd6c02b133f2526655eeb4b3dd7) [![Success](/docs/check.png)](https://travis-ci.org/DarkHollow/tfg-seriews-playAPI/builds/177389040) added Swagger Documentation at http://localhost:9000/api/doc
-- [![Merge](/docs/git-merge.png) documentacion-swagger-offline](https://github.com/DarkHollow/tfg-series-playAPI/commit/5192f336f768d48a8061d292de8adf850ca1a190) [![Success](/docs/check.png)](https://travis-ci.org/DarkHollow/tfg-series-playAPI/builds/177477812) added Swagger Documentation Offline at <http://darkhollow.github.com/tfg-series-playAPI>
+- [![Merge](https://darkhollow.github.io/tfg-series-playAPI/pull-request-green.svg) f1-persistencia](https://github.com/DarkHollow/tfg-series-playAPI/commit/afae5affa2267e11c7a0213d91c4126007203b21) [![Success](https://darkhollow.github.io/tfg-series-playAPI/check-green.svg)](https://travis-ci.org/DarkHollow/tfg-series-playAPI/builds/169117350) added persistence with MySQL
+- [![Merge](https://darkhollow.github.io/tfg-series-playAPI/pull-request-green.svg) f2-loginTVDB](https://github.com/DarkHollow/tfg-series-playAPI/commit/0d770990d298835e057b4ef3279df0230bfa7b0a) [![Success](https://darkhollow.github.io/tfg-series-playAPI/check-green.svg)](https://travis-ci.org/DarkHollow/tfg-series-playAPI/builds/171504480) added log in TVDB on start up and refresh every 12h
+- [![Merge](https://darkhollow.github.io/tfg-series-playAPI/pull-request-green.svg) documentacion-swagger](https://github.com/DarkHollow/tfg-series-playAPI/commit/9049dee28153efd6c02b133f2526655eeb4b3dd7) [![Success](https://darkhollow.github.io/tfg-series-playAPI/check-green.svg)](https://travis-ci.org/DarkHollow/tfg-seriews-playAPI/builds/177389040) added Swagger Documentation at http://localhost:9000/api/doc
+- [![Merge](https://darkhollow.github.io/tfg-series-playAPI/pull-request-green.svg) documentacion-swagger-offline](https://github.com/DarkHollow/tfg-series-playAPI/commit/5192f336f768d48a8061d292de8adf850ca1a190) [![Success](https://darkhollow.github.io/tfg-series-playAPI/check-green.svg)](https://travis-ci.org/DarkHollow/tfg-series-playAPI/builds/177477812) added Swagger Documentation Offline at <http://darkhollow.github.com/tfg-series-playAPI>
 
 
 ## experiment [![Build Status](https://travis-ci.org/DarkHollow/tfg-series-playAPI.svg?branch=experiment)](https://travis-ci.org/DarkHollow/tfg-series-playAPI)

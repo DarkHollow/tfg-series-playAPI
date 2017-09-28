@@ -235,8 +235,8 @@ definitions:
         type: string
         description: principal actors of the tvShows
       imdbRating:
-        type: float
-        description: average rating on imdb of the tvShows
+        type: number
+        description: average rating on imdb of the series
       trailer:
         type: string
         description: YouTube video code of the trailer

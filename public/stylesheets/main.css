@@ -323,3 +323,40 @@
     text-align: center;
     padding-top: 200px;
 }
+
+/* device view */
+@media (max-width: 768px) {
+    .page-container {
+        padding: 8px;
+    }
+
+    .page-header-inverse {
+        margin-bottom: 0;
+    }
+
+    .page-title {
+        padding: 0;
+    }
+
+    .panel {
+        margin-bottom: 8px;
+    }
+
+    .panel-body {
+        padding-top: 0;
+        padding-bottom: 6px;
+    }
+
+    .menu-list {
+        margin: 0;
+    }
+
+    .menu-list li > a {
+        color: #000;
+    }
+
+    .alert {
+        margin-bottom: 8px;
+    }
+}
+

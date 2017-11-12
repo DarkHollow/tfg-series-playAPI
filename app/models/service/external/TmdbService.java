@@ -3,21 +3,11 @@ package models.service.external;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import models.TvShow;
-import org.hibernate.context.TenantIdentifierMismatchException;
 import play.Logger;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSResponse;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -26,15 +16,15 @@ import java.util.concurrent.TimeoutException;
 public class TmdbService {
 
   private final WSClient ws;
-  private final SimpleDateFormat df;
+  private final JsonUtils jsonUtils;
   private final TmdbConnection tmdbConnection;
 
   private static char SEPARATOR = File.separatorChar;
 
   @Inject
-  public TmdbService(WSClient ws, SimpleDateFormat df, TmdbConnection tmdbConnection) {
+  public TmdbService(WSClient ws, JsonUtils jsonUtils, TmdbConnection tmdbConnection) {
     this.ws = ws;
-    this.df = df;
+    this.jsonUtils = jsonUtils;
     this.tmdbConnection = tmdbConnection;
   }
 
@@ -104,39 +94,13 @@ public class TmdbService {
       tvShow.fanart = jsonTvShow.get("backdrop_path").asText();
       tvShow.local = false;
       JsonNode fecha = jsonTvShow.get("first_aire_date");
-      tvShow.firstAired = parseDate(fecha);
+      tvShow.firstAired = jsonUtils.parseDate(fecha);
 
     } else {
       Logger.info("TvShow no encontrada en The Movie Database API");
     }
 
     return tvShow;
-  }
-
-  // parsear fecha
-  private Date parseDate(JsonNode jsonDate) {
-    int i = 0, tries = 100;
-    Date result = null;
-
-    if (!jsonDate.isNull() && !jsonDate.asText().equals("")) {
-
-      while (i < tries) {
-        try {
-          df.applyPattern("yyyy-MM-dd");
-          result = df.parse(jsonDate.asText()); // fecha estreno
-          break;
-        } catch (Exception e) {
-          i++;
-          if (i != 100) {
-            Logger.info("Reintentando parsear fecha de estreno");
-          } else {
-            Logger.error("No se ha podido parsear la fecha");
-          }
-        }
-      }
-    }
-
-    return result;
   }
 
 }

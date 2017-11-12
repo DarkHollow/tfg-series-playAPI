@@ -1,6 +1,7 @@
 package service.external;
 
 import models.TvShow;
+import models.service.external.JsonUtils;
 import models.service.external.TmdbConnection;
 import models.service.external.TmdbService;
 import org.dbunit.JndiDatabaseTester;
@@ -32,7 +33,7 @@ public class TmdbServiceItTest {
   private static JPAApi jpa;
   private JndiDatabaseTester databaseTester;
   private static WSClient ws;
-  private static SimpleDateFormat df;
+  private static JsonUtils jsonUtils;
   private static TmdbService tmdbService;
 
   private final static int PORT = 3333;
@@ -50,7 +51,7 @@ public class TmdbServiceItTest {
 
     // inicializamos mocks y servicios
     ws = WS.newClient(PORT);
-    df = mock(SimpleDateFormat.class);
+    jsonUtils = mock(JsonUtils.class);
 
     // inicializamos base de datos de prueba
     databaseTester = new JndiDatabaseTester("DefaultDS");
@@ -79,7 +80,7 @@ public class TmdbServiceItTest {
     running(testServer(PORT, fakeApplication(inMemoryDatabase())), new HtmlUnitDriver(), browser -> {
       browser.goTo("http://localhost:" + PORT);
 
-      tmdbService = new TmdbService(ws, df, Play.current().injector().instanceOf(TmdbConnection.class));
+      tmdbService = new TmdbService(ws, jsonUtils, Play.current().injector().instanceOf(TmdbConnection.class));
 
       jpa.withTransaction(() -> {
         try {
@@ -99,7 +100,7 @@ public class TmdbServiceItTest {
     running(testServer(PORT, fakeApplication(inMemoryDatabase())), new HtmlUnitDriver(), browser -> {
       browser.goTo("http://localhost:" + PORT);
 
-      TmdbService tmdbService = new TmdbService(ws, df, Play.current().injector().instanceOf(TmdbConnection.class));
+      TmdbService tmdbService = new TmdbService(ws, jsonUtils, Play.current().injector().instanceOf(TmdbConnection.class));
 
       jpa.withTransaction(() -> {
         try {

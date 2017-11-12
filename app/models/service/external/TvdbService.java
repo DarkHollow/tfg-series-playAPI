@@ -12,9 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletionStage;
@@ -25,22 +23,22 @@ import java.util.concurrent.TimeoutException;
 public class TvdbService {
 
   private final WSClient ws;
-  private final SimpleDateFormat df;
+  private final JsonUtils jsonUtils;
   private final TvdbConnection tvdbConnection;
 
   private static char SEPARATOR = File.separatorChar;
 
   @Inject
-  public TvdbService(WSClient ws, SimpleDateFormat df, TvdbConnection tvdbConnection) {
+  public TvdbService(WSClient ws, JsonUtils jsonUtils, TvdbConnection tvdbConnection) {
     this.ws = ws;
-    this.df = df;
+    this.jsonUtils = jsonUtils;
     this.tvdbConnection = tvdbConnection;
   }
 
   // peticion a TVDB
   private JsonNode tvdbGetRequest(String query, String language)
           throws InterruptedException, ExecutionException, TimeoutException {
-    JsonNode result = null;
+    JsonNode result;
     int MAXTRIES = 2; // maximos intentos de refrescar token
     int count = 0;
 
@@ -120,11 +118,11 @@ public class TvdbService {
 
       if (images.size() > 1) {
         // seleccionamos la imagen mas votada
-        Integer bestRating = -1;
+        Double bestRating = -1.0;
         Integer moreRatings = -1;
 
         for (JsonNode image: images) {
-          Integer imageRating = image.get("ratingsInfo").get("average").asInt();
+          Double imageRating = image.get("ratingsInfo").get("average").asDouble();
           if (imageRating > bestRating) {
             fileName = image.get("fileName").asText();
             bestRating = imageRating;
@@ -214,7 +212,7 @@ public class TvdbService {
       tvShow.banner = jsonTvShow.get("banner").asText();               // banner de la tvShow
       tvShow.local = false;
       JsonNode fecha = jsonTvShow.get("firstAired");
-      tvShow.firstAired = parseDate(fecha);
+      tvShow.firstAired = jsonUtils.parseDate(fecha);
 
     } else {
       Logger.info("TvShow no encontrada en TVDB");
@@ -245,7 +243,7 @@ public class TvdbService {
           nuevaTvShow.local = false;                                  // iniciamos por defecto a false
 
           JsonNode fecha = jsonTvShow.get("firstAired");
-          nuevaTvShow.firstAired = parseDate(fecha);
+          nuevaTvShow.firstAired = jsonUtils.parseDate(fecha);
 
           // finalmente la añadimos a la lista
           tvShows.add(nuevaTvShow);
@@ -284,7 +282,7 @@ public class TvdbService {
       tvShow.runtime = jsonTvShow.get("runtime").asText();
       tvShow.local = false;
       JsonNode fecha = jsonTvShow.get("firstAired");
-      tvShow.firstAired = parseDate(fecha);
+      tvShow.firstAired = jsonUtils.parseDate(fecha);
 
       // generos
       for (JsonNode genre : jsonTvShow.get("genre")) {
@@ -303,32 +301,6 @@ public class TvdbService {
     }
 
     return tvShow;
-  }
-
-  // parsear fecha
-  private Date parseDate(JsonNode jsonDate) {
-    int i = 0, tries = 100;
-    Date result = null;
-
-    if (!jsonDate.isNull() && !jsonDate.asText().equals("")) {
-
-      while (i < tries) {
-        try {
-          df.applyPattern("yyyy-MM-dd");
-          result = df.parse(jsonDate.asText()); // fecha estreno
-          break;
-        } catch (Exception e) {
-          i++;
-          if (i != 100) {
-            Logger.info("Reintentando parsear fecha de estreno");
-          } else {
-            Logger.error("No se ha podido parsear la fecha");
-          }
-        }
-      }
-    }
-
-    return result;
   }
 
 }

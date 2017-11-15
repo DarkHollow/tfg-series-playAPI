@@ -94,6 +94,11 @@ public class TvShow {
   @JsonView(TvShowViews.FullTvShow.class)
   public List<TvShowVote> tvShowVotes;
 
+  @OneToMany(mappedBy = "tvShow", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonManagedReference
+  @JsonView(TvShowViews.FullTvShow.class)
+  public List<Season> seasons;
+
   // constructor vacio
   public TvShow() {}
 

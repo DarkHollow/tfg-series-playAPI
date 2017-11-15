@@ -1,7 +1,7 @@
 package service.external;
 
 import models.TvShow;
-import models.service.external.JsonUtils;
+import models.service.external.ExternalUtils;
 import models.service.external.TvdbConnection;
 import models.service.external.TvdbService;
 import org.dbunit.JndiDatabaseTester;
@@ -22,7 +22,6 @@ import play.libs.ws.WS;
 import play.libs.ws.WSClient;
 
 import java.io.FileInputStream;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -34,7 +33,7 @@ public class TvdbServiceItTest {
   private static JPAApi jpa;
   private JndiDatabaseTester databaseTester;
   private static WSClient ws;
-  private static JsonUtils jsonUtils;
+  private static ExternalUtils externalUtils;
 
   private final static int PORT = 3333;
 
@@ -51,7 +50,7 @@ public class TvdbServiceItTest {
 
     // inicializamos mocks y servicios
     ws = WS.newClient(PORT);
-    jsonUtils = mock(JsonUtils.class);
+    externalUtils = mock(ExternalUtils.class);
 
     // inicializamos base de datos de prueba
     databaseTester = new JndiDatabaseTester("DefaultDS");
@@ -80,7 +79,7 @@ public class TvdbServiceItTest {
     running(testServer(PORT, fakeApplication(inMemoryDatabase())), new HtmlUnitDriver(), browser -> {
       browser.goTo("http://localhost:" + PORT);
 
-      TvdbService tvdbService = new TvdbService(ws, jsonUtils, Play.current().injector().instanceOf(TvdbConnection.class));
+      TvdbService tvdbService = new TvdbService(ws, externalUtils, Play.current().injector().instanceOf(TvdbConnection.class));
 
       jpa.withTransaction(() -> {
         try {
@@ -100,7 +99,7 @@ public class TvdbServiceItTest {
     running(testServer(PORT, fakeApplication(inMemoryDatabase())), new HtmlUnitDriver(), browser -> {
       browser.goTo("http://localhost:" + PORT);
 
-      TvdbService tvdbService = new TvdbService(ws, jsonUtils, Play.current().injector().instanceOf(TvdbConnection.class));
+      TvdbService tvdbService = new TvdbService(ws, externalUtils, Play.current().injector().instanceOf(TvdbConnection.class));
 
       jpa.withTransaction(() -> {
         try {
@@ -119,7 +118,7 @@ public class TvdbServiceItTest {
     running(testServer(PORT, fakeApplication(inMemoryDatabase())), new HtmlUnitDriver(), browser -> {
       browser.goTo("http://localhost:" + PORT);
 
-      TvdbService tvdbService = new TvdbService(ws, jsonUtils, Play.current().injector().instanceOf(TvdbConnection.class));
+      TvdbService tvdbService = new TvdbService(ws, externalUtils, Play.current().injector().instanceOf(TvdbConnection.class));
 
       jpa.withTransaction(() -> {
         try {

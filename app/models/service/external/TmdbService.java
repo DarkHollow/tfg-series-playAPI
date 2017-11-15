@@ -16,15 +16,15 @@ import java.util.concurrent.TimeoutException;
 public class TmdbService {
 
   private final WSClient ws;
-  private final JsonUtils jsonUtils;
+  private final ExternalUtils externalUtils;
   private final TmdbConnection tmdbConnection;
 
   private static char SEPARATOR = File.separatorChar;
 
   @Inject
-  public TmdbService(WSClient ws, JsonUtils jsonUtils, TmdbConnection tmdbConnection) {
+  public TmdbService(WSClient ws, ExternalUtils externalUtils, TmdbConnection tmdbConnection) {
     this.ws = ws;
-    this.jsonUtils = jsonUtils;
+    this.externalUtils = externalUtils;
     this.tmdbConnection = tmdbConnection;
   }
 
@@ -94,7 +94,7 @@ public class TmdbService {
       tvShow.fanart = jsonTvShow.get("backdrop_path").asText();
       tvShow.local = false;
       JsonNode fecha = jsonTvShow.get("first_aire_date");
-      tvShow.firstAired = jsonUtils.parseDate(fecha);
+      tvShow.firstAired = externalUtils.parseDate(fecha);
 
     } else {
       Logger.info("TvShow no encontrada en The Movie Database API");

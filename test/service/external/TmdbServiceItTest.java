@@ -1,7 +1,7 @@
 package service.external;
 
 import models.TvShow;
-import models.service.external.JsonUtils;
+import models.service.external.ExternalUtils;
 import models.service.external.TmdbConnection;
 import models.service.external.TmdbService;
 import org.dbunit.JndiDatabaseTester;
@@ -22,7 +22,6 @@ import play.libs.ws.WS;
 import play.libs.ws.WSClient;
 
 import java.io.FileInputStream;
-import java.text.SimpleDateFormat;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -33,7 +32,7 @@ public class TmdbServiceItTest {
   private static JPAApi jpa;
   private JndiDatabaseTester databaseTester;
   private static WSClient ws;
-  private static JsonUtils jsonUtils;
+  private static ExternalUtils externalUtils;
   private static TmdbService tmdbService;
 
   private final static int PORT = 3333;
@@ -51,7 +50,7 @@ public class TmdbServiceItTest {
 
     // inicializamos mocks y servicios
     ws = WS.newClient(PORT);
-    jsonUtils = mock(JsonUtils.class);
+    externalUtils = mock(ExternalUtils.class);
 
     // inicializamos base de datos de prueba
     databaseTester = new JndiDatabaseTester("DefaultDS");
@@ -80,7 +79,7 @@ public class TmdbServiceItTest {
     running(testServer(PORT, fakeApplication(inMemoryDatabase())), new HtmlUnitDriver(), browser -> {
       browser.goTo("http://localhost:" + PORT);
 
-      tmdbService = new TmdbService(ws, jsonUtils, Play.current().injector().instanceOf(TmdbConnection.class));
+      tmdbService = new TmdbService(ws, externalUtils, Play.current().injector().instanceOf(TmdbConnection.class));
 
       jpa.withTransaction(() -> {
         try {
@@ -100,7 +99,7 @@ public class TmdbServiceItTest {
     running(testServer(PORT, fakeApplication(inMemoryDatabase())), new HtmlUnitDriver(), browser -> {
       browser.goTo("http://localhost:" + PORT);
 
-      TmdbService tmdbService = new TmdbService(ws, jsonUtils, Play.current().injector().instanceOf(TmdbConnection.class));
+      TmdbService tmdbService = new TmdbService(ws, externalUtils, Play.current().injector().instanceOf(TmdbConnection.class));
 
       jpa.withTransaction(() -> {
         try {

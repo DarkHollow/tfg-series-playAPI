@@ -23,15 +23,15 @@ import java.util.concurrent.TimeoutException;
 public class TvdbService {
 
   private final WSClient ws;
-  private final JsonUtils jsonUtils;
+  private final ExternalUtils externalUtils;
   private final TvdbConnection tvdbConnection;
 
   private static char SEPARATOR = File.separatorChar;
 
   @Inject
-  public TvdbService(WSClient ws, JsonUtils jsonUtils, TvdbConnection tvdbConnection) {
+  public TvdbService(WSClient ws, ExternalUtils externalUtils, TvdbConnection tvdbConnection) {
     this.ws = ws;
-    this.jsonUtils = jsonUtils;
+    this.externalUtils = externalUtils;
     this.tvdbConnection = tvdbConnection;
   }
 
@@ -88,25 +88,6 @@ public class TvdbService {
     return result;
   }
 
-  // descargar una imagen desde una url a un directorio local definido por tvdbId y tipo
-  private String downloadImage(URL url, String format, String path) {
-    BufferedImage image;
-    try {
-      // descargamos imagen
-      image = ImageIO.read(url);
-      File imageFile = new File(path);
-      // creamos carpetas
-      Boolean foldersCreated = imageFile.getParentFile().mkdirs();
-      Logger.info("Ruta creada: " + foldersCreated);
-      // guardamos imagen
-      ImageIO.write(image, format, imageFile);
-    } catch (Exception ex) {
-      Logger.error("Download Image - error descargando imagen");
-      return null;
-    }
-    return path;
-  }
-
   // obtener imagen por tvdbId y tipo
   public String getImage(TvShow tvShow, String type) {
     Logger.info(tvShow.name + " - descargando " + type);
@@ -146,11 +127,20 @@ public class TvdbService {
       if (fileName != null) {
         // descargar imagen
         URL downloadURL = new URL("https://thetvdb.com/banners/" + fileName);
+        // generamos nombre a guardar a partir de la primera letra del tipo con la mitad del hashCode en positivo
+        String saveName = type.substring(0, 1) + externalUtils.positiveHalfHashCode(fileName.hashCode());
+        // sacamos la extensión del fichero de imagen
         String format = fileName.substring(fileName.lastIndexOf('.') + 1);
-        String path = "." + SEPARATOR + "public" + SEPARATOR + "images" + SEPARATOR + "series" + SEPARATOR + tvShow.id.toString() + SEPARATOR + type + "." + format;
-        String resultPath = downloadImage(downloadURL, format, path);
+        // generamos la ruta donde se guardará la imagen
+        String folderPath = "." + SEPARATOR + "public" + SEPARATOR + "images" + SEPARATOR + "series" + SEPARATOR + tvShow.id.toString();
+        // ruta absoluta
+        String path = folderPath + SEPARATOR + saveName + "." + format;
+        // descargamos imagen
+        String resultPath = externalUtils.downloadImage(downloadURL, format, path);
         if (resultPath != null) {
           Logger.info(tvShow.name + " - " + type + " descargado");
+          // borrar imagen antigua
+          externalUtils.deleteOldImages(folderPath, type, saveName + "." + format);
           return resultPath;
         }
       } else {
@@ -173,11 +163,19 @@ public class TvdbService {
 
       if (!newBanner.isEmpty()) {
         URL downloadURL = new URL("https://thetvdb.com/banners/" + newBanner);
+        // generamos nombre a guardar a partir de la primera letra del tipo con la mitad del hashCode en positivo
+        String saveName = "b" + externalUtils.positiveHalfHashCode(newBanner.hashCode());
+        // sacamos la extensión del archivo
         String format = newBanner.substring(newBanner.lastIndexOf('.') + 1);
-        String path = "." + SEPARATOR + "public" + SEPARATOR + "images" + SEPARATOR + "series" + SEPARATOR + tvShow.id.toString() + SEPARATOR + "banner." + format;
-        String resultPath = downloadImage(downloadURL, format, path);
+        // generamos la ruta donde se guardará la imagen
+        String folderPath = "." + SEPARATOR + "public" + SEPARATOR + "images" + SEPARATOR + "series" + SEPARATOR + tvShow.id.toString();
+        // ruta absoluta
+        String path = folderPath + SEPARATOR + saveName + "." + format;
+        // descargamos la imagen
+        String resultPath = externalUtils.downloadImage(downloadURL, format, path);
         if (resultPath != null) {
           Logger.info(tvShow.name + " - banner descargado");
+          externalUtils.deleteOldImages(folderPath, "banner", saveName + "." + format);
           return resultPath;
         }
       } else {
@@ -212,7 +210,7 @@ public class TvdbService {
       tvShow.banner = jsonTvShow.get("banner").asText();               // banner de la tvShow
       tvShow.local = false;
       JsonNode fecha = jsonTvShow.get("firstAired");
-      tvShow.firstAired = jsonUtils.parseDate(fecha);
+      tvShow.firstAired = externalUtils.parseDate(fecha);
 
     } else {
       Logger.info("TvShow no encontrada en TVDB");
@@ -243,7 +241,7 @@ public class TvdbService {
           nuevaTvShow.local = false;                                  // iniciamos por defecto a false
 
           JsonNode fecha = jsonTvShow.get("firstAired");
-          nuevaTvShow.firstAired = jsonUtils.parseDate(fecha);
+          nuevaTvShow.firstAired = externalUtils.parseDate(fecha);
 
           // finalmente la añadimos a la lista
           tvShows.add(nuevaTvShow);
@@ -282,7 +280,7 @@ public class TvdbService {
       tvShow.runtime = jsonTvShow.get("runtime").asText();
       tvShow.local = false;
       JsonNode fecha = jsonTvShow.get("firstAired");
-      tvShow.firstAired = jsonUtils.parseDate(fecha);
+      tvShow.firstAired = externalUtils.parseDate(fecha);
 
       // generos
       for (JsonNode genre : jsonTvShow.get("genre")) {

@@ -135,6 +135,7 @@ public class TvdbService {
         String folderPath = "." + SEPARATOR + "public" + SEPARATOR + "images" + SEPARATOR + "series" + SEPARATOR + tvShow.id.toString();
         // ruta absoluta
         String path = folderPath + SEPARATOR + saveName + "." + format;
+        // descargamos imagen
         String resultPath = externalUtils.downloadImage(downloadURL, format, path);
         if (resultPath != null) {
           Logger.info(tvShow.name + " - " + type + " descargado");
@@ -164,11 +165,13 @@ public class TvdbService {
         URL downloadURL = new URL("https://thetvdb.com/banners/" + newBanner);
         // generamos nombre a guardar a partir de la primera letra del tipo con la mitad del hashCode en positivo
         String saveName = "b" + externalUtils.positiveHalfHashCode(newBanner.hashCode());
+        // sacamos la extensión del archivo
         String format = newBanner.substring(newBanner.lastIndexOf('.') + 1);
         // generamos la ruta donde se guardará la imagen
         String folderPath = "." + SEPARATOR + "public" + SEPARATOR + "images" + SEPARATOR + "series" + SEPARATOR + tvShow.id.toString();
         // ruta absoluta
         String path = folderPath + SEPARATOR + saveName + "." + format;
+        // descargamos la imagen
         String resultPath = externalUtils.downloadImage(downloadURL, format, path);
         if (resultPath != null) {
           Logger.info(tvShow.name + " - banner descargado");

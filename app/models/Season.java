@@ -28,7 +28,8 @@ public class Season {
 
   public String poster;
 
-  @Constraints.Required
+  public String name;
+
   @Column(columnDefinition = "text")
   public String overview;
 
@@ -61,7 +62,7 @@ public class Season {
   // solo informacion importante
   @Override
   public String toString() {
-    return "TvShow [id=" + id + ", seasonNumber=" + seasonNumber + ", firstAired=" + firstAired + ", overview="
-            + overview +"]";
+    return "TvShow [id=" + id + ", seasonNumber=" + seasonNumber + ", name=" + name + ", firstAired=" + firstAired
+            + ", overview=" + overview +"]";
   }
 }

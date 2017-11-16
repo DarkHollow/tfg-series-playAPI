@@ -68,7 +68,7 @@ public class TvShowModelDAOTest {
   public void testTvShowDAOCreate() {
     final TvShowDAO tvShowDAO = new TvShowDAO(jpa);
 
-    TvShow tvShow1 = new TvShow(3, "imdbId", "Stranger Things", new Date(), "Descripción",
+    TvShow tvShow1 = new TvShow(3, "imdbId", 66732, "Stranger Things", new Date(), "Descripción",
       "banner.jpg", "poster.jpg", "fanart.jpg", "Network", "45", null, "TV-14",
       TvShow.Status.Continuing, (float)9.0, 10);
 
@@ -77,6 +77,7 @@ public class TvShowModelDAOTest {
     //assertEquals(tvShow1.id, tvShow2.id);
     assertEquals(tvShow1.tvdbId, tvShow2.tvdbId);
     assertEquals(tvShow1.imdbId, tvShow2.imdbId);
+    assertEquals(tvShow1.tmdbId, tvShow2.tmdbId);
     assertEquals(tvShow1.name, tvShow2.name);
     assertEquals(tvShow1.firstAired, tvShow2.firstAired);
     assertEquals(tvShow1.overview, tvShow2.overview);

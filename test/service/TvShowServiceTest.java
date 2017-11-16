@@ -74,9 +74,9 @@ public class TvShowServiceTest {
   // testeamos crear una tv show
   @Test
   public void testTvShowServiceCreate() {
-    TvShow tvShow1 = new TvShow(3, "tvdbId", "Stranger Things", new Date(), "Descripción",
-      "banner.jpg", "poster.jpg", "fanart.jpg", "Network", "45", null, "TV-14",
-      TvShow.Status.Continuing, (float)9.0, 10);
+    TvShow tvShow1 = new TvShow(3, "imdbId", 66732, "Stranger Things", new Date(), "Descripción",
+            "banner.jpg", "poster.jpg", "fanart.jpg", "Network", "45", null, "TV-14",
+            TvShow.Status.Continuing, (float)9.0, 10);
 
     TvShow tvShow2 = jpa.withTransaction(() -> tvShowService.create(tvShow1));
     assertEquals(tvShow1, tvShow2);

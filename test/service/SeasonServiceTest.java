@@ -2,16 +2,10 @@ package service;
 
 import models.Season;
 import models.TvShow;
-import models.TvShowRequest;
-import models.User;
 import models.dao.SeasonDAO;
 import models.dao.TvShowDAO;
-import models.dao.TvShowRequestDAO;
 import models.service.SeasonService;
-import models.service.TvShowRequestService;
 import models.service.TvShowService;
-import models.service.external.ExternalUtils;
-import models.service.external.TmdbService;
 import models.service.external.TvdbService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
@@ -28,7 +22,6 @@ import play.db.jpa.JPAApi;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -56,9 +49,7 @@ public class SeasonServiceTest {
     tvShowDAO = new TvShowDAO(jpa);
     TvdbService tvdbService = mock(TvdbService.class);
     TvShowService tvShowService = new TvShowService(tvShowDAO, tvdbService);
-    TmdbService tmdbService = mock(TmdbService.class);
-    ExternalUtils externalUtils = new ExternalUtils();
-    seasonService = new SeasonService(seasonDAO, tvShowService, tmdbService, externalUtils);
+    seasonService = new SeasonService(seasonDAO, tvShowService);
 
     // inicializamos base de datos de prueba
     databaseTester = new JndiDatabaseTester("DefaultDS");

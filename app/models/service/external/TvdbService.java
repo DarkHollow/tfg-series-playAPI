@@ -7,8 +7,6 @@ import play.Logger;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSResponse;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -105,20 +103,20 @@ public class TvdbService {
         for (JsonNode image: images) {
           Double imageRating = image.get("ratingsInfo").get("average").asDouble();
           if (imageRating > bestRating) {
-            fileName = image.get("fileName").asText();
+            fileName = externalUtils.nullableString(image.get("fileName").asText());
             bestRating = imageRating;
           } else if (imageRating.equals(bestRating)) {
             // si tienen la misma puntuacion, cogemos la que mas votaciones lleve
             Integer imageRatings = image.get("ratingsInfo").get("count").asInt();
             if (imageRatings > moreRatings) {
-              fileName = image.get("fileName").asText();
+              fileName = externalUtils.nullableString(image.get("fileName").asText());
               moreRatings = imageRatings;
             }
           }
         }
       } else if (images.size() == 1) {
         // solo hay una imagen, la cogemos
-        fileName = images.get(0).get("fileName").asText();
+        fileName = externalUtils.nullableString(images.get(0).get("fileName").asText());
       } else {
         // no se han encontrado imagenes
         return null;
@@ -140,7 +138,7 @@ public class TvdbService {
         if (resultPath != null) {
           Logger.info(tvShow.name + " - " + type + " descargado");
           // borrar imagen antigua
-          externalUtils.deleteOldImages(folderPath, type, saveName + "." + format);
+          externalUtils.deleteOldImages(folderPath, type.substring(0, 1), saveName + "." + format);
           return resultPath;
         }
       } else {
@@ -159,9 +157,9 @@ public class TvdbService {
     Logger.info(tvShow.name + " - descargando banner");
     try {
       TvShow newTvShow = getTvShowTVDB(tvShow.tvdbId);
-      String newBanner = newTvShow.banner;
+      String newBanner = externalUtils.nullableString(newTvShow.banner);
 
-      if (!newBanner.isEmpty()) {
+      if (newBanner != null) {
         URL downloadURL = new URL("https://thetvdb.com/banners/" + newBanner);
         // generamos nombre a guardar a partir de la primera letra del tipo con la mitad del hashCode en positivo
         String saveName = "b" + externalUtils.positiveHalfHashCode(newBanner.hashCode());
@@ -175,7 +173,7 @@ public class TvdbService {
         String resultPath = externalUtils.downloadImage(downloadURL, format, path);
         if (resultPath != null) {
           Logger.info(tvShow.name + " - banner descargado");
-          externalUtils.deleteOldImages(folderPath, "banner", saveName + "." + format);
+          externalUtils.deleteOldImages(folderPath, "b", saveName + "." + format);
           return resultPath;
         }
       } else {
@@ -201,21 +199,18 @@ public class TvdbService {
     if (respuesta != null && respuesta.has("data")) {
       JsonNode jsonTvShow = respuesta.with("data");
       Logger.debug("TvShow encontrado en TvdbConnection: " + jsonTvShow.get("seriesName").asText());
-
       // inicializamos el tv show
-      tvShow =  new TvShow();
-      tvShow.tvdbId = jsonTvShow.get("id").asInt();                    // id de tvdbConnection
-      tvShow.imdbId = jsonTvShow.get("imdbId").asText();
-      tvShow.name = jsonTvShow.get("seriesName").asText();             // nombre de la tvShow
-      tvShow.banner = jsonTvShow.get("banner").asText();               // banner de la tvShow
+      tvShow = new TvShow();
+      tvShow.tvdbId = jsonTvShow.get("id").asInt();
+      tvShow.imdbId = externalUtils.nullableString(jsonTvShow.get("imdbId").asText());
+      tvShow.name = externalUtils.nullableString(jsonTvShow.get("seriesName").asText());
+      tvShow.banner = externalUtils.nullableString(jsonTvShow.get("banner").asText());
       tvShow.local = false;
       JsonNode fecha = jsonTvShow.get("firstAired");
       tvShow.firstAired = externalUtils.parseDate(fecha);
-
     } else {
       Logger.info("TvShow no encontrada en TVDB");
     }
-
     return tvShow;
   }
 
@@ -235,10 +230,10 @@ public class TvdbService {
         for (JsonNode jsonTvShow : respuesta.withArray("data")) {
           // obtenemos datos del TV Show
           TvShow nuevaTvShow = new TvShow();
-          nuevaTvShow.tvdbId = Integer.parseInt(jsonTvShow.get("id").asText()); // id de tvdbConnection
-          nuevaTvShow.name = jsonTvShow.get("seriesName").asText();   // nombre del TV Show
-          nuevaTvShow.banner = jsonTvShow.get("banner").asText();     // banner del TV Show
-          nuevaTvShow.local = false;                                  // iniciamos por defecto a false
+          nuevaTvShow.tvdbId = Integer.parseInt(jsonTvShow.get("id").asText());
+          nuevaTvShow.name = externalUtils.nullableString(jsonTvShow.get("seriesName").asText());
+          nuevaTvShow.banner = externalUtils.nullableString(jsonTvShow.get("banner").asText());
+          nuevaTvShow.local = false;  // iniciamos por defecto a false
 
           JsonNode fecha = jsonTvShow.get("firstAired");
           nuevaTvShow.firstAired = externalUtils.parseDate(fecha);
@@ -270,14 +265,14 @@ public class TvdbService {
 
       // inicializamos el tv show
       tvShow =  new TvShow();
-      tvShow.tvdbId = jsonTvShow.get("id").asInt();                    // id de tvdbConnection
-      tvShow.imdbId = jsonTvShow.get("imdbId").asText();
-      tvShow.name = jsonTvShow.get("seriesName").asText();             // nombre de la tvShow
-      tvShow.banner = jsonTvShow.get("banner").asText();               // banner de la tvShow
-      tvShow.network = jsonTvShow.get("network").asText();
-      tvShow.overview = jsonTvShow.get("overview").asText();
-      tvShow.rating = jsonTvShow.get("rating").asText();
-      tvShow.runtime = jsonTvShow.get("runtime").asText();
+      tvShow.tvdbId = jsonTvShow.get("id").asInt();
+      tvShow.imdbId = externalUtils.nullableString(jsonTvShow.get("imdbId").asText());
+      tvShow.name = externalUtils.nullableString(jsonTvShow.get("seriesName").asText());
+      tvShow.banner = externalUtils.nullableString(jsonTvShow.get("banner").asText());
+      tvShow.network = externalUtils.nullableString(jsonTvShow.get("network").asText());
+      tvShow.overview = externalUtils.nullableString(jsonTvShow.get("overview").asText());
+      tvShow.rating = externalUtils.nullableString(jsonTvShow.get("rating").asText());
+      tvShow.runtime = externalUtils.nullableString(jsonTvShow.get("runtime").asText());
       tvShow.local = false;
       JsonNode fecha = jsonTvShow.get("firstAired");
       tvShow.firstAired = externalUtils.parseDate(fecha);

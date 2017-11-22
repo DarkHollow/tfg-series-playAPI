@@ -50,7 +50,7 @@ public class TmdbServiceItTest {
 
     // inicializamos mocks y servicios
     ws = WS.newClient(PORT);
-    externalUtils = mock(ExternalUtils.class);
+    externalUtils = new ExternalUtils();
 
     // inicializamos base de datos de prueba
     databaseTester = new JndiDatabaseTester("DefaultDS");
@@ -73,7 +73,7 @@ public class TmdbServiceItTest {
     db.shutdown();
   }
 
-  // testeamos buscar en TVDB por id y que encuentre
+  // testeamos buscar en TMDb por tvdbId y que encuentre
   @Test
   public void testTmdbServiceFindByTmdbIdOk() {
     running(testServer(PORT, fakeApplication(inMemoryDatabase())), new HtmlUnitDriver(), browser -> {
@@ -93,7 +93,7 @@ public class TmdbServiceItTest {
     });
   }
 
-  // testeamos buscar en TVDB por id y que no encuentre
+  // testeamos buscar en TMDb por tvdbId y que no encuentre
   @Test
   public void testTmdbServiceFindByTmdbIdNotOk() {
     running(testServer(PORT, fakeApplication(inMemoryDatabase())), new HtmlUnitDriver(), browser -> {
@@ -103,7 +103,7 @@ public class TmdbServiceItTest {
 
       jpa.withTransaction(() -> {
         try {
-          TvShow tvShow = tmdbService.findByTvdbId(0);
+          TvShow tvShow = tmdbService.findByTvdbId(-1);
           assertNull(tvShow);
         } catch (Exception ex) {
           Logger.info("No se puede ejecutar el test porque TVDB no responde");

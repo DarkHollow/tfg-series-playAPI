@@ -1,12 +1,9 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import json.TvShowViews;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import play.data.validation.Constraints;
 
 import javax.persistence.*;
@@ -32,6 +29,10 @@ public class TvShow {
   @Column(unique = true)
   @JsonView(TvShowViews.SearchTvShowTvdbId.class)
   public Integer tvdbId;
+
+  @Column(unique = true)
+  @JsonView(TvShowViews.SearchTvShowTvdbId.class)
+  public Integer tmdbId;
 
   @Constraints.Required
   @Column(length = 100)
@@ -94,16 +95,22 @@ public class TvShow {
   @JsonView(TvShowViews.FullTvShow.class)
   public List<TvShowVote> tvShowVotes;
 
+  @OneToMany(mappedBy = "tvShow", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonManagedReference
+  @JsonView(TvShowViews.FullTvShow.class)
+  public List<Season> seasons;
+
   // constructor vacio
   public TvShow() {}
 
   // contructor por campos
-  public TvShow(Integer tvdbId, String imdbId, String name, Date firstAired, String overview, String banner,
-                String poster, String fanart, String network, String runtime, Set<String> genre, String rating,
-                Status status, Float score, Integer voteCount) {
+  public TvShow(Integer tvdbId, String imdbId, Integer tmdbId, String name, Date firstAired, String overview,
+                String banner, String poster, String fanart, String network, String runtime, Set<String> genre,
+                String rating, Status status, Float score, Integer voteCount) {
 
     this.tvdbId = tvdbId;
     this.imdbId = imdbId;
+    this.tmdbId = tmdbId;
     this.name = name;
     this.firstAired = firstAired;
     this.overview = overview;
@@ -124,6 +131,7 @@ public class TvShow {
   public TvShow(TvShow tvShow) {
     this.tvdbId = tvShow.tvdbId;
     this.imdbId = tvShow.imdbId;
+    this.tmdbId = tvShow.tmdbId;
     this.name = tvShow.name;
     this.firstAired = tvShow.firstAired;
     this.overview = tvShow.overview;
@@ -157,8 +165,8 @@ public class TvShow {
   // solo informacion importante
   @Override
   public String toString() {
-    return "TvShow [id=" + id + ", tvdbId=" + tvdbId + ", name=" + name + ", firstAired=" + firstAired + ", overview="
-            + overview + ", network=" + network + ", status=" + status + ", score =" + score
-            + ", voteCount=" + voteCount +"]";
+    return "TvShow [id=" + id + ", tvdbId=" + tvdbId + ", tmdbId=" + tmdbId + ", name=" + name +
+            ", firstAired=" + firstAired + ", overview=" + overview + ", network=" + network + ", status=" + status +
+            ", score =" + score + ", voteCount=" + voteCount +"]";
   }
 }

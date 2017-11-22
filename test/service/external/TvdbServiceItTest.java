@@ -25,7 +25,6 @@ import java.io.FileInputStream;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
 import static play.test.Helpers.*;
 
 public class TvdbServiceItTest {
@@ -50,7 +49,7 @@ public class TvdbServiceItTest {
 
     // inicializamos mocks y servicios
     ws = WS.newClient(PORT);
-    externalUtils = mock(ExternalUtils.class);
+    externalUtils = new ExternalUtils();
 
     // inicializamos base de datos de prueba
     databaseTester = new JndiDatabaseTester("DefaultDS");

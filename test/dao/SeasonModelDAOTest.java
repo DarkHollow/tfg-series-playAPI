@@ -71,7 +71,7 @@ public class SeasonModelDAOTest {
   @Test
   public void testSeasonDAOCreate() {
     Season season1 = new Season(2, new Date(), "resumen", "poster", "nombre");
-    TvShow tvShow = tvShowDAO.find(1);
+    TvShow tvShow = jpa.withTransaction(() -> tvShowDAO.find(1));
     season1.tvShow = tvShow;
     Season season2 = jpa.withTransaction(() -> seasonDAO.create(season1));
     tvShow.seasons.add(season2);

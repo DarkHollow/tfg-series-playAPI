@@ -15,6 +15,7 @@ import play.db.jpa.JPA;
 import play.db.jpa.JPAApi;
 
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.Date;
 
 import static org.junit.Assert.*;
@@ -74,6 +75,7 @@ public class SeasonModelDAOTest {
     TvShow tvShow = jpa.withTransaction(() -> tvShowDAO.find(1));
     season1.tvShow = tvShow;
     Season season2 = jpa.withTransaction(() -> seasonDAO.create(season1));
+    tvShow.seasons = new ArrayList<>();
     tvShow.seasons.add(season2);
 
     assertEquals(season1.name, season2.name);

@@ -87,7 +87,7 @@ public class SeasonService {
     List<Season> seasons = null;
     if (tmdbId != null) {
       seasons = new ArrayList<>();
-      JsonNode jsonTvShow = null;
+      JsonNode jsonTvShow;
       try {
         jsonTvShow = tmdbService.getJsonTvShowByTmdbId(tmdbId);
         if (jsonTvShow.withArray("seasons").size() > 0) {

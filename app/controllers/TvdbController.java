@@ -1,10 +1,9 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
-import json.TvShowViews;
+import utils.json.TvShowViews;
 import models.TvShow;
 import models.service.external.TvdbService;
 import play.db.jpa.Transactional;
@@ -17,10 +16,12 @@ import utils.Security.Administrator;
 public class TvdbController extends Controller {
 
   private final TvdbService tvdbService;
+  private final utils.json.Utils jsonUtils;
 
   @Inject
-  public TvdbController(TvdbService tvdbService) {
+  public TvdbController(TvdbService tvdbService, utils.json.Utils jsonUtils) {
     this.tvdbService = tvdbService;
+    this.jsonUtils = jsonUtils;
   }
 
   // buscar TV Show en TVDB por id
@@ -31,9 +32,7 @@ public class TvdbController extends Controller {
       TvShow tvShow = tvdbService.findOnTvdbByTvdbId(tvdbId);
       if (tvShow != null) {
         try {
-          JsonNode jsonNode = Json.parse(new ObjectMapper()
-                  .writerWithView(TvShowViews.SearchTvShowTvdbId.class)
-                  .writeValueAsString(tvShow));
+          JsonNode jsonNode = jsonUtils.jsonParseObject(tvShow, TvShowViews.SearchTvShowTvdbId.class);
           // quitamos campos no relevantes
           ObjectNode object = (ObjectNode) jsonNode;
           object.remove("id");

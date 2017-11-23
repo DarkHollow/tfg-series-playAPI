@@ -13,10 +13,8 @@ import play.data.FormFactory;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
-import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
-import utils.Security.Roles;
 import utils.Security.User;
 
 public class TvShowVoteController extends Controller {

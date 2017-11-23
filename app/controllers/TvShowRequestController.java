@@ -2,10 +2,9 @@ package controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
-import json.TvShowViews;
+import utils.json.TvShowViews;
 import models.TvShow;
 import models.TvShowRequest;
 import models.service.SeasonService;
@@ -37,11 +36,13 @@ public class TvShowRequestController extends Controller {
   private final UserService userService;
   private final FormFactory formFactory;
   private final utils.Security.User userAuth;
+  private final utils.json.Utils jsonUtils;
 
   @Inject
   public TvShowRequestController(TvdbService tvdbService, TmdbService tmdbService, TvShowService tvShowService,
                                  SeasonService seasonService, TvShowRequestService tvShowRequestService,
-                                 UserService userService, FormFactory formFactory, utils.Security.User userAuth) {
+                                 UserService userService, FormFactory formFactory, utils.Security.User userAuth,
+                                 utils.json.Utils jsonUtils) {
     this.tvdbService = tvdbService;
     this.tmdbService = tmdbService;
     this.tvShowService = tvShowService;
@@ -50,6 +51,7 @@ public class TvShowRequestController extends Controller {
     this.userService = userService;
     this.formFactory = formFactory;
     this.userAuth = userAuth;
+    this.jsonUtils = jsonUtils;
   }
 
   // Peticion POST TvShowRequest
@@ -227,9 +229,7 @@ public class TvShowRequestController extends Controller {
 
                     // respuesta ok - devolvemos datos obtenidos
                     try {
-                      JsonNode jsonNode = Json.parse(new ObjectMapper()
-                              .writerWithView(TvShowViews.FullTvShow.class)
-                              .writeValueAsString(tvShow));
+                      JsonNode jsonNode = jsonUtils.jsonParseObject(tvShow, TvShowViews.FullTvShow.class);
                       result.set("tvShow", jsonNode);
                       return ok(result);
                     } catch (JsonProcessingException e) {

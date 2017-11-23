@@ -1,5 +1,7 @@
 package service.external;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import models.Season;
 import models.TvShow;
 import models.service.external.ExternalUtils;
 import models.service.external.TmdbConnection;
@@ -107,6 +109,44 @@ public class TmdbServiceItTest {
           assertNull(tvShow);
         } catch (Exception ex) {
           Logger.info("No se puede ejecutar el test porque TVDB no responde");
+        }
+      });
+    });
+  }
+
+  @Test
+  public void testTmdbServiceGetJsonTvShowByTmdbId() {
+    running(testServer(PORT, fakeApplication(inMemoryDatabase())), new HtmlUnitDriver(), browser -> {
+      browser.goTo("http://localhost:" + PORT);
+
+      tmdbService = new TmdbService(ws, externalUtils, Play.current().injector().instanceOf(TmdbConnection.class));
+
+      jpa.withTransaction(() -> {
+        try {
+          JsonNode tvShow = tmdbService.getJsonTvShowByTmdbId(1396);
+          assertNotNull(tvShow);
+          assertEquals("Breaking Bad", tvShow.get("name").asText());
+        } catch (Exception ex) {
+          Logger.info("No se puede ejecutar el test porque TMDb no responde");
+        }
+      });
+    });
+  }
+
+  @Test
+  public void testTmdbServiceGetCompleteSeasonByTmdbIdAndSeasonNumber() {
+    running(testServer(PORT, fakeApplication(inMemoryDatabase())), new HtmlUnitDriver(), browser -> {
+      browser.goTo("http://localhost:" + PORT);
+
+      tmdbService = new TmdbService(ws, externalUtils, Play.current().injector().instanceOf(TmdbConnection.class));
+
+      jpa.withTransaction(() -> {
+        try {
+          Season season = tmdbService.getCompleteSeasonByTmdbIdAndSeasonNumber(1396, 1);
+          assertNotNull(season);
+          assertEquals(1, (int) season.seasonNumber);
+        } catch (Exception ex) {
+          Logger.info("No se puede ejecutar el test porque TMDb no responde");
         }
       });
     });

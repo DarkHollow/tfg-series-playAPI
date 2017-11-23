@@ -37,9 +37,10 @@ public class Season {
   public Season() {}
 
   // contructor por campos
-  public Season(Integer seasonNumber, Date firstAired, String overview, String poster) {
+  public Season(Integer seasonNumber, Date firstAired, String name, String overview, String poster) {
     this.seasonNumber = seasonNumber;
     this.firstAired = firstAired;
+    this.name = name;
     this.overview = overview;
     this.poster = poster;
   }
@@ -48,6 +49,7 @@ public class Season {
   public Season(Season season) {
     this.seasonNumber = season.seasonNumber;
     this.firstAired = season.firstAired;
+    this.name = season.name;
     this.overview = season.overview;
     this.poster = season.poster;
   }
@@ -55,6 +57,7 @@ public class Season {
   // poner a null todos las cadenas vacías que no son null
   public void nullify() {
     if (seasonNumber != null) seasonNumber = null;
+    if (name != null) name = null;
     if (overview != null && overview.isEmpty()) overview = null;
     if (poster != null && poster.isEmpty()) poster = null;
   }

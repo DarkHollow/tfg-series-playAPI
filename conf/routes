@@ -3,50 +3,54 @@
 # ~~~~
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file                   controllers.Assets.versioned(path="/public", file: Asset)
+GET     /assets/*file                       controllers.Assets.versioned(path="/public", file: Asset)
 
 # API documentation with Swagger --
-GET     /api/docs                        controllers.Default.redirect(to = "docs/")
-GET     /api/docs/                       controllers.Assets.at(path="/public/docs", file = "index.html")
-GET     /api/docs/*file                  controllers.Assets.at(path="/public/docs", file)
+GET     /api/docs                           controllers.Default.redirect(to = "docs/")
+GET     /api/docs/                          controllers.Assets.at(path="/public/docs", file = "index.html")
+GET     /api/docs/*file                     controllers.Assets.at(path="/public/docs", file)
 
 # API root ------------------------
-GET     /api                            controllers.Default.redirect(to = "api/")
-GET     /api/                           controllers.RootController.index
+GET     /api                                controllers.Default.redirect(to = "api/")
+GET     /api/                               controllers.RootController.index
 
 # TV Shows ------------------------
-GET     /api/tvshows                    controllers.TvShowController.all(search: String ?= "", tvdb: Integer ?= 0)
-POST    /api/tvshows                    controllers.TvShowController.create
-GET     /api/tvshows/:id                controllers.TvShowController.tvShowById(id: Integer)
-PUT     /api/tvshows/:id                controllers.TvShowController.updateData(id: Integer)
-DELETE  /api/tvshows/:id                controllers.TvShowController.delete(id: Integer)
+GET     /api/tvshows                        controllers.TvShowController.all(search: String ?= "", tvdb: Integer ?= 0)
+POST    /api/tvshows                        controllers.TvShowController.create
+GET     /api/tvshows/:id                    controllers.TvShowController.tvShowById(id: Integer)
+PUT     /api/tvshows/:id                    controllers.TvShowController.updateData(id: Integer)
+DELETE  /api/tvshows/:id                    controllers.TvShowController.delete(id: Integer)
+
+# TV Shows Seasons ----------------
+GET     /api/tvshows/:id/seasons            controllers.SeasonController.allTvShowSeasons(id: Integer)
+GET     /api/tvshows/:id/seasons/:number    controllers.SeasonController.seasonByTvShowIdAndSeasonNumber(id: Integer, number: Integer)
 
 # TV Show Votes -------------------
-GET     /api/tvshows/:tvShowId/rating   controllers.TvShowVoteController.getTvShowVote(tvShowId: Integer)
-PUT     /api/tvshows/:tvShowId/rating   controllers.TvShowVoteController.voteTvShow(tvShowId: Integer)
-DELETE  /api/tvshows/:tvShowId/rating   controllers.TvShowVoteController.deleteTvShowVote(tvShowId: Integer)
+GET     /api/tvshows/:tvShowId/rating       controllers.TvShowVoteController.getTvShowVote(tvShowId: Integer)
+PUT     /api/tvshows/:tvShowId/rating       controllers.TvShowVoteController.voteTvShow(tvShowId: Integer)
+DELETE  /api/tvshows/:tvShowId/rating       controllers.TvShowVoteController.deleteTvShowVote(tvShowId: Integer)
 
 # The TVDB API --------------------
-GET     /api/tvshows/tvdb/:tvdbId       controllers.TvdbController.tvShowById(tvdbId: Integer)
+GET     /api/tvshows/tvdb/:tvdbId           controllers.TvdbController.tvShowById(tvdbId: Integer)
 
 # TV Show requests ----------------
-POST    /api/requests                   controllers.TvShowRequestController.create
-PATCH   /api/requests/:id               controllers.TvShowRequestController.update(id: Integer)
-PUT     /api/requests/:id/newtvshow     controllers.TvShowRequestController.newTvShow(id: Integer)
+POST    /api/requests                       controllers.TvShowRequestController.create
+PATCH   /api/requests/:id                   controllers.TvShowRequestController.update(id: Integer)
+PUT     /api/requests/:id/newtvshow         controllers.TvShowRequestController.newTvShow(id: Integer)
 
 # Users ---------------------------
-POST    /api/users                      controllers.UserController.register
-POST    /api/users/session              controllers.UserController.login
-GET     /api/users/session              controllers.UserController.verifySession
+POST    /api/users                          controllers.UserController.register
+POST    /api/users/session                  controllers.UserController.login
+GET     /api/users/session                  controllers.UserController.verifySession
 
 # Evolutions
-GET     /api/evolutions                 controllers.EvolutionController.getEvolutions(status: String ?= "")
-PATCH   /api/evolutions                 controllers.EvolutionController.applyEvolutionJSON
+GET     /api/evolutions                     controllers.EvolutionController.getEvolutions(status: String ?= "")
+PATCH   /api/evolutions                     controllers.EvolutionController.applyEvolutionJSON
 
 # Admin client
-GET     /                               controllers.Default.redirect(to = "admin")
-GET     /admin/login                    controllers.AdminController.loginView
-GET     /admin                          controllers.AdminController.index
-GET     /admin/tvShows                  controllers.AdminController.tvShows
-GET     /admin/tvShows/:id              controllers.AdminController.tvShow(id: Integer)
-GET     /admin/tvShowRequests           controllers.AdminController.tvShowRequests
+GET     /                                   controllers.Default.redirect(to = "admin")
+GET     /admin/login                        controllers.AdminController.loginView
+GET     /admin                              controllers.AdminController.index
+GET     /admin/tvShows                      controllers.AdminController.tvShows
+GET     /admin/tvShows/:id                  controllers.AdminController.tvShow(id: Integer)
+GET     /admin/tvShowRequests               controllers.AdminController.tvShowRequests

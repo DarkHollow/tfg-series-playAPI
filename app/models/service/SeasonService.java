@@ -60,6 +60,14 @@ public class SeasonService {
     return seasonDAO.find(id);
   }
 
+  // obtener por season number
+  public Season getSeasonByNumber(TvShow tvShow, Integer seasonNumber) {
+    if (tvShow != null && tvShow.seasons != null) {
+      return tvShow.seasons.stream().filter(season -> season.seasonNumber.equals(seasonNumber)).findAny().orElse(null);
+    }
+    return null;
+  }
+
   // Delete por id
   public Boolean delete(Integer id) {
     Season season = seasonDAO.find(id);

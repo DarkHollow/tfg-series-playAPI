@@ -9,9 +9,13 @@ public class Utils {
 
   // convierte un objeto en utils.json con una vista utils.json en concreto
   public JsonNode jsonParseObject(Object object, Class view) throws JsonProcessingException {
-    return Json.parse(new ObjectMapper()
-            .writerWithView(view)
-            .writeValueAsString(object));
+    if (object != null) {
+      return Json.parse(new ObjectMapper()
+              .writerWithView(view)
+              .writeValueAsString(object));
+    } else {
+      return null;
+    }
   }
 
 }

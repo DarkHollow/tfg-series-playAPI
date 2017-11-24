@@ -6,4 +6,5 @@ public class TvShowViews {
   public static class SearchTVDB extends SearchTvShowTvdbId {}
   public static class FullTvShow extends SearchTvShowTvdbId {}
   public static class InternalFullTvShow extends FullTvShow {}
+  public static class FullAll extends InternalFullTvShow {}
 }

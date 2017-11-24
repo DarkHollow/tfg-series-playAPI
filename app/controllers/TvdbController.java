@@ -3,7 +3,7 @@ package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
-import utils.json.TvShowViews;
+import utils.json.JsonViews;
 import models.TvShow;
 import models.service.external.TvdbService;
 import play.db.jpa.Transactional;
@@ -32,7 +32,7 @@ public class TvdbController extends Controller {
       TvShow tvShow = tvdbService.findOnTvdbByTvdbId(tvdbId);
       if (tvShow != null) {
         try {
-          JsonNode jsonNode = jsonUtils.jsonParseObject(tvShow, TvShowViews.SearchTvShowTvdbId.class);
+          JsonNode jsonNode = jsonUtils.jsonParseObject(tvShow, JsonViews.SearchTvShowTvdbId.class);
           // quitamos campos no relevantes
           ObjectNode object = (ObjectNode) jsonNode;
           object.remove("id");

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
-import utils.json.JsonViews;
+import utils.json.TvShowViews;
 import models.Evolution;
 import models.service.EvolutionService;
 import play.Logger;
@@ -52,7 +52,7 @@ public class EvolutionController extends Controller {
     // todas la evolutions
     List<Evolution> allEvolutions = evolutionService.all();
     try {
-      JsonNode jsonNode = jsonUtils.jsonParseObject(allEvolutions, JsonViews.FullTvShow.class);
+      JsonNode jsonNode = jsonUtils.jsonParseObject(allEvolutions, TvShowViews.FullTvShow.class);
       result.set("evolutions", jsonNode);
     } catch (Exception ex) {
       Logger.error("Cannot parse evolutions object");

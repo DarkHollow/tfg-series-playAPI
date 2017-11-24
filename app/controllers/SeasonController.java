@@ -27,7 +27,35 @@ public class SeasonController {
     this.jsonUtils = jsonUtils;
   }
 
-  // devolver un TV Show por id
+  // devolver todas las temporadas de una serie (información reducida)
+  @Transactional(readOnly = true)
+  @Security.Authenticated(Roles.class)
+  public Result allTvShowSeasons(Integer tvShowId) {
+    TvShow tvShow = tvShowService.find(tvShowId);
+    if (tvShow == null) {
+      ObjectNode result = Json.newObject();
+      result.put("error", "Not found");
+      return notFound(result);
+    }
+
+    try {
+      JsonNode jsonNode = jsonUtils.jsonParseObject(tvShow.seasons, JsonViews.FullTvShow.class);
+      if (jsonNode == null) {
+        ObjectNode result = Json.newObject();
+        result.put("error", "Not found");
+        return notFound(result);
+      } else {
+        return ok(jsonNode);
+      }
+    } catch (Exception ex) {
+      // si hubiese un error, devolver error interno
+      ObjectNode result = Json.newObject();
+      result.put("error", "It can't be processed");
+      return internalServerError(result);
+    }
+  }
+
+  // devolver una temporada por tv show id y numero de temporada
   @Transactional(readOnly = true)
   @Security.Authenticated(Roles.class)
   public Result seasonByTvShowIdAndSeasonNumber(Integer tvShowId, Integer seasonNumber) {

@@ -3,7 +3,7 @@ package models;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
-import json.TvShowViews;
+import utils.json.TvShowViews;
 import play.data.validation.Constraints;
 
 import javax.persistence.*;

@@ -45,7 +45,6 @@ public class UserController extends Controller {
     try {
       email = String.valueOf(requestForm.get("email"));
       password = String.valueOf(requestForm.get("password"));
-      password = password.toLowerCase();
       name = String.valueOf(requestForm.get("name"));
     } catch (Exception ex) {
       result.put("error", "email/password/name null or not string");
@@ -56,6 +55,8 @@ public class UserController extends Controller {
 
     // comprobamos si los datos están vacíos y si el email es válido y si ya está registrado
     if (email != null && !email.isEmpty() && password != null && !password.isEmpty() && name != null && !name.isEmpty()) {
+      // pasamos a minusculas una vez sabemos que no es null
+      password = password.toLowerCase();
       // comprobamos si el email es valido
       Constraints.EmailValidator emailValidator = new Constraints.EmailValidator();
       if (emailValidator.isValid(email)) {
@@ -122,7 +123,7 @@ public class UserController extends Controller {
   @Transactional(readOnly = true)
   public Result login() {
     ObjectNode result = Json.newObject();
-    User user = null;
+    User user;
 
     String email;
     String password;
@@ -133,7 +134,6 @@ public class UserController extends Controller {
     try {
       email = String.valueOf(requestForm.get("email"));
       password = String.valueOf(requestForm.get("password"));
-      password = password.toLowerCase();
     } catch (Exception ex) {
       result.put("error", "email/password null or not string");
       result.put("type", "bad request");
@@ -143,6 +143,8 @@ public class UserController extends Controller {
 
     // comprobamos si los datos están vacíos y si el email es válido y si existe
     if (email != null && !email.isEmpty() && password != null && !password.isEmpty()) {
+      // pasamos a minusculas una vez sabemos que no es null
+      password = password.toLowerCase();
       if (password.length() >= 6) {
         // comprobamos email y contraseña
         try {

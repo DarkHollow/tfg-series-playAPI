@@ -2,10 +2,9 @@ package controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
-import json.TvShowViews;
+import utils.json.TvShowViews;
 import models.TvShow;
 import models.TvShowRequest;
 import models.service.SeasonService;
@@ -33,15 +32,17 @@ public class TvShowController extends Controller {
   private final SeasonService seasonService;
   private final TvdbService tvdbService;
   private final FormFactory formFactory;
+  private final utils.json.Utils jsonUtils;
 
   @Inject
   public TvShowController(TvShowService tvShowService, SeasonService seasonService, TvdbService tvdbService,
-                          FormFactory formFactory, TvShowRequestService tvShowRequestService) {
+                          FormFactory formFactory, TvShowRequestService tvShowRequestService, utils.json.Utils jsonUtils) {
     this.tvShowService = tvShowService;
     this.tvShowRequestService = tvShowRequestService;
     this.seasonService = seasonService;
     this.tvdbService = tvdbService;
     this.formFactory = formFactory;
+    this.jsonUtils = jsonUtils;
   }
 
   // devolver todas los TV Shows (NOTE: futura paginacion?)
@@ -72,11 +73,8 @@ public class TvShowController extends Controller {
 
     // si la lista no está vacía, devolvemos datos
     try {
-      JsonNode jsonNode = Json.parse(new ObjectMapper()
-                                  .writerWithView(TvShowViews.SearchTvShow.class)
-                                  .writeValueAsString(tvShows));
+      JsonNode jsonNode = jsonUtils.jsonParseObject(tvShows, TvShowViews.SearchTvShow.class);
       return ok(jsonNode);
-
     } catch (Exception ex) {
       // si hubiese un error, devolver error interno
       ObjectNode result = Json.newObject();
@@ -136,9 +134,7 @@ public class TvShowController extends Controller {
 
     // si la lista no está vacía, devolvemos datos
     try {
-      JsonNode jsonNode = Json.parse(new ObjectMapper()
-                                  .writerWithView(TvShowViews.FullTvShow.class)
-                                  .writeValueAsString(tvShow));
+      JsonNode jsonNode = jsonUtils.jsonParseObject(tvShow, TvShowViews.FullTvShow.class);
       return ok(jsonNode);
 
     } catch (Exception ex) {
@@ -164,11 +160,7 @@ public class TvShowController extends Controller {
 
       // si la lista no está vacía, devolvemos datos
       try {
-        JsonNode jsonNode = Json.parse(new ObjectMapper()
-                                    .writerWithView(TvShowViews.SearchTvShow.class)
-                                    .writeValueAsString(tvShows));
-        return ok(jsonNode);
-
+        return ok(jsonUtils.jsonParseObject(tvShows, TvShowViews.SearchTvShow.class));
       } catch (Exception ex) {
         // si hubiese un error, devolver error interno
         ObjectNode result = Json.newObject();
@@ -219,11 +211,8 @@ public class TvShowController extends Controller {
         }
 
         try {
-          JsonNode jsonNode = Json.parse(new ObjectMapper()
-                  .writerWithView(TvShowViews.SearchTVDB.class)
-                  .writeValueAsString(tvShows));
+          JsonNode jsonNode = jsonUtils.jsonParseObject(tvShows, TvShowViews.SearchTVDB.class);
           return ok(jsonNode);
-
         } catch (Exception ex) {
           // si hubiese un error, devolver error interno
           Logger.debug(ex.getClass().toString());
@@ -302,9 +291,7 @@ public class TvShowController extends Controller {
         result.put("ok", "TV Show " + request + " successfully updated");
         result.put("message", "Serie " + request + "  actualizada correctamente");
         try {
-          JsonNode jsonNode = Json.parse(new ObjectMapper()
-                  .writerWithView(TvShowViews.FullTvShow.class)
-                  .writeValueAsString(tvShow));
+          JsonNode jsonNode = jsonUtils.jsonParseObject(tvShow, TvShowViews.FullTvShow.class);
           result.set("tvShow", jsonNode);
         } catch (JsonProcessingException e) {
           Logger.error("Error parseando datos serie a JSON, serie  " + request + "  actualizada igualmente");

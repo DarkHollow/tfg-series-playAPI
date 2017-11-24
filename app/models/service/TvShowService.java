@@ -62,7 +62,7 @@ public class TvShowService {
     return tvShowDAO.all();
   }
 
-  // Delete por id - TODO acordarse de llamar también a TvShowRequestService.delete !!!
+  // Delete por id - TODO pensar en si llamar también a TvShowRequestService.delete !!!
   public Boolean delete(Integer id) {
     TvShow tvShow = tvShowDAO.find(id);
     if (tvShow != null) {
@@ -103,6 +103,42 @@ public class TvShowService {
       }
     }
     return tvShow;
+  }
+
+  public Boolean getAndSetImage(TvShow tvShow, String type) {
+    String path = null;
+
+    switch (type) {
+      case "banner":
+        path = tvdbService.getBanner(tvShow);
+        break;
+      case "poster":
+      case "fanart":
+        path = tvdbService.getImage(tvShow, type);
+        break;
+      default:
+    }
+
+    if (path != null && !path.equals("")) {
+      path = path.replace("public", "assets");
+      switch (type) {
+        case "banner":
+          tvShow.banner = path;
+          break;
+        case "poster":
+          tvShow.poster = path;
+          break;
+        case "fanart":
+          tvShow.fanart = path;
+          break;
+        default:
+      }
+      return true;
+    } else {
+      // no se ha podido obtener la imagen
+      Logger.info(tvShow.name + " - no se ha podido obtener la imagen " + type);
+      return false;
+    }
   }
 
 }

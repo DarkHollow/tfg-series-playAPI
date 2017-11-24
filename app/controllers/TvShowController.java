@@ -8,6 +8,7 @@ import com.google.inject.Inject;
 import json.TvShowViews;
 import models.TvShow;
 import models.TvShowRequest;
+import models.service.SeasonService;
 import models.service.TvShowRequestService;
 import models.service.TvShowService;
 import models.service.external.TvdbService;
@@ -29,14 +30,16 @@ public class TvShowController extends Controller {
 
   private final TvShowService tvShowService;
   private final TvShowRequestService tvShowRequestService;
+  private final SeasonService seasonService;
   private final TvdbService tvdbService;
   private final FormFactory formFactory;
 
   @Inject
-  public TvShowController(TvShowService tvShowService, TvdbService tvdbService, FormFactory formFactory,
-                          TvShowRequestService tvShowRequestService) {
+  public TvShowController(TvShowService tvShowService, SeasonService seasonService, TvdbService tvdbService,
+                          FormFactory formFactory, TvShowRequestService tvShowRequestService) {
     this.tvShowService = tvShowService;
     this.tvShowRequestService = tvShowRequestService;
+    this.seasonService = seasonService;
     this.tvdbService = tvdbService;
     this.formFactory = formFactory;
   }
@@ -248,7 +251,6 @@ public class TvShowController extends Controller {
     TvShow tvShow = tvShowService.find(id);
 
     if (tvShow != null) {
-
       // comprobamos qué recurso ha de ser actualizado
       DynamicForm requestForm = formFactory.form().bindFromRequest();
       String request;
@@ -259,56 +261,41 @@ public class TvShowController extends Controller {
         return badRequest(result);
       }
 
-      switch (request) {
-        case "data":
-          try {
-            tvShow = tvShowService.updateData(tvShow);
-          } catch (Exception ex) {
-            Logger.error("Actualizar datos serie - timeout con API externa");
-            result.put("error", "cannot connect with external API");
-            return status(504, result); // gateway timeout
-          }
-          break;
-        case "images":
-          // las imagenes deben ser una a una desde aquí
-          // obtenemos banner
-          tvShow.banner = tvdbService.getBanner(tvShow);
-          if (tvShow.banner != null) {
-            tvShow.banner = tvShow.banner.replace("public", "assets");
-            // banner obtenido
-            result.put("banner", true);
-          } else {
-            // no se ha podido obtener el banner
-            Logger.info(tvShow.name + " - no se ha podido obtener el banner");
-            result.put("banner", false);
-          }
-          // obtenemos poster
-          tvShow.poster = tvdbService.getImage(tvShow, "poster");
-          if (tvShow.poster != null) {
-            tvShow.poster = tvShow.poster.replace("public", "assets");
-            // poster obtenido
-            result.put("poster", true);
-          } else {
-            // no se ha podido obtener el poster
-            Logger.info(tvShow.name + " - no se ha podido obtener el poster");
-            result.put("poster", false);
-          }
-          // obtenemos fanart
-          tvShow.fanart = tvdbService.getImage(tvShow, "fanart");
-          if (tvShow.fanart != null) {
-            tvShow.fanart = tvShow.fanart.replace("public", "assets");
-            // fanart obtenido
-            result.put("fanart", true);
-          } else {
-            // no se ha podido obtener el fanart
-            Logger.info(tvShow.name + " - no se ha podido obtener el fanart");
-            result.put("fanart", false);
-          }
-          break;
-        default:
-          Logger.error("Actualizar " + request + ": el tipo de datos a actualizar de la serie no coincide con ninguno conocido: '" + request + "'");
-          tvShow = null;
+      if (request != null) {
+        switch (request) {
+          case "data":
+            try {
+              tvShow = tvShowService.updateData(tvShow);
+            } catch (Exception ex) {
+              Logger.error("Actualizar datos serie - timeout con API externa");
+              result.put("error", "cannot connect with external API");
+              return status(504, result); // gateway timeout
+            }
+            break;
+          case "seasons":
+            try {
+              tvShow = seasonService.updateSeasons(tvShow);
+            } catch (Exception ex) {
+              Logger.error("Actualizar temporadas serie - timeout con API externa");
+              result.put("error", "cannot connect with external API");
+              return status(504, result); // gateway timeout
+            }
+            break;
+          case "images":
+            // las imagenes deben ser una a una desde aquí
+            result.put("banner", tvShowService.getAndSetImage(tvShow, "banner"));
+            result.put("poster", tvShowService.getAndSetImage(tvShow, "poster"));
+            result.put("fanart", tvShowService.getAndSetImage(tvShow, "fanart"));
+            break;
+          default:
+            Logger.error("Actualizar " + request + ": el tipo de datos a actualizar de la serie no coincide con ninguno conocido: '" + request + "'");
+            tvShow = null;
+        }
+      } else {
+        result.put("error", "update null");
+        return badRequest(result);
       }
+
 
       // si el tvShow no es null, se ha actualizado correctamente
       if (tvShow != null) {

@@ -6,6 +6,8 @@ import models.dao.SeasonDAO;
 import models.dao.TvShowDAO;
 import models.service.SeasonService;
 import models.service.TvShowService;
+import models.service.external.ExternalUtils;
+import models.service.external.TmdbService;
 import models.service.external.TvdbService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
@@ -14,6 +16,7 @@ import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import play.Logger;
 import play.db.Database;
 import play.db.Databases;
 import play.db.jpa.JPA;
@@ -22,6 +25,7 @@ import play.db.jpa.JPAApi;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -49,7 +53,9 @@ public class SeasonServiceTest {
     tvShowDAO = new TvShowDAO(jpa);
     TvdbService tvdbService = mock(TvdbService.class);
     TvShowService tvShowService = new TvShowService(tvShowDAO, tvdbService);
-    seasonService = new SeasonService(seasonDAO, tvShowService);
+    TmdbService tmdbService = mock(TmdbService.class);
+    ExternalUtils externalUtils = new ExternalUtils();
+    seasonService = new SeasonService(seasonDAO, tvShowService, tmdbService, externalUtils);
 
     // inicializamos base de datos de prueba
     databaseTester = new JndiDatabaseTester("DefaultDS");
@@ -74,7 +80,7 @@ public class SeasonServiceTest {
 
   // testeamos crear una season
   @Test
-  public void testSeasonCreate() {
+  public void testSeasonServiceCreate() {
     Season season1 = new Season(2, new Date(), "resumen", "poster", "nombre");
 
     TvShow tvShow = jpa.withTransaction(() -> tvShowDAO.find(1));
@@ -88,7 +94,7 @@ public class SeasonServiceTest {
 
   // testeamos a buscar una season -> found
   @Test
-  public void testSeasonFind() {
+  public void testSeasonServiceFind() {
     Season season = jpa.withTransaction(() -> seasonService.find(1));
     assertEquals(1, (int) season.id);
     assertEquals("resumen temporada", season.overview);
@@ -97,23 +103,53 @@ public class SeasonServiceTest {
 
   // testeamos a buscar una season -> not found
   @Test
-  public void testSeasonFindNotFound() {
+  public void testSeasonServiceFindNotFound() {
     Season season = jpa.withTransaction(() -> seasonService.find(0));
     assertNull(season);
   }
 
   // testeamos a borrar una season OK
   @Test
-  public void testSeasonDeleteOk() {
+  public void testSeasonServiceDeleteOk() {
     Boolean result = jpa.withTransaction(() -> seasonService.delete(1));
     assertTrue(result);
   }
 
   // testeamos a borrar una season not OK
   @Test
-  public void testSeasonDeleteNotOk() {
+  public void testSeasonServiceDeleteNotOk() {
     Boolean result = jpa.withTransaction(() -> seasonService.delete(0));
     assertFalse(result);
+  }
+
+  // testeamos asignar temporadas
+  @Test
+  public void TestSeasonServiceSetSeasons() {
+    jpa.withTransaction(() -> {
+      TvShow tvShow = tvShowDAO.find(1);
+      Season season1 = new Season(2, new Date(), "resumen 2", "poster 2", "nombre 2");
+      Season season2 = new Season(3, new Date(), "resumen 3", "poster 3", "nombre 3");
+      List<Season> seasons = new ArrayList<>();
+      seasons.add(season1);
+      seasons.add(season2);
+      Boolean result = seasonService.setSeasons(tvShow, seasons);
+
+      assertTrue(result);
+      assertEquals(3, tvShow.seasons.size());
+    });
+  }
+
+  // testeamos borrar todas las temporadas de una serie
+  @Test
+  public void TestSeasonServiceDeleteSeasons() {
+    jpa.withTransaction(() -> {
+      TvShow tvShow = tvShowDAO.find(1);
+      Boolean result = seasonService.deleteSeasons(tvShow);
+      tvShow = tvShowDAO.find(1);
+
+      assertTrue(result);
+      assertEquals(0, tvShow.seasons.size());
+    });
   }
 
 }

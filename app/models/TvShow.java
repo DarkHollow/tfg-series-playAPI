@@ -3,7 +3,7 @@ package models;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
-import utils.json.TvShowViews;
+import utils.json.JsonViews;
 import play.data.validation.Constraints;
 
 import javax.persistence.*;
@@ -19,85 +19,85 @@ public class TvShow {
 
   @Id
   @GeneratedValue(strategy=GenerationType.IDENTITY)
-  @JsonView(TvShowViews.SearchTvShow.class)
+  @JsonView(JsonViews.SearchTvShow.class)
   public Integer id;
 
-  @JsonView(TvShowViews.InternalFullTvShow.class)
+  @JsonView(JsonViews.InternalFullTvShow.class)
   public String imdbId;
 
   @Constraints.Required
   @Column(unique = true)
-  @JsonView(TvShowViews.SearchTvShowTvdbId.class)
+  @JsonView(JsonViews.SearchTvShowTvdbId.class)
   public Integer tvdbId;
 
   @Column(unique = true)
-  @JsonView(TvShowViews.SearchTvShowTvdbId.class)
+  @JsonView(JsonViews.SearchTvShowTvdbId.class)
   public Integer tmdbId;
 
   @Constraints.Required
   @Column(length = 100)
-  @JsonView(TvShowViews.SearchTvShow.class)
+  @JsonView(JsonViews.SearchTvShow.class)
   public String name;
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-  @JsonView(TvShowViews.SearchTvShow.class)
+  @JsonView(JsonViews.SearchTvShow.class)
   public Date firstAired;
 
   @Constraints.Required
   @Column(columnDefinition = "text")
-  @JsonView(TvShowViews.FullTvShow.class)
+  @JsonView(JsonViews.FullTvShow.class)
   public String overview;
 
-  @JsonView(TvShowViews.SearchTvShow.class)
+  @JsonView(JsonViews.SearchTvShow.class)
   public String banner;
 
-  @JsonView(TvShowViews.FullTvShow.class)
+  @JsonView(JsonViews.FullTvShow.class)
   public String poster;
 
-  @JsonView(TvShowViews.FullTvShow.class)
+  @JsonView(JsonViews.FullTvShow.class)
   public String fanart;
 
   @Column(length = 50)
-  @JsonView(TvShowViews.FullTvShow.class)
+  @JsonView(JsonViews.FullTvShow.class)
   public String network;
 
-  @JsonView(TvShowViews.FullTvShow.class)
+  @JsonView(JsonViews.FullTvShow.class)
   public String runtime;
 
-  @JsonView(TvShowViews.FullTvShow.class)
+  @JsonView(JsonViews.FullTvShow.class)
   @ElementCollection
   public Set<String> genre = new HashSet();
 
-  @JsonView(TvShowViews.FullTvShow.class)
+  @JsonView(JsonViews.FullTvShow.class)
   public String rating;
 
   // NOTE: error con H2 en test @Column(columnDefinition = "enum('Continuing', 'Ended')")
   @Enumerated(EnumType.STRING)
-  @JsonView(TvShowViews.FullTvShow.class)
+  @JsonView(JsonViews.FullTvShow.class)
   public Status status;
 
-  @JsonView(TvShowViews.SearchTvShow.class)
+  @JsonView(JsonViews.SearchTvShow.class)
   public Float score;
 
-  @JsonView(TvShowViews.SearchTvShow.class)
+  @JsonView(JsonViews.SearchTvShow.class)
   public Integer voteCount;
 
   @Transient
-  @JsonView(TvShowViews.SearchTVDB.class)
+  @JsonView(JsonViews.SearchTVDB.class)
   public Boolean local;
 
   @Transient
-  @JsonView(TvShowViews.SearchTVDB.class)
+  @JsonView(JsonViews.SearchTVDB.class)
   public String requestStatus;
 
   @OneToMany(mappedBy = "tvShow", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonManagedReference
-  @JsonView(TvShowViews.FullTvShow.class)
+  @JsonView(JsonViews.FullTvShow.class)
   public List<TvShowVote> tvShowVotes;
 
   @OneToMany(mappedBy = "tvShow", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonManagedReference
-  @JsonView(TvShowViews.FullTvShow.class)
+  @JsonView(JsonViews.FullTvShow.class)
   public List<Season> seasons;
 
   // constructor vacio

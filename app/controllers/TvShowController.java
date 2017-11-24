@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
-import utils.json.TvShowViews;
+import utils.json.JsonViews;
 import models.TvShow;
 import models.TvShowRequest;
 import models.service.SeasonService;
@@ -73,7 +73,7 @@ public class TvShowController extends Controller {
 
     // si la lista no está vacía, devolvemos datos
     try {
-      JsonNode jsonNode = jsonUtils.jsonParseObject(tvShows, TvShowViews.SearchTvShow.class);
+      JsonNode jsonNode = jsonUtils.jsonParseObject(tvShows, JsonViews.SearchTvShow.class);
       return ok(jsonNode);
     } catch (Exception ex) {
       // si hubiese un error, devolver error interno
@@ -134,7 +134,7 @@ public class TvShowController extends Controller {
 
     // si la lista no está vacía, devolvemos datos
     try {
-      JsonNode jsonNode = jsonUtils.jsonParseObject(tvShow, TvShowViews.FullTvShow.class);
+      JsonNode jsonNode = jsonUtils.jsonParseObject(tvShow, JsonViews.FullTvShow.class);
       return ok(jsonNode);
 
     } catch (Exception ex) {
@@ -160,7 +160,7 @@ public class TvShowController extends Controller {
 
       // si la lista no está vacía, devolvemos datos
       try {
-        return ok(jsonUtils.jsonParseObject(tvShows, TvShowViews.SearchTvShow.class));
+        return ok(jsonUtils.jsonParseObject(tvShows, JsonViews.SearchTvShow.class));
       } catch (Exception ex) {
         // si hubiese un error, devolver error interno
         ObjectNode result = Json.newObject();
@@ -211,7 +211,7 @@ public class TvShowController extends Controller {
         }
 
         try {
-          JsonNode jsonNode = jsonUtils.jsonParseObject(tvShows, TvShowViews.SearchTVDB.class);
+          JsonNode jsonNode = jsonUtils.jsonParseObject(tvShows, JsonViews.SearchTVDB.class);
           return ok(jsonNode);
         } catch (Exception ex) {
           // si hubiese un error, devolver error interno
@@ -291,7 +291,7 @@ public class TvShowController extends Controller {
         result.put("ok", "TV Show " + request + " successfully updated");
         result.put("message", "Serie " + request + "  actualizada correctamente");
         try {
-          JsonNode jsonNode = jsonUtils.jsonParseObject(tvShow, TvShowViews.FullTvShow.class);
+          JsonNode jsonNode = jsonUtils.jsonParseObject(tvShow, JsonViews.FullTvShow.class);
           result.set("tvShow", jsonNode);
         } catch (JsonProcessingException e) {
           Logger.error("Error parseando datos serie a JSON, serie  " + request + "  actualizada igualmente");

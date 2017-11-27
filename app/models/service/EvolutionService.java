@@ -3,22 +3,27 @@ package models.service;
 import models.Evolution;
 import models.TvShow;
 import models.dao.EvolutionDAO;
+import models.service.external.TmdbService;
 import play.Logger;
 
 import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 
 public class EvolutionService {
   private final EvolutionDAO evolutionDAO;
   private final TvShowService tvShowService;
+  private final SeasonService seasonService;
+  private final TmdbService tmdbService;
 
   @Inject
-  public EvolutionService(EvolutionDAO evolutionDAO, TvShowService tvShowService) {
+  public EvolutionService(EvolutionDAO evolutionDAO, TvShowService tvShowService, SeasonService seasonService,
+                          TmdbService tmdbService) {
     this.evolutionDAO = evolutionDAO;
     this.tvShowService = tvShowService;
+    this.seasonService = seasonService;
+    this.tmdbService = tmdbService;
   }
 
   public Evolution createEvolution(Evolution evolution) {
@@ -152,6 +157,33 @@ public class EvolutionService {
     }
 
     Logger.info("Evolution 1 - Actualización finalizada con éxito");
+    return true;
+  }
+
+  // Evolution 2
+  // - nuevo atributo de TvShow: tmdbId, obtener ese id en series ya persistidas
+  // - nuevo model Season, obtener temporadas para las series ya persistidas
+  public Boolean applyEvolution2() {
+    try {
+      List<TvShow> tvShows = tvShowService.all();
+      if (!tvShows.isEmpty()) {
+        Logger.info("Evolution 2 - Actualizando series...\nEvolution 2 - este proceso tardará en proporción a la cantidad" +
+                " de series de las que disponga el sistema persistidas.");
+        // si no está vacía, obtener TMDb ids de todas la series y obtener sus temporadas
+        for (TvShow tvShow: tvShows) {
+          // updateSeasons se encarga de ambas cosas, de obtener el tmdbId si no lo tiene
+          // y después borra las temporadas actuales y descarga todas
+          seasonService.updateSeasons(tvShow);
+        }
+      } else {
+        Logger.info("Evolution 2 - No hay series que actualizar");
+      }
+    } catch (Exception ex) {
+      Logger.error("Evolution 2 - No se ha podido actualizar: " + ex.getClass().toString());
+      return false;
+    }
+
+    Logger.info("Evolution 2 - Actualización finalizada con éxito");
     return true;
   }
 

@@ -217,6 +217,19 @@
                                         </div>
                                     }
                                 }
+
+                                @for(season <- tvShow.seasons.sortBy(_.seasonNumber)){
+                                    @if(season.seasonNumber == 0){
+                                        <div class="smartphone-season">
+                                            @if(season.poster != null) {
+                                                <img class="smartphone-season-poster" src="@{ "http://".concat(requestHeader.host).concat(season.poster.substring(1)) }" />
+                                            }else{
+                                                <img class="smartphone-season-poster" src="@{ "http://".concat(requestHeader.host).concat("/assets/images/placeholderPoster.jpg") }" />
+                                            }
+                                            <div class="smartphone-season-title">Especiales</div>
+                                        </div>
+                                    }
+                                }
                             </div>
                         }
 

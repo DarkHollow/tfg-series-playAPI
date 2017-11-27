@@ -166,32 +166,34 @@ public class SeasonService {
       if (tvShow.seasons != null) {
         for (Season season: tvShow.seasons) {
           Season tmdbSeason = tmdbService.getCompleteSeasonByTmdbIdAndSeasonNumber(tvShow.tmdbId, season.seasonNumber);
-          season.name = tmdbSeason.name;
-          season.overview = tmdbSeason.overview;
-          season.firstAired = tmdbSeason.firstAired;
-          // descargar poster
-          if (tmdbSeason.poster != null && !tmdbSeason.poster.isEmpty() && !tmdbSeason.poster.equals("null")) {
-            String baseUrl = "https://image.tmdb.org/t/p/original";
-            URL downloadURL = new URL(baseUrl + tmdbSeason.poster);
-            // generamos nombre a guardar a partir de la primera letra del tipo con la mitad del hashCode en positivo
-            String saveName = "s" + season.seasonNumber + "-" + externalUtils.positiveHalfHashCode(tmdbSeason.poster.substring(1).hashCode());
-            // sacamos la extensión del fichero de imagen
-            String format = tmdbSeason.poster.substring(tmdbSeason.poster.lastIndexOf('.') + 1);
-            // generamos la ruta donde se guardará la imagen
-            String folderPath = "." + SEPARATOR + "public" + SEPARATOR + "images" + SEPARATOR + "series" + SEPARATOR + tvShow.id.toString();
-            // ruta absoluta
-            String path = folderPath + SEPARATOR + saveName + "." + format;
-            // descargamos imagen
-            String resultPath = externalUtils.downloadImage(downloadURL, format, path);
-            if (resultPath != null) {
-              season.poster = resultPath.replace("public", "assets");
-              Logger.info(tvShow.name + " - " + "poster season " + season.seasonNumber + " descargado");
-              // borrar imagen antigua
-              externalUtils.deleteOldImages(folderPath, "s" + season.seasonNumber, saveName + "." + format);
+          if (tmdbSeason != null) {
+            season.name = tmdbSeason.name;
+            season.overview = tmdbSeason.overview;
+            season.firstAired = tmdbSeason.firstAired;
+            // descargar poster
+            if (tmdbSeason.poster != null && !tmdbSeason.poster.isEmpty() && !tmdbSeason.poster.equals("null")) {
+              String baseUrl = "https://image.tmdb.org/t/p/original";
+              URL downloadURL = new URL(baseUrl + tmdbSeason.poster);
+              // generamos nombre a guardar a partir de la primera letra del tipo con la mitad del hashCode en positivo
+              String saveName = "s" + season.seasonNumber + "-" + externalUtils.positiveHalfHashCode(tmdbSeason.poster.substring(1).hashCode());
+              // sacamos la extensión del fichero de imagen
+              String format = tmdbSeason.poster.substring(tmdbSeason.poster.lastIndexOf('.') + 1);
+              // generamos la ruta donde se guardará la imagen
+              String folderPath = "." + SEPARATOR + "public" + SEPARATOR + "images" + SEPARATOR + "series" + SEPARATOR + tvShow.id.toString();
+              // ruta absoluta
+              String path = folderPath + SEPARATOR + saveName + "." + format;
+              // descargamos imagen
+              String resultPath = externalUtils.downloadImage(downloadURL, format, path);
+              if (resultPath != null) {
+                season.poster = resultPath.replace("public", "assets");
+                Logger.info(tvShow.name + " - " + "poster season " + season.seasonNumber + " descargado");
+                // borrar imagen antigua
+                externalUtils.deleteOldImages(folderPath, "s" + season.seasonNumber, saveName + "." + format);
+              }
+              result = true;
+            } else {
+              Logger.info("Season Fullfill - la temporada no tiene poster");
             }
-            result = true;
-          } else {
-            Logger.info("Season Fullfill - la temporada no tiene poster");
           }
         }
       } else {
@@ -209,7 +211,9 @@ public class SeasonService {
       // primero comprobamos si  tiene tmdbId, y si no, lo conseguimos
       if (tvShow.tmdbId == null) {
         TvShow tmdbShow = tmdbService.findByTvdbId(tvShow.tvdbId);
-        tvShow.tmdbId = tmdbShow.tmdbId;
+        if (tmdbShow != null) {
+          tvShow.tmdbId = tmdbShow.tmdbId;
+        }
       }
 
       if (tvShow.tmdbId != null) {

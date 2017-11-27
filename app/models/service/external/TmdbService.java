@@ -9,6 +9,7 @@ import play.libs.ws.WSClient;
 import play.libs.ws.WSResponse;
 
 import java.io.File;
+import java.sql.Date;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +28,12 @@ public class TmdbService {
     this.ws = ws;
     this.externalUtils = externalUtils;
     this.tmdbConnection = tmdbConnection;
+  }
+
+  // petición sola
+  private WSResponse request(String finalQuery) throws InterruptedException, ExecutionException, TimeoutException {
+    CompletionStage<WSResponse> stage = ws.url(finalQuery).get();
+    return stage.toCompletableFuture().get(10, TimeUnit.SECONDS);
   }
 
   // petición a The Movie Database API
@@ -52,23 +59,33 @@ public class TmdbService {
     finalQuery += "&api_key=" + tmdbConnection.getApiKey();
 
     try {
-      CompletionStage<WSResponse> stage = ws.url(finalQuery).get();
-      response = stage.toCompletableFuture().get(10, TimeUnit.SECONDS);
+      Boolean finished = false;
+      while (!finished) {
+        response = request(finalQuery);
 
-      switch (response.getStatus()) {
-        case 200:
-          result = response.asJson();
-          break;
-        case 401:
-          Logger.error("Petición TMDb - Sin autorización, comprobar API Key");
-          break;
-        case 404:
-          Logger.info("Petición TMDb - Recurso no encontrado");
-          break;
-        default:
-          Logger.warn("Petición TMDb - Status no controlado");
+        switch (response.getStatus()) {
+          case 200:
+            result = response.asJson();
+            finished = true;
+            break;
+          case 401:
+            Logger.error("Petición TMDb - Sin autorización, comprobar API Key");
+            finished = true;
+            break;
+          case 404:
+            Logger.info("Petición TMDb - Recurso no encontrado");
+            finished = true;
+            break;
+          case 429:
+            Logger.info("Petición TMDb - Límite de peticiones alcanzado, esperando 5 segundos");
+            TimeUnit.SECONDS.sleep(5);
+            break;
+          default:
+            Logger.warn("Petición TMDb - Status no controlado");
+            finished = true;
+            Logger.warn("Status " + response.getStatus());
+        }
       }
-
     } catch (Exception ex) {
       Logger.error("Petición TMDb - " + ex.getClass());
       throw ex;

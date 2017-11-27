@@ -203,7 +203,35 @@
                             </div>
                         </div>
 
-                        <div class="smartphone-footer"></div>
+                        @if(tvShow.seasons.size() > 0){
+                            <div class="smartphone-seasons">
+                                @for(season <- tvShow.seasons.sortBy(_.seasonNumber)){
+                                    @if(season.seasonNumber != 0){
+                                        <div class="smartphone-season">
+                                        @if(season.poster != null) {
+                                            <img class="smartphone-season-poster" src="@{ "http://".concat(requestHeader.host).concat(season.poster.substring(1)) }" />
+                                        }else{
+                                            <img class="smartphone-season-poster" src="@{ "http://".concat(requestHeader.host).concat("/assets/images/placeholderPoster.jpg") }" />
+                                        }
+                                            <div class="smartphone-season-title">Temporada @season.seasonNumber</div>
+                                        </div>
+                                    }
+                                }
+
+                                @for(season <- tvShow.seasons.sortBy(_.seasonNumber)){
+                                    @if(season.seasonNumber == 0){
+                                        <div class="smartphone-season">
+                                            @if(season.poster != null) {
+                                                <img class="smartphone-season-poster" src="@{ "http://".concat(requestHeader.host).concat(season.poster.substring(1)) }" />
+                                            }else{
+                                                <img class="smartphone-season-poster" src="@{ "http://".concat(requestHeader.host).concat("/assets/images/placeholderPoster.jpg") }" />
+                                            }
+                                            <div class="smartphone-season-title">Especiales</div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        }
 
                     </div>
 
@@ -213,65 +241,110 @@
             </div>
 
             <br />
+
             <div class="row">
-                <small class="display-block">Imágenes</small>
-                <br />
+                <div class="col-md-12">
+                    <small class="display-block">Imágenes</small>
+                    <br />
 
-                <div class="col-sm-3">
-                    <ul class="media-list content-group">
-                        <li class="media">
-                            <div class="media-left col-sm-2 text-semibold">Póster</div>
-                            <div class="media-body">
-                                <div class="media-content">
-                                    @if(tvShow.poster != null) {
-                                        <a target="_blank" href="@{ "http://".concat(requestHeader.host).concat(tvShow.poster.substring(1)) }">
-                                            <img class="tvShow-img tvShow-poster img-responsive" src="@{ "http://".concat(requestHeader.host).concat(tvShow.poster.substring(1)) }" />
-                                        </a>
-                                    }else{
-                                        <span>No tenemos póster</span>
-                                    }
+                    <div class="col-sm-3">
+                        <ul class="media-list content-group">
+                            <li class="media">
+                                <div class="media-left col-sm-2 text-semibold">Póster</div>
+                                <div class="media-body">
+                                    <div class="media-content">
+                                        @if(tvShow.poster != null) {
+                                            <a target="_blank" href="@{ "http://".concat(requestHeader.host).concat(tvShow.poster.substring(1)) }">
+                                                <img class="tvShow-img tvShow-poster img-responsive" src="@{ "http://".concat(requestHeader.host).concat(tvShow.poster.substring(1)) }" />
+                                            </a>
+                                        }else{
+                                            <span>No tenemos póster</span>
+                                        }
+                                    </div>
                                 </div>
-                            </div>
-                        </li>
-                    </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <ul class="media-list content-group">
+                            <li class="media">
+                                <div class="media-left col-sm-2 text-semibold">Banner</div>
+                                <div class="media-body">
+                                    <div class="media-content">
+                                        @if(tvShow.banner != null) {
+                                            <a target="_blank" href="@{ "http://".concat(requestHeader.host).concat(tvShow.banner.substring(1)) }">
+                                                <img class="tvShow-img img-responsive" src="@{ "http://".concat(requestHeader.host).concat(tvShow.banner.substring(1)) }" />
+                                            </a>
+                                        }else{
+                                            <span>No tenemos banner</span>
+                                        }
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <ul class="media-list content-group">
+                            <li class="media">
+                                <div class="media-left col-sm-2 text-semibold">Fanart</div>
+                                <div class="media-body">
+                                    <div class="media-content">
+                                        @if(tvShow.fanart != null) {
+                                            <a target="_blank" href="@{ "http://".concat(requestHeader.host).concat(tvShow.fanart.substring(1)) }">
+                                                <img class="tvShow-img img-responsive" src="@{ "http://".concat(requestHeader.host).concat(tvShow.fanart.substring(1)) }" />
+                                            </a>
+                                        }else{
+                                            <span>No tenemos fanart</span>
+                                        }
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
+            </div>
 
-                <div class="col-sm-4">
-                    <ul class="media-list content-group">
-                        <li class="media">
-                            <div class="media-left col-sm-2 text-semibold">Banner</div>
-                            <div class="media-body">
-                                <div class="media-content">
-                                    @if(tvShow.banner != null) {
-                                        <a target="_blank" href="@{ "http://".concat(requestHeader.host).concat(tvShow.banner.substring(1)) }">
-                                            <img class="tvShow-img img-responsive" src="@{ "http://".concat(requestHeader.host).concat(tvShow.banner.substring(1)) }" />
-                                        </a>
-                                    }else{
-                                        <span>No tenemos banner</span>
-                                    }
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
+            <br />
 
-                <div class="col-sm-4">
-                    <ul class="media-list content-group">
-                        <li class="media">
-                            <div class="media-left col-sm-2 text-semibold">Fanart</div>
-                            <div class="media-body">
-                                <div class="media-content">
-                                    @if(tvShow.fanart != null) {
-                                        <a target="_blank" href="@{ "http://".concat(requestHeader.host).concat(tvShow.fanart.substring(1)) }">
-                                            <img class="tvShow-img img-responsive" src="@{ "http://".concat(requestHeader.host).concat(tvShow.fanart.substring(1)) }" />
-                                        </a>
-                                    }else{
-                                        <span>No tenemos fanart</span>
-                                    }
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
+            <div class="row" style="padding: 10px;">
+                <small class="display-block">Temporadas</small>
+                <div class="seasons">
+                @for(season <- tvShow.seasons.sortBy(_.seasonNumber)) {
+                    <div class="season">
+                        <div class="season-poster">
+                        @if(season.poster != null) {
+                            <a target="_blank" href="@{ "http://".concat(requestHeader.host).concat(season.poster.substring(1)) }">
+                                <img class="season-poster" src="@{ "http://".concat(requestHeader.host).concat(season.poster.substring(1)) }" />
+                            </a>
+                        }else{
+                            <img class="season-poster" src="@{ "http://".concat(requestHeader.host).concat("/assets/images/placeholderPoster.jpg") }" />
+                        }
+                        </div>
+                        <div class="season-info">
+                            <h1>@if(season.seasonNumber == 0){
+                                <span>Especiales</span>
+                            }else{
+                                <span>@season.name</span>
+                            }
+                            @if(season.firstAired != null) {
+                                <span class="text-size-small margin-left-6">Estreno: @season.firstAired.format("dd-MM-yyyy")</span>
+                            }else{
+                                <span class="text-size-small margin-left-6">Sin fecha de estreno</span>
+                            }
+                            </h1>
+
+                            <h6>Temporada @season.seasonNumber de @tvShow.name</h6>
+
+                            @if(season.overview != null){
+                                <span style="white-space: pre-line">@season.overview.substring(0, 1).toUpperCase()@season.overview.substring(1)</span>
+                            }else{
+                                <span>Sin sinopsis</span>
+                            }
+                        </div>
+                    </div>
+                }
                 </div>
             </div>
 
@@ -289,9 +362,14 @@
                         Descargar datos de nuevo
                     </button>
 
-                    <button data-id="@tvShow.id" data-action="download-images" data-host="@requestHeader.host" data-reload="@routes.AdminController.tvShow(tvShow.id)" type="button" class="btn bg-green-800 btn-labeled">
+                    <button data-id="@tvShow.id" data-action="download-images" data-host="@requestHeader.host" data-reload="@routes.AdminController.tvShow(tvShow.id)" type="button" class="btn bg-green-600 btn-labeled">
                         <b><i class="icon-image2"></i></b>
                         Descargar imágenes de nuevo
+                    </button>
+
+                    <button data-id="@tvShow.id" data-action="download-seasons" data-host="@requestHeader.host" data-reload="@routes.AdminController.tvShow(tvShow.id)" type="button" class="btn bg-green-700 btn-labeled">
+                        <b><i class="icon-books"></i></b>
+                        Descargar temporadas de nuevo
                     </button>
                 </div>
 

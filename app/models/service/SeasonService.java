@@ -171,10 +171,10 @@ public class SeasonService {
           season.firstAired = tmdbSeason.firstAired;
           // descargar poster
           if (tmdbSeason.poster != null && !tmdbSeason.poster.isEmpty() && !tmdbSeason.poster.equals("null")) {
-            String baseUrl = "https://image.tmdb.org/t/p/w500";
+            String baseUrl = "https://image.tmdb.org/t/p/original";
             URL downloadURL = new URL(baseUrl + tmdbSeason.poster);
             // generamos nombre a guardar a partir de la primera letra del tipo con la mitad del hashCode en positivo
-            String saveName = "s" + season.seasonNumber + externalUtils.positiveHalfHashCode(tmdbSeason.poster.substring(1).hashCode());
+            String saveName = "s" + season.seasonNumber + "-" + externalUtils.positiveHalfHashCode(tmdbSeason.poster.substring(1).hashCode());
             // sacamos la extensión del fichero de imagen
             String format = tmdbSeason.poster.substring(tmdbSeason.poster.lastIndexOf('.') + 1);
             // generamos la ruta donde se guardará la imagen
@@ -208,7 +208,7 @@ public class SeasonService {
     if (tvShow != null) {
       // primero comprobamos si  tiene tmdbId, y si no, lo conseguimos
       if (tvShow.tmdbId == null) {
-        TvShow tmdbShow = tvShowService.findByTvdbId(tvShow.tvdbId);
+        TvShow tmdbShow = tmdbService.findByTvdbId(tvShow.tvdbId);
         tvShow.tmdbId = tmdbShow.tmdbId;
       }
 

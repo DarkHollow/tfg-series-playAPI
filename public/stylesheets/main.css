@@ -212,7 +212,7 @@
 
 .smartphone {
     position: relative;
-    height: 400px;
+    height: 530px;
     width: 300px;
     background-color: #272727;
 }
@@ -295,6 +295,7 @@
 
 .status-box {
     padding: 10px;
+    padding-bottom: 2px;
     color: #eae5ec;
 }
 
@@ -303,12 +304,105 @@
     color: #bdb9bf;
 }
 
-.smartphone-footer {
-    position: absolute;
-    bottom: 0;
-    height: 60px;
+.smartphone-seasons {
+    display: flex;
+    flex-direction: row;
+    height: 170px;
     width: 100%;
-    background: linear-gradient(#272727, #FFFFFF);
+    background-color: #1c1c1c;
+    padding: 4px;
+    overflow: hidden;
+}
+
+.smartphone-season {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: #2f2f2f;
+    margin-left: 4px;
+}
+
+.smartphone-season:first-of-type {
+    margin-left: 0;
+}
+
+.smartphone-season-poster {
+    height: 130px;
+    width: auto;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    image-rendering: -webkit-optimize-contrast;
+}
+
+.smartphone-season-title {
+    padding: 3px;
+    color: #eae5ec;
+}
+
+/* información temporadas normal */
+
+.seasons {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+}
+
+.season {
+    display: flex;
+    flex-direction: row;
+    padding: 0;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    margin: 0;
+    border-bottom: 1px solid #e7e7e7;
+}
+
+.season:last-of-type {
+    border: 0;
+}
+
+.season h1 {
+    margin: 0;
+    margin-bottom: 6px;
+    padding: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.season-poster {
+    width: 140px;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    border-radius: 4px;
+    image-rendering: -webkit-optimize-contrast;
+}
+
+.season-info {
+    padding-left: 30px;
+    align-self: center;
+}
+
+@media (max-width: 768px) {
+    .season {
+        display: flex;
+        flex-direction: column;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #e7e7e7;
+    }
+
+    .season-poster {
+        align-self: center;
+        margin-bottom: 6px;
+    }
+
+    .season-info {
+        padding-left: 0;
+    }
 }
 
 .aviso-body {
@@ -358,5 +452,16 @@
     .alert {
         margin-bottom: 8px;
     }
+
+    .panel-footer {
+        height: 60px !important;
+    }
+
+    .heading-elements {
+        height: 60px;
+    }
 }
 
+.margin-left-6 {
+    margin-left: 6px;
+}

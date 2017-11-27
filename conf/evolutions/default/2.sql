@@ -2,6 +2,8 @@
 
 # --- !Ups
 
+ALTER TABLE TvShow ADD COLUMN tmdbId integer;
+
 CREATE TABLE season (
   id int(11) NOT NULL AUTO_INCREMENT,
   firstAired datetime,
@@ -15,4 +17,5 @@ CREATE TABLE season (
 );
 
 # --- !Downs
+ALTER TABLE TvShow DROP COLUMN tmdbId;
 DROP TABLE season;

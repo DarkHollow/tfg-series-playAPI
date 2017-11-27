@@ -208,7 +208,7 @@ public class SeasonService {
     if (tvShow != null) {
       // primero comprobamos si  tiene tmdbId, y si no, lo conseguimos
       if (tvShow.tmdbId == null) {
-        TvShow tmdbShow = tvShowService.findByTvdbId(tvShow.tvdbId);
+        TvShow tmdbShow = tmdbService.findByTvdbId(tvShow.tvdbId);
         tvShow.tmdbId = tmdbShow.tmdbId;
       }
 

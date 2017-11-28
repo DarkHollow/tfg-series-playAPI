@@ -3,6 +3,7 @@ package models.service;
 import com.google.inject.Inject;
 import models.TvShow;
 import models.dao.TvShowDAO;
+import models.service.external.TmdbService;
 import models.service.external.TvdbService;
 import org.apache.commons.io.FileUtils;
 import play.Logger;
@@ -17,11 +18,13 @@ public class TvShowService {
 
   private final TvShowDAO tvShowDAO;
   private final TvdbService tvdbService;
+  private final TmdbService tmdbService;
 
   @Inject
-  public TvShowService(TvShowDAO tvShowDAO, TvdbService tvdbService) {
+  public TvShowService(TvShowDAO tvShowDAO, TvdbService tvdbService, TmdbService tmdbService) {
     this.tvShowDAO = tvShowDAO;
     this.tvdbService = tvdbService;
+    this.tmdbService = tmdbService;
   }
 
   // CRUD
@@ -139,6 +142,24 @@ public class TvShowService {
       Logger.info(tvShow.name + " - no se ha podido obtener la imagen " + type);
       return false;
     }
+  }
+
+  public Integer getObtainTmdbId(TvShow tvShow) {
+    if (tvShow != null) {
+      try {
+        if (tvShow.tmdbId == null) {
+          TvShow tmdbShow = tmdbService.findByTvdbId(tvShow.tvdbId);
+          if (tmdbShow != null) {
+            tvShow.tmdbId = tmdbShow.tmdbId;
+          }
+        }
+      } catch (Exception ex) {
+        Logger.info("No se ha podido obtener el tmdbId para la serie " + tvShow.name);
+      }
+    } else {
+      return null;
+    }
+    return tvShow.tmdbId;
   }
 
 }

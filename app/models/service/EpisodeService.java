@@ -2,10 +2,12 @@ package models.service;
 
 import com.google.inject.Inject;
 import models.Episode;
+import models.Season;
 import models.dao.EpisodeDAO;
 import play.Logger;
 
 import java.io.File;
+import java.util.List;
 
 public class EpisodeService {
 
@@ -66,6 +68,26 @@ public class EpisodeService {
       Logger.debug("EpisodeSerice.delete - No existe?");
       return false;
     }
+  }
+
+  // Boolean asignar episodios a una temporada y persistir
+  public Boolean setEpisodes(Season season, List<Episode> episodes) {
+    Boolean result = false;
+    try {
+      if (episodes != null && episodes.size() > 0) {
+        // si hay temporadas las creamos
+        for (Episode episode: episodes) {
+          Logger.info(season.episodes.size() + " episodios");
+          episode.season = season;
+          season.episodes.add(create(episode));
+        }
+        Logger.info(season.episodes.size() + " episodios");
+      }
+      result = true;
+    } catch (Exception ex) {
+      Logger.error(ex.getMessage());
+    }
+    return result;
   }
 
 }

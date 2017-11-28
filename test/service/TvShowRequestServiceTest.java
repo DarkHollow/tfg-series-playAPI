@@ -6,6 +6,7 @@ import models.dao.TvShowDAO;
 import models.dao.TvShowRequestDAO;
 import models.service.TvShowRequestService;
 import models.service.TvShowService;
+import models.service.external.TmdbService;
 import models.service.external.TvdbService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
@@ -48,7 +49,8 @@ public class TvShowRequestServiceTest {
     user1.id = 1;
     TvShowDAO tvShowDAO = new TvShowDAO(jpa);
     TvdbService tvdbService = mock(TvdbService.class);
-    TvShowService tvShowService = new TvShowService(tvShowDAO, tvdbService);
+    TmdbService tmdbService = mock(TmdbService.class);
+    TvShowService tvShowService = new TvShowService(tvShowDAO, tvdbService, tmdbService);
     TvShowRequestDAO tvShowRequestDAO = new TvShowRequestDAO(jpa);
     tvShowRequestService = new TvShowRequestService(tvShowService, tvShowRequestDAO);
 

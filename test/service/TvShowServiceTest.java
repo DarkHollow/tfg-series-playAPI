@@ -3,6 +3,7 @@ package service;
 import models.TvShow;
 import models.dao.TvShowDAO;
 import models.service.TvShowService;
+import models.service.external.TmdbService;
 import models.service.external.TvdbService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
@@ -43,7 +44,8 @@ public class TvShowServiceTest {
   public void initData() throws Exception {
     TvShowDAO tvShowDAO = new TvShowDAO(jpa);
     TvdbService tvdbService = mock(TvdbService.class);
-    tvShowService = new TvShowService(tvShowDAO, tvdbService);
+    TmdbService tmdbService = mock(TmdbService.class);
+    tvShowService = new TvShowService(tvShowDAO, tvdbService, tmdbService);
 
     databaseTester = new JndiDatabaseTester("DefaultDS");
     IDataSet initialDataSet = new FlatXmlDataSetBuilder().build(new

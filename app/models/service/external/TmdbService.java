@@ -2,6 +2,7 @@ package models.service.external;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
+import models.Episode;
 import models.Season;
 import models.TvShow;
 import play.Logger;
@@ -10,6 +11,8 @@ import play.libs.ws.WSResponse;
 
 import java.io.File;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -139,7 +142,7 @@ public class TmdbService {
     }
   }
 
-  // obtiene temporada y episodios
+  // obtiene temporada
   public Season getCompleteSeasonByTmdbIdAndSeasonNumber(Integer tmdbId, Integer seasonNumber) throws InterruptedException, ExecutionException, TimeoutException {
     JsonNode respuesta;
     Season season = null;
@@ -168,6 +171,43 @@ public class TmdbService {
     }
 
     return season;
+  }
+
+  // obtiene episodios
+  public List<Episode> getAllSeasonEpisodesByTmdbIdAndSeasonNumber(Integer tmdbId, Integer seasonNumber) throws InterruptedException, ExecutionException, TimeoutException {
+    JsonNode respuesta;
+    List<Episode> episodes = null;
+    String query = "https://api.themoviedb.org/3/tv/" + tmdbId.toString() + SEPARATOR + "season" + SEPARATOR + seasonNumber.toString();
+
+    respuesta = getRequest(query, "es-ES");
+
+    // comprobamos si ha encontrado la season en Tmdb
+    if (respuesta != null && respuesta.get("status_code") == null) {
+      Logger.info("TMDb Service - Get all season episodes: Season y episodes encontrados en The Movie Database API");
+      // inicializamos lista
+      episodes = new ArrayList<>();
+
+      // recorremos episodios de la respuesta
+      if (respuesta.withArray("episodes").size() > 0) {
+        JsonNode jsonEpisodes = respuesta.withArray("episodes");
+        List<Episode> finalEpisodes = episodes;
+        jsonEpisodes.forEach(episodeJson -> {
+          Episode episode = new Episode();
+          episode.episodeNumber = episodeJson.get("episode_number").asInt();
+          episode.name = externalUtils.nullableString(episodeJson.get("name").asText());
+          episode.overview = externalUtils.nullableString(episodeJson.get("overview").asText());
+          episode.screenshot = externalUtils.nullableString(episodeJson.get("still_path").asText());
+          JsonNode fecha = respuesta.get("air_date");
+          episode.firstAired = externalUtils.parseDate(fecha);
+
+          finalEpisodes.add(episode);
+        });
+      }
+    } else {
+      Logger.info("TMDb Service - Get all season episodes: Season no encontrada en The Movie Database API");
+    }
+
+    return episodes;
   }
 
 }

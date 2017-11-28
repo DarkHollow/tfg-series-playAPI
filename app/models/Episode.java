@@ -2,36 +2,34 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import play.data.validation.Constraints;
 import utils.json.JsonViews;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
 
 @Entity
-@Table(name = "season")
-public class Season {
+@Table(name = "episode")
+public class Episode {
 
   @Id
   @GeneratedValue(strategy=GenerationType.IDENTITY)
   public Integer id;
 
   @ManyToOne
-  @JoinColumn(name = "tvShowId")
+  @JoinColumn(name = "seasonId")
   @JsonBackReference
-  public TvShow tvShow;
+  public Season season;
 
   @Constraints.Required
-  public Integer seasonNumber;
+  public Integer episodeNumber;
 
   @JsonView(JsonViews.FullAll.class)
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   public Date firstAired;
 
-  public String poster;
+  public String screenshot;
 
   @JsonView(JsonViews.FullAll.class)
   public String name;
@@ -40,44 +38,39 @@ public class Season {
   @Column(columnDefinition = "text")
   public String overview;
 
-  @OneToMany(mappedBy = "season", cascade = CascadeType.ALL, orphanRemoval = true)
-  @JsonManagedReference
-  @JsonView(JsonViews.FullTvShow.class)
-  public List<Episode> episodes;
-
   // constructor vacio
-  public Season() {}
+  public Episode() {}
 
   // contructor por campos
-  public Season(Integer seasonNumber, Date firstAired, String name, String overview, String poster) {
-    this.seasonNumber = seasonNumber;
+  public Episode(Integer episodeNumber, Date firstAired, String name, String overview, String screenshot) {
+    this.episodeNumber = episodeNumber;
     this.firstAired = firstAired;
     this.name = name;
     this.overview = overview;
-    this.poster = poster;
+    this.screenshot = screenshot;
   }
 
   // contructor copia
-  public Season(Season season) {
-    this.seasonNumber = season.seasonNumber;
+  public Episode(Episode season) {
+    this.episodeNumber = season.episodeNumber;
     this.firstAired = season.firstAired;
     this.name = season.name;
     this.overview = season.overview;
-    this.poster = season.poster;
+    this.screenshot = season.screenshot;
   }
 
   // poner a null todos las cadenas vacías que no son null
   public void nullify() {
-    if (seasonNumber != null) seasonNumber = null;
+    if (episodeNumber != null) episodeNumber = null;
     if (name != null) name = null;
     if (overview != null && overview.isEmpty()) overview = null;
-    if (poster != null && poster.isEmpty()) poster = null;
+    if (screenshot != null && screenshot.isEmpty()) screenshot = null;
   }
 
   // solo informacion importante
   @Override
   public String toString() {
-    return "TvShow [id=" + id + ", seasonNumber=" + seasonNumber + ", name=" + name + ", firstAired=" + firstAired
+    return "Episode [id=" + id + ", episodeNumber=" + episodeNumber + ", name=" + name + ", firstAired=" + firstAired
             + ", overview=" + overview +"]";
   }
 }

@@ -3,7 +3,9 @@ package models.service;
 import com.google.inject.Inject;
 import models.Episode;
 import models.Season;
+import models.TvShow;
 import models.dao.EpisodeDAO;
+import models.service.external.TmdbService;
 import play.Logger;
 
 import java.io.File;
@@ -13,13 +15,18 @@ public class EpisodeService {
 
   private final EpisodeDAO episodeDAO;
   private final SeasonService seasonService;
+  private final TvShowService tvShowService;
+  private final TmdbService tmdbService;
 
   private static char SEPARATOR = File.separatorChar;
 
   @Inject
-  public EpisodeService(EpisodeDAO episodeDAO, SeasonService seasonService) {
+  public EpisodeService(EpisodeDAO episodeDAO, SeasonService seasonService, TvShowService tvShowService,
+                        TmdbService tmdbService) {
     this.episodeDAO = episodeDAO;
     this.seasonService = seasonService;
+    this.tvShowService = tvShowService;
+    this.tmdbService = tmdbService;
   }
 
   // CRUD
@@ -87,6 +94,24 @@ public class EpisodeService {
     } catch (Exception ex) {
       Logger.error(ex.getMessage());
     }
+    return result;
+  }
+
+  // Boolean asignar episodios a todas las temporadas de un tv show obtenidos de TMDb
+  public Boolean setEpisodesAllSeasonsFromTmdb(TvShow tvShow) {
+    Boolean result = false;
+    Integer tmdbId = tvShowService.getObtainTmdbId(tvShow);
+    if (tmdbId != null) {
+      tvShow.seasons.forEach(season -> {
+        try {
+          setEpisodes(season, tmdbService.getAllSeasonEpisodesByTmdbIdAndSeasonNumber(tmdbId, season.seasonNumber));
+        } catch (Exception ex) {
+          Logger.error(ex.getMessage());
+        }
+      });
+      result = true;
+    }
+
     return result;
   }
 

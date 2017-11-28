@@ -2,12 +2,14 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import play.data.validation.Constraints;
 import utils.json.JsonViews;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "season")
@@ -37,6 +39,11 @@ public class Season {
   @JsonView(JsonViews.FullAll.class)
   @Column(columnDefinition = "text")
   public String overview;
+
+  @OneToMany(mappedBy = "season", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonManagedReference
+  @JsonView(JsonViews.FullTvShow.class)
+  public List<Episode> episodes;
 
   // constructor vacio
   public Season() {}

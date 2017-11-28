@@ -18,7 +18,7 @@ public class Episode {
   public Integer id;
 
   @ManyToOne
-  @JoinColumn(name = "tvShowId")
+  @JoinColumn(name = "seasonId")
   @JsonBackReference
   public Season season;
 

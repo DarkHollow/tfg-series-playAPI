@@ -9,6 +9,7 @@ import models.service.external.TmdbService;
 import play.Logger;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EpisodeService {
@@ -113,6 +114,59 @@ public class EpisodeService {
     }
 
     return result;
+  }
+
+  // borrar todos los episodios de una temporada
+  public Boolean deleteAllEpisodesFromSeason(Season season) {
+    Boolean result = false;
+
+    if (season != null) {
+      try {
+        if (season.episodes != null) {
+          List<Integer> toRemove = new ArrayList<>();
+          for (Episode episode: season.episodes) {
+            toRemove.add(episode.id);
+          }
+          for (Integer id: toRemove) {
+            delete(id);
+          }
+        }
+        result = true;
+      } catch (Exception ex) {
+        Logger.error("No se han podido borrar los episodes de la serie - " + ex.toString());
+      }
+    } else {
+      Logger.info("Borrar episodios - season null");
+    }
+
+    return result;
+  }
+
+  // borrar todos los episodios de todas las temporadas de una serie
+  public Boolean deleteAllEpisodesFromTvShow(TvShow tvShow) {
+    final Boolean[] result = {true};
+
+    if (tvShow != null) {
+      try {
+        tvShow.seasons.forEach(season -> {
+          try {
+            if (!deleteAllEpisodesFromSeason(season)) {
+              Logger.info("deleteAllEpisodesFromTvShow - no se ha podido eliminar los de la seasonId " + season.id);
+            }
+          } catch (Exception ex) {
+            Logger.error(ex.getMessage());
+            result[0] = false;
+          }
+        });
+      } catch (Exception ex) {
+        Logger.error("No se han podido borrar TODOS los episodes de la serie - " + ex.toString());
+        result[0] = false;
+      }
+    } else {
+      Logger.info("Borrar TODOS los episodios - tvShow null");
+      result[0] = false;
+    }
+    return result[0];
   }
 
 }

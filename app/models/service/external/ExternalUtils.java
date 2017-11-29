@@ -81,7 +81,7 @@ public class ExternalUtils {
   }
 
   String nullableString(String string) {
-    return StringUtils.isNotEmpty(string) ? string : null;
+    return StringUtils.isNotBlank(string) && !string.equals("null") ? string : null;
   }
 
 }

@@ -214,6 +214,11 @@
                                             <img class="smartphone-season-poster" src="@{ "http://".concat(requestHeader.host).concat("/assets/images/placeholderPoster.jpg") }" />
                                         }
                                             <div class="smartphone-season-title">Temporada @season.seasonNumber</div>
+                                            @if(season.episodes != null){
+                                                <div class="smartphone-season-subtitle">@season.episodes.size() episodios</div>
+                                            }else{
+                                                <div class="smartphone-season-subtitle">Sin episodios</div>
+                                            }
                                         </div>
                                     }
                                 }
@@ -342,6 +347,56 @@
                             }else{
                                 <span>Sin sinopsis</span>
                             }
+
+                            <div class="season-episodes">
+                                @if(season.episodes != null && season.episodes.size() > 0) {
+                                    <h6><a data-toggle="collapse" href="#episodes-group-@season.seasonNumber"><strong>Episodios</strong> @season.episodes.size()</a></h6>
+                                    <div class="episodes collapse" id="episodes-group-@season.seasonNumber">
+                                    @for(episode <- season.episodes.sortBy(_.episodeNumber)) {
+                                        <div class="episode">
+                                            <div class="episode-screenshot">
+                                            @if(episode.screenshot != null) {
+                                                <a target="_blank" href="@{ "http://".concat(requestHeader.host).concat(episode.screenshot.substring(1)) }">
+                                                    <img class="episode-screenshot" src="@{ "http://".concat(requestHeader.host).concat(episode.screenshot.substring(1)) }" />
+                                                </a>
+                                            }else{
+                                                <img class="episode-screenshot" src="@{ "http://".concat(requestHeader.host).concat("/assets/images/placeholderPoster.jpg") }" />
+                                            }
+                                            </div>
+
+                                            <div class="episode-info">
+                                                <div class="episode-title">
+                                                    <div>
+                                                    @if(episode.name != null){
+                                                        <span class="episode-number">@episode.episodeNumber</span>
+                                                        <span class="episode-name">@episode.name</span>
+                                                    }else{
+                                                        <span class="episode-number">@episode.episodeNumber</span>
+                                                        <span class="episode-name"><span class="episode-number">Episodio @episode.episodeNumber</span>
+                                                    }
+                                                    </div>
+                                                @if(episode.firstAired != null){
+                                                    <span class="episode-firstAired">@episode.firstAired.format("dd-MM-yyyy")</span>
+                                                }else{
+                                                    <span class="episode-firstAired">Sin fecha</span>
+                                                }
+                                                </div>
+
+                                                <div>
+                                                @if(episode.overview != null){
+                                                    <span>@episode.overview</span>
+                                                }else{
+                                                    <span>Sin resumen</span>
+                                                }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    </div>
+                                }else{
+                                    <h6>Sin episodios</h6>
+                                }
+                            </div>
                         </div>
                     </div>
                 }
@@ -359,17 +414,22 @@
                 <div class="heading-btn pull-left">
                     <button data-id="@tvShow.id" data-action="download-data" data-host="@requestHeader.host" data-reload="@routes.AdminController.tvShow(tvShow.id)" type="button" class="btn bg-green btn-labeled">
                         <b><i class="icon-download"></i></b>
-                        Descargar datos de nuevo
+                        Redescargar datos
                     </button>
 
                     <button data-id="@tvShow.id" data-action="download-images" data-host="@requestHeader.host" data-reload="@routes.AdminController.tvShow(tvShow.id)" type="button" class="btn bg-green-600 btn-labeled">
                         <b><i class="icon-image2"></i></b>
-                        Descargar imágenes de nuevo
+                        Redescargar imágenes
                     </button>
 
                     <button data-id="@tvShow.id" data-action="download-seasons" data-host="@requestHeader.host" data-reload="@routes.AdminController.tvShow(tvShow.id)" type="button" class="btn bg-green-700 btn-labeled">
+                        <b><i class="icon-archive"></i></b>
+                        Redescargar temporadas
+                    </button>
+
+                    <button data-id="@tvShow.id" data-action="download-episodes" data-host="@requestHeader.host" data-reload="@routes.AdminController.tvShow(tvShow.id)" type="button" class="btn bg-green-800 btn-labeled">
                         <b><i class="icon-books"></i></b>
-                        Descargar temporadas de nuevo
+                        Redescargar episodios
                     </button>
                 </div>
 

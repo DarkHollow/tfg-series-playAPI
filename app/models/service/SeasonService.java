@@ -172,7 +172,7 @@ public class SeasonService {
             season.firstAired = tmdbSeason.firstAired;
             // descargar poster
             if (tmdbSeason.poster != null && !tmdbSeason.poster.isEmpty() && !tmdbSeason.poster.equals("null")) {
-              String baseUrl = "https://image.tmdb.org/t/p/original";
+              String baseUrl = "https://image.tmdb.org/t/p/w1000";
               URL downloadURL = new URL(baseUrl + tmdbSeason.poster);
               // generamos nombre a guardar a partir de la primera letra del tipo con la mitad del hashCode en positivo
               String saveName = "s" + season.seasonNumber + "-" + externalUtils.positiveHalfHashCode(tmdbSeason.poster.substring(1).hashCode());

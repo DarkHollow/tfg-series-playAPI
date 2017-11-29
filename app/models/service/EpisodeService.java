@@ -5,10 +5,12 @@ import models.Episode;
 import models.Season;
 import models.TvShow;
 import models.dao.EpisodeDAO;
+import models.service.external.ExternalUtils;
 import models.service.external.TmdbService;
 import play.Logger;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -20,16 +22,18 @@ public class EpisodeService {
   private final SeasonService seasonService;
   private final TvShowService tvShowService;
   private final TmdbService tmdbService;
+  private final ExternalUtils externalUtils;
 
   private static char SEPARATOR = File.separatorChar;
 
   @Inject
   public EpisodeService(EpisodeDAO episodeDAO, SeasonService seasonService, TvShowService tvShowService,
-                        TmdbService tmdbService) {
+                        TmdbService tmdbService, ExternalUtils externalUtils) {
     this.episodeDAO = episodeDAO;
     this.seasonService = seasonService;
     this.tvShowService = tvShowService;
     this.tmdbService = tmdbService;
+    this.externalUtils = externalUtils;
   }
 
   // CRUD
@@ -92,6 +96,33 @@ public class EpisodeService {
           season.episodes.add(create(episode));
         }
         Logger.info(season.episodes.size() + " episodios");
+        // descargar imágenes episodios
+        for (Episode episode: season.episodes) {
+          // descargar poster
+          if (episode.screenshot != null && !episode.screenshot.isEmpty() && !episode.screenshot.equals("null")) {
+            String baseUrl = "https://image.tmdb.org/t/p/original";
+            URL downloadURL = new URL(baseUrl + episode.screenshot);
+            // generamos nombre a guardar a partir de la primera letra del tipo con la mitad del hashCode en positivo
+            String saveName = "e" + season.seasonNumber + "x" + episode.episodeNumber + "-" + externalUtils.positiveHalfHashCode(episode.screenshot.substring(1).hashCode());
+            // sacamos la extensión del fichero de imagen
+            String format = episode.screenshot.substring(episode.screenshot.lastIndexOf('.') + 1);
+            // generamos la ruta donde se guardará la imagen
+            String folderPath = "." + SEPARATOR + "public" + SEPARATOR + "images" + SEPARATOR + "series" + SEPARATOR + season.tvShow.id.toString();
+            // ruta absoluta
+            String path = folderPath + SEPARATOR + saveName + "." + format;
+            // descargamos imagen
+            String resultPath = externalUtils.downloadImage(downloadURL, format, path);
+            if (resultPath != null) {
+              episode.screenshot = resultPath.replace("public", "assets");
+              Logger.info(season.tvShow.name + " - " + "screenshot episodio " + season.seasonNumber + "x" + episode.episodeNumber + " descargado");
+              // borrar imagen antigua
+              externalUtils.deleteOldImages(folderPath, "e" + season.seasonNumber + "x" + episode.episodeNumber, saveName + "." + format);
+            }
+            result = true;
+          } else {
+            Logger.info("Set episodes - el episodio no tiene screenshot");
+          }
+        }
       }
       result = true;
     } catch (Exception ex) {

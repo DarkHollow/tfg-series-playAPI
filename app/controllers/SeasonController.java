@@ -45,6 +45,8 @@ public class SeasonController {
         result.put("error", "Not found");
         return notFound(result);
       } else {
+        // contar numero episodio por temporada
+        jsonNode.forEach(season -> ((ObjectNode)season).put("episodeCount", seasonService.getSeasonByNumber(tvShow, season.get("seasonNumber").asInt()).episodes.size()));
         return ok(jsonNode);
       }
     } catch (Exception ex) {

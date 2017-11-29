@@ -2,6 +2,7 @@ package service;
 
 import models.Evolution;
 import models.dao.EvolutionDAO;
+import models.service.EpisodeService;
 import models.service.EvolutionService;
 import models.service.SeasonService;
 import models.service.TvShowService;
@@ -45,8 +46,8 @@ public class EvolutionModelServiceTest {
     EvolutionDAO evolutionDAO = new EvolutionDAO(jpa);
     TvShowService tvShowService = mock(TvShowService.class);
     SeasonService seasonService = mock(SeasonService.class);
-    TmdbService tmdbService = mock(TmdbService.class);
-    evolutionService = new EvolutionService(evolutionDAO, tvShowService, seasonService, tmdbService);
+    EpisodeService episodeService = mock(EpisodeService.class);
+    evolutionService = new EvolutionService(evolutionDAO, tvShowService, seasonService, episodeService);
 
     databaseTester = new JndiDatabaseTester("DefaultDS");
     IDataSet initialDataSet = new FlatXmlDataSetBuilder().build(new

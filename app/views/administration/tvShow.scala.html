@@ -342,6 +342,56 @@
                             }else{
                                 <span>Sin sinopsis</span>
                             }
+
+                            <div class="season-episodes">
+                                @if(season.episodes != null && season.episodes.size() > 0) {
+                                    <h6><a data-toggle="collapse" href="#episodes-group-@season.seasonNumber"><strong>Episodios</strong> @season.episodes.size()</a></h6>
+                                    <div class="episodes collapse" id="episodes-group-@season.seasonNumber">
+                                    @for(episode <- season.episodes.sortBy(_.episodeNumber)) {
+                                        <div class="episode">
+                                            <div class="episode-screenshot">
+                                            @if(episode.screenshot != null) {
+                                                <a target="_blank" href="@{ "http://".concat(requestHeader.host).concat(episode.screenshot.substring(1)) }">
+                                                    <img class="episode-screenshot" src="@{ "http://".concat(requestHeader.host).concat(episode.screenshot.substring(1)) }" />
+                                                </a>
+                                            }else{
+                                                <img class="episode-screenshot" src="@{ "http://".concat(requestHeader.host).concat("/assets/images/placeholderPoster.jpg") }" />
+                                            }
+                                            </div>
+
+                                            <div class="episode-info">
+                                                <div class="episode-title">
+                                                    <div>
+                                                    @if(episode.name != null){
+                                                        <span class="episode-number">@episode.episodeNumber</span>
+                                                        <span class="episode-name">@episode.name</span>
+                                                    }else{
+                                                        <span class="episode-number">@episode.episodeNumber</span>
+                                                        <span class="episode-name"><span class="episode-number">Episodio @episode.episodeNumber</span>
+                                                    }
+                                                    </div>
+                                                @if(episode.firstAired != null){
+                                                    <span class="episode-firstAired">@episode.firstAired.format("dd-MM-yyyy")</span>
+                                                }else{
+                                                    <span class="episode-firstAired">Sin fecha</span>
+                                                }
+                                                </div>
+
+                                                <div>
+                                                @if(episode.overview != null){
+                                                    <span>@episode.overview</span>
+                                                }else{
+                                                    <span>Sin resumen</span>
+                                                }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    </div>
+                                }else{
+                                    <h6>Sin episodios</h6>
+                                }
+                            </div>
                         </div>
                     </div>
                 }

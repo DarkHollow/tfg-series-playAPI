@@ -360,7 +360,7 @@
                                                     <img class="episode-screenshot" src="@{ "http://".concat(requestHeader.host).concat(episode.screenshot.substring(1)) }" />
                                                 </a>
                                             }else{
-                                                <img class="episode-screenshot" src="@{ "http://".concat(requestHeader.host).concat("/assets/images/placeholderPoster.jpg") }" />
+                                                <img class="episode-screenshot" src="@{ "http://".concat(requestHeader.host).concat("/assets/images/placeholderScreenshot.jpg") }" />
                                             }
                                             </div>
 
@@ -372,7 +372,7 @@
                                                         <span class="episode-name">@episode.name</span>
                                                     }else{
                                                         <span class="episode-number">@episode.episodeNumber</span>
-                                                        <span class="episode-name"><span class="episode-number">Episodio @episode.episodeNumber</span>
+                                                        <span class="episode-name">Episodio @episode.episodeNumber</span>
                                                     }
                                                     </div>
                                                 @if(episode.firstAired != null){

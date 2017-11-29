@@ -144,7 +144,7 @@ public class TvShowService {
     }
   }
 
-  public Integer getObtainTmdbId(TvShow tvShow) {
+  Integer getObtainTmdbId(TvShow tvShow) {
     if (tvShow != null) {
       try {
         if (tvShow.tmdbId == null) {

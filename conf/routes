@@ -21,9 +21,13 @@ GET     /api/tvshows/:id                    controllers.TvShowController.tvShowB
 PUT     /api/tvshows/:id                    controllers.TvShowController.updateData(id: Integer)
 DELETE  /api/tvshows/:id                    controllers.TvShowController.delete(id: Integer)
 
-# TV Shows Seasons ----------------
+# TV Show Seasons -----------------
 GET     /api/tvshows/:id/seasons            controllers.SeasonController.allTvShowSeasons(id: Integer)
 GET     /api/tvshows/:id/seasons/:number    controllers.SeasonController.seasonByTvShowIdAndSeasonNumber(id: Integer, number: Integer)
+
+# TV Show Episodes ----------------
+GET     /api/tvshows/:id/seasons/:sNumber/episodes              controllers.EpisodeController.allTvShowSeasonEpisodes(id: Integer, sNumber: Integer)
+GET     /api/tvshows/:id/seasons/:sNumber/episodes/:eNumber     controllers.EpisodeController.seasonByTvShowIdAndSeasonNumber(id: Integer, sNumber: Integer, eNumber: Integer)
 
 # TV Show Votes -------------------
 GET     /api/tvshows/:tvShowId/rating       controllers.TvShowVoteController.getTvShowVote(tvShowId: Integer)

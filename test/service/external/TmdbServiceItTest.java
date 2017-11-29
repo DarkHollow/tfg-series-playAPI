@@ -1,6 +1,7 @@
 package service.external;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import models.Episode;
 import models.Season;
 import models.TvShow;
 import models.service.external.ExternalUtils;
@@ -24,9 +25,9 @@ import play.libs.ws.WS;
 import play.libs.ws.WSClient;
 
 import java.io.FileInputStream;
+import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
 import static play.test.Helpers.*;
 
 public class TmdbServiceItTest {
@@ -145,6 +146,25 @@ public class TmdbServiceItTest {
           Season season = tmdbService.getCompleteSeasonByTmdbIdAndSeasonNumber(1396, 1);
           assertNotNull(season);
           assertEquals(1, (int) season.seasonNumber);
+        } catch (Exception ex) {
+          Logger.info("No se puede ejecutar el test porque TMDb no responde");
+        }
+      });
+    });
+  }
+
+  @Test
+  public void testTmdbServiceGetAllSeasonEpisodesByTmdbIdAndSeasonNumber() {
+    running(testServer(PORT, fakeApplication(inMemoryDatabase())), new HtmlUnitDriver(), browser -> {
+      browser.goTo("http://localhost:" + PORT);
+
+      tmdbService = new TmdbService(ws, externalUtils, Play.current().injector().instanceOf(TmdbConnection.class));
+
+      jpa.withTransaction(() -> {
+        try {
+          List<Episode> episodes = tmdbService.getAllSeasonEpisodesByTmdbIdAndSeasonNumber(1396, 1);
+          assertNotNull(episodes);
+          assertEquals(7, episodes.size());
         } catch (Exception ex) {
           Logger.info("No se puede ejecutar el test porque TMDb no responde");
         }

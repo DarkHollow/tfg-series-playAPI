@@ -9,6 +9,7 @@ import models.dao.UserDAO;
 import models.service.TvShowService;
 import models.service.TvShowVoteService;
 import models.service.UserService;
+import models.service.external.TmdbService;
 import models.service.external.TvdbService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
@@ -53,7 +54,8 @@ public class TvShowVoteServiceTest {
     UserService userService = new UserService(userDAO, password);
     TvShowDAO tvShowDAO = new TvShowDAO(jpa);
     TvdbService tvdbService = mock(TvdbService.class);
-    TvShowService tvShowService = new TvShowService(tvShowDAO, tvdbService);
+    TmdbService tmdbService = mock(TmdbService.class);
+    TvShowService tvShowService = new TvShowService(tvShowDAO, tvdbService, tmdbService);
     tvShowVoteService = new TvShowVoteService(tvShowVoteDAO, userService, tvShowService);
 
     // inicializamos base de datos de prueba

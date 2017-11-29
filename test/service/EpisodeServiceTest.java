@@ -1,6 +1,7 @@
 package service;
 
 import models.Episode;
+import models.Season;
 import models.dao.EpisodeDAO;
 import models.dao.SeasonDAO;
 import models.dao.TvShowDAO;
@@ -23,7 +24,9 @@ import play.db.jpa.JPA;
 import play.db.jpa.JPAApi;
 
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -50,11 +53,11 @@ public class EpisodeServiceTest {
     SeasonDAO seasonDAO = new SeasonDAO(jpa);
     TvShowDAO tvShowDAO = new TvShowDAO(jpa);
     TvdbService tvdbService = mock(TvdbService.class);
-    TvShowService tvShowService = new TvShowService(tvShowDAO, tvdbService);
     TmdbService tmdbService = mock(TmdbService.class);
+    TvShowService tvShowService = new TvShowService(tvShowDAO, tvdbService, tmdbService);
     ExternalUtils externalUtils = new ExternalUtils();
     SeasonService seasonService = new SeasonService(seasonDAO, tvShowService, tmdbService, externalUtils);
-    episodeService = new EpisodeService(episodeDAO, seasonService);
+    episodeService = new EpisodeService(episodeDAO, seasonService, tvShowService, tmdbService);
 
     // inicializamos base de datos de prueba
     databaseTester = new JndiDatabaseTester("DefaultDS");
@@ -116,6 +119,22 @@ public class EpisodeServiceTest {
   public void testEpisodeServiceDeleteNotOk() {
     Boolean result = jpa.withTransaction(() -> episodeService.delete(0));
     assertFalse(result);
+  }
+
+  // testeamos asignar temporadas
+  @Test
+  public void TestEpisodeServiceSetEpisodes() {
+    jpa.withTransaction(() -> {
+      SeasonDAO seasonDAO = new SeasonDAO(jpa);
+      Season season = seasonDAO.find(1);
+      Episode episode = new Episode(2, new Date(), "Episodio 3", "Resumen 3", "captura 3");
+      List<Episode> episodes = new ArrayList<>();
+      episodes.add(episode);
+      Boolean result = episodeService.setEpisodes(season, episodes);
+
+      assertTrue(result);
+      assertEquals(3, season.episodes.size());
+    });
   }
 
 }

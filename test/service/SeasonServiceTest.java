@@ -16,7 +16,6 @@ import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import play.Logger;
 import play.db.Database;
 import play.db.Databases;
 import play.db.jpa.JPA;
@@ -52,8 +51,8 @@ public class SeasonServiceTest {
     SeasonDAO seasonDAO = new SeasonDAO(jpa);
     tvShowDAO = new TvShowDAO(jpa);
     TvdbService tvdbService = mock(TvdbService.class);
-    TvShowService tvShowService = new TvShowService(tvShowDAO, tvdbService);
     TmdbService tmdbService = mock(TmdbService.class);
+    TvShowService tvShowService = new TvShowService(tvShowDAO, tvdbService, tmdbService);
     ExternalUtils externalUtils = new ExternalUtils();
     seasonService = new SeasonService(seasonDAO, tvShowService, tmdbService, externalUtils);
 

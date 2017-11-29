@@ -85,7 +85,7 @@ public class EpisodeService {
     Boolean result = false;
     try {
       if (episodes != null && episodes.size() > 0) {
-        // si hay temporadas las creamos
+        // si hay episodios los creamos
         for (Episode episode: episodes) {
           Logger.info(season.episodes.size() + " episodios");
           episode.season = season;

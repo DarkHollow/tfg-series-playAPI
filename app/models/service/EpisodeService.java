@@ -11,6 +11,8 @@ import play.Logger;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 public class EpisodeService {
 
@@ -114,6 +116,36 @@ public class EpisodeService {
     }
 
     return result;
+  }
+
+  // actualizar los episodios de una tv show mediante servicios externos (borramos, y conseguimos de nuevo)
+  public TvShow updateEpisodes(TvShow tvShow) throws InterruptedException, ExecutionException, TimeoutException {
+    if (tvShow != null) {
+      // primero comprobamos si  tiene tmdbId, y si no, lo conseguimos
+      if (tvShow.tmdbId == null) {
+        tvShow.tmdbId = tvShowService.getObtainTmdbId(tvShow);
+      }
+
+      if (tvShow.tmdbId != null) {
+        // borramos los episodios actuales
+        if (deleteAllEpisodesFromTvShow(tvShow)) {
+          // obtenemos todos los episodios
+          if (setEpisodesAllSeasonsFromTmdb(tvShow)) {
+            Logger.info("Update all episodes - con éxito");
+          } else {
+            Logger.error("Update all episodes - No se ha podido setear los episodios");
+            tvShow = null;
+          }
+        } else {
+          Logger.error("Update all episodes - No se ha podido borrar los episodios actuales");
+          tvShow = null;
+        }
+      } else {
+        Logger.info("Update all episodes - No se ha podido obtener la serie en TMDB, por lo tanto, tampoco sus episodios");
+        tvShow = null;
+      }
+    }
+    return tvShow;
   }
 
   // borrar todos los episodios de una temporada

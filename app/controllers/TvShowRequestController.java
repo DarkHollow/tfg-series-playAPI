@@ -4,13 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
-import utils.json.JsonViews;
 import models.TvShow;
 import models.TvShowRequest;
-import models.service.SeasonService;
-import models.service.TvShowRequestService;
-import models.service.TvShowService;
-import models.service.UserService;
+import models.service.*;
 import models.service.external.TmdbService;
 import models.service.external.TvdbService;
 import play.Logger;
@@ -25,6 +21,7 @@ import play.mvc.Security;
 import utils.Security.Administrator;
 import utils.Security.Roles;
 import utils.Security.User;
+import utils.json.JsonViews;
 
 public class TvShowRequestController extends Controller {
 
@@ -32,6 +29,7 @@ public class TvShowRequestController extends Controller {
   private final TmdbService tmdbService;
   private final TvShowService tvShowService;
   private final SeasonService seasonService;
+  private final EpisodeService episodeService;
   private final TvShowRequestService tvShowRequestService;
   private final UserService userService;
   private final FormFactory formFactory;
@@ -40,13 +38,14 @@ public class TvShowRequestController extends Controller {
 
   @Inject
   public TvShowRequestController(TvdbService tvdbService, TmdbService tmdbService, TvShowService tvShowService,
-                                 SeasonService seasonService, TvShowRequestService tvShowRequestService,
-                                 UserService userService, FormFactory formFactory, utils.Security.User userAuth,
-                                 utils.json.Utils jsonUtils) {
+                                 SeasonService seasonService, EpisodeService episodeService,
+                                 TvShowRequestService tvShowRequestService, UserService userService,
+                                 FormFactory formFactory, utils.Security.User userAuth, utils.json.Utils jsonUtils) {
     this.tvdbService = tvdbService;
     this.tmdbService = tmdbService;
     this.tvShowService = tvShowService;
     this.seasonService = seasonService;
+    this.episodeService = episodeService;
     this.tvShowRequestService = tvShowRequestService;
     this.userService = userService;
     this.formFactory = formFactory;
@@ -219,9 +218,12 @@ public class TvShowRequestController extends Controller {
                       tvShow = tvShowService.find(tvShow.id);
                       // obtenemos las temporadas completas (sin episodios)
                       result.put("seasons", seasonService.fullfillSeasons(tvShow));
+                      // obtenemos episodios de cada temporada
+                      result.put("episodes", episodeService.setEpisodesAllSeasonsFromTmdb(tvShow));
                     } else {
                       result.put("seasons", false);
-                      Logger.info("No se ha podido obtener la serie en TMDB, por lo tanto, tampoco sus temporadas");
+                      result.put("episodes", false);
+                      Logger.info("No se ha podido obtener la serie en TMDB, por lo tanto, tampoco sus temporadas ni episodios");
                     }
 
                     // poner request como persistida

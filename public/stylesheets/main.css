@@ -337,7 +337,15 @@
 
 .smartphone-season-title {
     padding: 3px;
+    padding-bottom: 0;
     color: #eae5ec;
+}
+
+.smartphone-season-subtitle {
+    padding: 3px;
+    padding-top: 0;
+    color: #eae5ec;
+    opacity: 0.66;
 }
 
 /* información temporadas normal */

@@ -139,6 +139,10 @@ public class TvShowController extends Controller {
     // si la lista no está vacía, devolvemos datos
     try {
       JsonNode jsonNode = jsonUtils.jsonParseObject(tvShow, JsonViews.FullTvShow.class);
+
+      // contar numero episodio por temporada
+      jsonNode.withArray("seasons").forEach(season -> ((ObjectNode)season).put("episodeCount", seasonService.getSeasonByNumber(tvShow, season.get("seasonNumber").asInt()).episodes.size()));
+
       return ok(jsonNode);
 
     } catch (Exception ex) {

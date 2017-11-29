@@ -47,7 +47,7 @@ public class EpisodeService {
         return episodeCreated;
       } else {
         // votacion no creada
-        Logger.error("EpisodeService.create - Episode no creadn");
+        Logger.error("EpisodeService.create - Episode no creado");
         return null;
       }
     } else {

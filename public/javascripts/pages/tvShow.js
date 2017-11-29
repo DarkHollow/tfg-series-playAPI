@@ -383,7 +383,7 @@ $(document).on('click', '[data-action=download-episodes]', function(e) {
         let promise = $.ajax({
           url: host + '/api/tvshows/' + tvShowId,
           type: 'PUT',
-          data: JSON.stringify({ "update": "seasons" }),
+          data: JSON.stringify({ "update": "episodes" }),
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',

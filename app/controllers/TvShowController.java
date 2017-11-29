@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
+import models.service.EpisodeService;
 import utils.json.JsonViews;
 import models.TvShow;
 import models.TvShowRequest;
@@ -30,16 +31,19 @@ public class TvShowController extends Controller {
   private final TvShowService tvShowService;
   private final TvShowRequestService tvShowRequestService;
   private final SeasonService seasonService;
+  private final EpisodeService episodeService;
   private final TvdbService tvdbService;
   private final FormFactory formFactory;
   private final utils.json.Utils jsonUtils;
 
   @Inject
-  public TvShowController(TvShowService tvShowService, SeasonService seasonService, TvdbService tvdbService,
-                          FormFactory formFactory, TvShowRequestService tvShowRequestService, utils.json.Utils jsonUtils) {
+  public TvShowController(TvShowService tvShowService, SeasonService seasonService, EpisodeService episodeService,
+                          TvdbService tvdbService, FormFactory formFactory, TvShowRequestService tvShowRequestService,
+                          utils.json.Utils jsonUtils) {
     this.tvShowService = tvShowService;
     this.tvShowRequestService = tvShowRequestService;
     this.seasonService = seasonService;
+    this.episodeService = episodeService;
     this.tvdbService = tvdbService;
     this.formFactory = formFactory;
     this.jsonUtils = jsonUtils;
@@ -266,6 +270,15 @@ public class TvShowController extends Controller {
               tvShow = seasonService.updateSeasons(tvShow);
             } catch (Exception ex) {
               Logger.error("Actualizar temporadas serie - timeout con API externa");
+              result.put("error", "cannot connect with external API");
+              return status(504, result); // gateway timeout
+            }
+            break;
+          case "episodes":
+            try {
+              tvShow = episodeService.updateEpisodes(tvShow);
+            } catch (Exception ex) {
+              Logger.error("Actualizar episodios serie - timeout con API externa");
               result.put("error", "cannot connect with external API");
               return status(504, result); // gateway timeout
             }

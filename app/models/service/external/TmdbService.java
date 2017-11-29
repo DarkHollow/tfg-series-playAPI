@@ -197,8 +197,7 @@ public class TmdbService {
           episode.name = externalUtils.nullableString(episodeJson.get("name").asText());
           episode.overview = externalUtils.nullableString(episodeJson.get("overview").asText());
           episode.screenshot = externalUtils.nullableString(episodeJson.get("still_path").asText());
-          JsonNode fecha = respuesta.get("air_date");
-          episode.firstAired = externalUtils.parseDate(fecha);
+          episode.firstAired = externalUtils.parseDate(episodeJson.get("air_date"));
 
           finalEpisodes.add(episode);
         });

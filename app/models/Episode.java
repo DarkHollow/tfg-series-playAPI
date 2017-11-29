@@ -2,9 +2,7 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonView;
 import play.data.validation.Constraints;
-import utils.json.JsonViews;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -25,16 +23,13 @@ public class Episode {
   @Constraints.Required
   public Integer episodeNumber;
 
-  @JsonView(JsonViews.FullAll.class)
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   public Date firstAired;
 
   public String screenshot;
 
-  @JsonView(JsonViews.FullAll.class)
   public String name;
 
-  @JsonView(JsonViews.FullAll.class)
   @Column(columnDefinition = "text")
   public String overview;
 

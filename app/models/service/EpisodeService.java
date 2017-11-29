@@ -47,7 +47,7 @@ public class EpisodeService {
         return episodeCreated;
       } else {
         // votacion no creada
-        Logger.error("EpisodeService.create - Episode no creadn");
+        Logger.error("EpisodeService.create - Episode no creado");
         return null;
       }
     } else {
@@ -82,6 +82,15 @@ public class EpisodeService {
       Logger.debug("EpisodeSerice.delete - No existe?");
       return false;
     }
+  }
+
+  // obtener por episode number
+  public Episode getEpisodeByNumber(TvShow tvShow, Integer seasonNumber, Integer episodeNumber) {
+    Season season = seasonService.getSeasonByNumber(tvShow, seasonNumber);
+    if (season != null && season.episodes != null) {
+      return season.episodes.stream().filter(episode -> episode.episodeNumber.equals(episodeNumber)).findAny().orElse(null);
+    }
+    return null;
   }
 
   // Boolean asignar episodios a una temporada y persistir

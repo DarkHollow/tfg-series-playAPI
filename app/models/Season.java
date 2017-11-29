@@ -42,7 +42,7 @@ public class Season {
 
   @OneToMany(mappedBy = "season", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonManagedReference
-  @JsonView(JsonViews.FullTvShow.class)
+  @JsonView(JsonViews.FullAll.class)
   public List<Episode> episodes;
 
   // constructor vacio

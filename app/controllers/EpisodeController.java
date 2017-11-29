@@ -3,7 +3,9 @@ package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
+import models.Season;
 import models.TvShow;
+import models.service.EpisodeService;
 import models.service.SeasonService;
 import models.service.TvShowService;
 import play.db.jpa.Transactional;
@@ -15,22 +17,25 @@ import utils.json.JsonViews;
 
 import static play.mvc.Results.*;
 
-public class SeasonController {
+public class EpisodeController {
+  private final EpisodeService episodeService;
   private final SeasonService seasonService;
   private final TvShowService tvShowService;
   private final utils.json.Utils jsonUtils;
 
   @Inject
-  public SeasonController(SeasonService seasonService, TvShowService tvShowService, utils.json.Utils jsonUtils) {
+  public EpisodeController(EpisodeService episodeService, SeasonService seasonService, TvShowService tvShowService,
+                           utils.json.Utils jsonUtils) {
+    this.episodeService = episodeService;
     this.seasonService = seasonService;
     this.tvShowService = tvShowService;
     this.jsonUtils = jsonUtils;
   }
 
-  // devolver todas las temporadas de una serie (información reducida)
+  // devolver todos los episodios de una temporada de una serie
   @Transactional(readOnly = true)
   @Security.Authenticated(Roles.class)
-  public Result allTvShowSeasons(Integer tvShowId) {
+  public Result allTvShowSeasonEpisodes(Integer tvShowId, Integer seasonNumber) {
     TvShow tvShow = tvShowService.find(tvShowId);
     if (tvShow == null) {
       ObjectNode result = Json.newObject();
@@ -38,15 +43,20 @@ public class SeasonController {
       return notFound(result);
     }
 
+    Season season = seasonService.getSeasonByNumber(tvShow, seasonNumber);
+    if (season == null) {
+      ObjectNode result = Json.newObject();
+      result.put("error", "Not found");
+      return notFound(result);
+    }
+
     try {
-      JsonNode jsonNode = jsonUtils.jsonParseObject(tvShow.seasons, JsonViews.FullTvShow.class);
+      JsonNode jsonNode = jsonUtils.jsonParseObject(season.episodes, JsonViews.FullAll.class);
       if (jsonNode == null) {
         ObjectNode result = Json.newObject();
         result.put("error", "Not found");
         return notFound(result);
       } else {
-        // contar numero episodio por temporada
-        jsonNode.forEach(season -> ((ObjectNode)season).put("episodeCount", seasonService.getSeasonByNumber(tvShow, season.get("seasonNumber").asInt()).episodes.size()));
         return ok(jsonNode);
       }
     } catch (Exception ex) {
@@ -57,10 +67,10 @@ public class SeasonController {
     }
   }
 
-  // devolver una temporada por tv show id y numero de temporada
+  // devolver un episodio de una temporada de una serie
   @Transactional(readOnly = true)
   @Security.Authenticated(Roles.class)
-  public Result seasonByTvShowIdAndSeasonNumber(Integer tvShowId, Integer seasonNumber) {
+  public Result seasonByTvShowIdAndSeasonNumber(Integer tvShowId, Integer seasonNumber, Integer episodeNumber) {
     TvShow tvShow = tvShowService.find(tvShowId);
     if (tvShow == null) {
       ObjectNode result = Json.newObject();
@@ -68,8 +78,15 @@ public class SeasonController {
       return notFound(result);
     }
 
+    Season season = seasonService.getSeasonByNumber(tvShow, seasonNumber);
+    if (season == null) {
+      ObjectNode result = Json.newObject();
+      result.put("error", "Not found");
+      return notFound(result);
+    }
+
     try {
-      JsonNode jsonNode = jsonUtils.jsonParseObject(seasonService.getSeasonByNumber(tvShow, seasonNumber), JsonViews.FullAll.class);
+      JsonNode jsonNode = jsonUtils.jsonParseObject(episodeService.getEpisodeByNumber(tvShow, seasonNumber, episodeNumber), JsonViews.FullAll.class);
       if (jsonNode != null) {
         return ok(jsonNode);
       } else {

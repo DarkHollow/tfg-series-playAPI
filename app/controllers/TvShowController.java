@@ -272,6 +272,7 @@ public class TvShowController extends Controller {
           case "seasons":
             try {
               tvShow = seasonService.updateSeasons(tvShow);
+              tvShow = episodeService.updateEpisodes(tvShow);
             } catch (Exception ex) {
               Logger.error("Actualizar temporadas serie - timeout con API externa");
               result.put("error", "cannot connect with external API");

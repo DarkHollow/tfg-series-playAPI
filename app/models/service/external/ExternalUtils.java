@@ -50,7 +50,6 @@ public class ExternalUtils {
       File imageFile = new File(path);
       // creamos carpetas
       Boolean foldersCreated = imageFile.getParentFile().mkdirs();
-      Logger.info("Ruta creada: " + foldersCreated);
       // guardamos imagen
       ImageIO.write(image, format, imageFile);
     } catch (Exception ex) {

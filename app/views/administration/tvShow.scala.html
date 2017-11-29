@@ -414,17 +414,22 @@
                 <div class="heading-btn pull-left">
                     <button data-id="@tvShow.id" data-action="download-data" data-host="@requestHeader.host" data-reload="@routes.AdminController.tvShow(tvShow.id)" type="button" class="btn bg-green btn-labeled">
                         <b><i class="icon-download"></i></b>
-                        Descargar datos de nuevo
+                        Redescargar datos
                     </button>
 
                     <button data-id="@tvShow.id" data-action="download-images" data-host="@requestHeader.host" data-reload="@routes.AdminController.tvShow(tvShow.id)" type="button" class="btn bg-green-600 btn-labeled">
                         <b><i class="icon-image2"></i></b>
-                        Descargar imágenes de nuevo
+                        Redescargar imágenes
                     </button>
 
                     <button data-id="@tvShow.id" data-action="download-seasons" data-host="@requestHeader.host" data-reload="@routes.AdminController.tvShow(tvShow.id)" type="button" class="btn bg-green-700 btn-labeled">
+                        <b><i class="icon-archive"></i></b>
+                        Redescargar temporadas
+                    </button>
+
+                    <button data-id="@tvShow.id" data-action="download-episodes" data-host="@requestHeader.host" data-reload="@routes.AdminController.tvShow(tvShow.id)" type="button" class="btn bg-green-800 btn-labeled">
                         <b><i class="icon-books"></i></b>
-                        Descargar temporadas de nuevo
+                        Redescargar episodios
                     </button>
                 </div>
 

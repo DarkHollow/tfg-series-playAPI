@@ -57,7 +57,7 @@ public class EpisodeServiceTest {
     TvShowService tvShowService = new TvShowService(tvShowDAO, tvdbService, tmdbService);
     ExternalUtils externalUtils = new ExternalUtils();
     SeasonService seasonService = new SeasonService(seasonDAO, tvShowService, tmdbService, externalUtils);
-    episodeService = new EpisodeService(episodeDAO, seasonService, tvShowService, tmdbService);
+    episodeService = new EpisodeService(episodeDAO, seasonService, tvShowService, tmdbService, externalUtils);
 
     // inicializamos base de datos de prueba
     databaseTester = new JndiDatabaseTester("DefaultDS");

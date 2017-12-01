@@ -109,7 +109,7 @@ public class EpisodeService {
         for (Episode episode: season.episodes) {
           // descargar poster
           if (episode.screenshot != null && !episode.screenshot.isEmpty() && !episode.screenshot.equals("null")) {
-            String baseUrl = "https://image.tmdb.org/t/p/original";
+            String baseUrl = "https://image.tmdb.org/t/p/w300";
             URL downloadURL = new URL(baseUrl + episode.screenshot);
             // generamos nombre a guardar a partir de la primera letra del tipo con la mitad del hashCode en positivo
             String saveName = "e" + season.seasonNumber + "x" + episode.episodeNumber + "-" + externalUtils.positiveHalfHashCode(episode.screenshot.substring(1).hashCode());

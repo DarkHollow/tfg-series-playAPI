@@ -7,6 +7,11 @@ import models.service.EvolutionService;
 import models.service.TvShowRequestService;
 import models.service.TvShowService;
 import models.service.UserService;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
+import org.joda.time.Period;
+import play.Logger;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Http;
@@ -16,6 +21,7 @@ import utils.Security.Administrator;
 import views.html.administration.index;
 import views.html.administration.login;
 
+import java.util.Date;
 import java.util.List;
 
 public class AdminController extends Controller {
@@ -89,9 +95,6 @@ public class AdminController extends Controller {
       if (userService.findByEmail(email).isAdmin()) {
         // si es admin, redirigir a admin, si no, no autorizado
         return redirect(routes.AdminController.index());
-      } else {
-        // si no es admin, no autorizado
-        return unauthorized();
       }
     }
 

@@ -100,6 +100,9 @@ public class TvShow {
   @JsonView(JsonViews.FullTvShow.class)
   public List<Season> seasons;
 
+  @OneToOne(mappedBy = "tvShow", cascade = CascadeType.ALL, orphanRemoval = true)
+  public Popular popular;
+
   // constructor vacio
   public TvShow() {}
 

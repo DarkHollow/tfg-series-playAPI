@@ -34,6 +34,11 @@ public class Popular {
   }
 
   public void updateDays() {
+    // comprobación de tamaño
+    if (requestsCount.size() != 7) {
+      clearRequestsCount();
+    }
+
     LocalDate today = new LocalDate();
     LocalDate lastUpdate = new LocalDate(updated);
     Logger.debug("today: " + today.toString() + ", last update: " + lastUpdate.toString());

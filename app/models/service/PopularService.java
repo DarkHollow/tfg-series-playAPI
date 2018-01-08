@@ -2,6 +2,7 @@ package models.service;
 
 import com.google.inject.Inject;
 import models.Popular;
+import models.TvShow;
 import models.dao.PopularDAO;
 
 import java.util.Comparator;
@@ -53,6 +54,11 @@ public class PopularService {
     } else {
       return false;
     }
+  }
+
+  public Integer growPopularity(TvShow tvShow) {
+    tvShow.popular = popularDAO.growPopularity(tvShow.id);
+    return tvShow.popular.getPopularity();
   }
 
 }

@@ -1,5 +1,6 @@
 package models.dao;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import models.Popular;
 import models.TvShow;
@@ -46,4 +47,16 @@ public class PopularDAO {
   public void delete(Popular popular) {
     jpa.em().remove(popular);
   }
+
+  public Popular growPopularity(Integer id) {
+    Popular popular = find(id);
+    jpa.em().getTransaction().begin();
+    popular.updateDays();
+    popular.requestsCount.set(0, popular.requestsCount.get(0) + 1);
+    popular.requestsCount = Lists.reverse(popular.requestsCount);
+    jpa.em().getTransaction().commit();
+    jpa.em().refresh(popular);
+    return popular;
+  }
+
 }

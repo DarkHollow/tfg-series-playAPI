@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
+import models.Popular;
 import models.TvShow;
 import models.TvShowRequest;
 import models.service.*;
@@ -30,6 +31,7 @@ public class TvShowRequestController extends Controller {
   private final TvShowService tvShowService;
   private final SeasonService seasonService;
   private final EpisodeService episodeService;
+  private final PopularService popularService;
   private final TvShowRequestService tvShowRequestService;
   private final UserService userService;
   private final FormFactory formFactory;
@@ -39,13 +41,15 @@ public class TvShowRequestController extends Controller {
   @Inject
   public TvShowRequestController(TvdbService tvdbService, TmdbService tmdbService, TvShowService tvShowService,
                                  SeasonService seasonService, EpisodeService episodeService,
-                                 TvShowRequestService tvShowRequestService, UserService userService,
-                                 FormFactory formFactory, utils.Security.User userAuth, utils.json.Utils jsonUtils) {
+                                 PopularService popularService, TvShowRequestService tvShowRequestService,
+                                 UserService userService, FormFactory formFactory, utils.Security.User userAuth,
+                                 utils.json.Utils jsonUtils) {
     this.tvdbService = tvdbService;
     this.tmdbService = tmdbService;
     this.tvShowService = tvShowService;
     this.seasonService = seasonService;
     this.episodeService = episodeService;
+    this.popularService = popularService;
     this.tvShowRequestService = tvShowRequestService;
     this.userService = userService;
     this.formFactory = formFactory;
@@ -206,6 +210,11 @@ public class TvShowRequestController extends Controller {
                     result.put("banner", tvShowService.getAndSetImage(tvShow, "banner"));
                     result.put("poster", tvShowService.getAndSetImage(tvShow, "poster"));
                     result.put("fanart", tvShowService.getAndSetImage(tvShow, "fanart"));
+
+                    // popularidad
+                    Popular popular = new Popular();
+                    popular.tvShow = tvShow;
+                    tvShow.popular = popularService.create(popular);
 
                     // TMDb
                     TvShow tmdbShow = tmdbService.findByTvdbId(tvShow.tvdbId);

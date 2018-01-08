@@ -3,7 +3,6 @@ package models;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
-import play.Logger;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -41,7 +40,6 @@ public class Popular {
 
     LocalDate today = new LocalDate();
     LocalDate lastUpdate = new LocalDate(updated);
-    Logger.debug("today: " + today.toString() + ", last update: " + lastUpdate.toString());
     Integer daysBetween = Math.abs(Days.daysBetween(lastUpdate, today).getDays());
     if (!isRequestsCountEmpty()) {
       if (daysBetween >= 7) {

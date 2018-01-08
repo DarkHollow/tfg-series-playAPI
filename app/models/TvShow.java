@@ -1,10 +1,11 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
-import utils.json.JsonViews;
 import play.data.validation.Constraints;
+import utils.json.JsonViews;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -101,6 +102,7 @@ public class TvShow {
   public List<Season> seasons;
 
   @OneToOne(mappedBy = "tvShow", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonIgnore
   public Popular popular;
 
   // constructor vacio
@@ -170,6 +172,6 @@ public class TvShow {
   public String toString() {
     return "TvShow [id=" + id + ", tvdbId=" + tvdbId + ", tmdbId=" + tmdbId + ", name=" + name +
             ", firstAired=" + firstAired + ", overview=" + overview + ", network=" + network + ", status=" + status +
-            ", score =" + score + ", voteCount=" + voteCount +"]";
+            ", score=" + score + ", voteCount=" + voteCount +"]";
   }
 }

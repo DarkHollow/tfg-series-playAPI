@@ -4,13 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
-import models.service.EpisodeService;
-import utils.json.JsonViews;
 import models.TvShow;
 import models.TvShowRequest;
-import models.service.SeasonService;
-import models.service.TvShowRequestService;
-import models.service.TvShowService;
+import models.service.*;
 import models.service.external.TvdbService;
 import play.Logger;
 import play.data.DynamicForm;
@@ -23,6 +19,7 @@ import play.mvc.Result;
 import play.mvc.Security;
 import utils.Security.Administrator;
 import utils.Security.Roles;
+import utils.json.JsonViews;
 
 import java.util.List;
 
@@ -32,18 +29,20 @@ public class TvShowController extends Controller {
   private final TvShowRequestService tvShowRequestService;
   private final SeasonService seasonService;
   private final EpisodeService episodeService;
+  private final PopularService popularService;
   private final TvdbService tvdbService;
   private final FormFactory formFactory;
   private final utils.json.Utils jsonUtils;
 
   @Inject
   public TvShowController(TvShowService tvShowService, SeasonService seasonService, EpisodeService episodeService,
-                          TvdbService tvdbService, FormFactory formFactory, TvShowRequestService tvShowRequestService,
-                          utils.json.Utils jsonUtils) {
+                          PopularService popularService, TvdbService tvdbService, FormFactory formFactory,
+                          TvShowRequestService tvShowRequestService, utils.json.Utils jsonUtils) {
     this.tvShowService = tvShowService;
     this.tvShowRequestService = tvShowRequestService;
     this.seasonService = seasonService;
     this.episodeService = episodeService;
+    this.popularService = popularService;
     this.tvdbService = tvdbService;
     this.formFactory = formFactory;
     this.jsonUtils = jsonUtils;
@@ -136,15 +135,19 @@ public class TvShowController extends Controller {
       return notFound(result);
     }
 
+    // actualizar popularity
+    Integer popularity = popularService.growPopularity(tvShow);
+
     // si la lista no está vacía, devolvemos datos
     try {
       JsonNode jsonNode = jsonUtils.jsonParseObject(tvShow, JsonViews.FullTvShow.class);
 
       // contar numero episodio por temporada
       jsonNode.withArray("seasons").forEach(season -> ((ObjectNode)season).put("episodeCount", seasonService.getSeasonByNumber(tvShow, season.get("seasonNumber").asInt()).episodes.size()));
+      // mostramos popularity
+      ((ObjectNode) jsonNode).put("popularity", popularity);
 
       return ok(jsonNode);
-
     } catch (Exception ex) {
       // si hubiese un error, devolver error interno
       ObjectNode result = Json.newObject();

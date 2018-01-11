@@ -26,14 +26,14 @@ public class PopularService {
   }
 
   // Get top 10 popular
-  public List<Popular> getTop10() {
+  public List<Popular> getPopular(Integer size) {
     List<Popular> populars = popularDAO.all().stream().sorted(Comparator.comparing(Popular::getPopularity).reversed()).collect(Collectors.toList());
     if (populars.isEmpty()) {
       return null;
-    } else if (populars.size() < 10) {
+    } else if (populars.size() < size) {
       return populars.subList(0, populars.size());
     } else {
-      return populars.subList(0, 10);
+      return populars.subList(0, size);
     }
   }
 

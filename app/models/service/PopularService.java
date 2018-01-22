@@ -28,6 +28,7 @@ public class PopularService {
   // Get top 10 popular
   public List<Popular> getPopular(Integer size) {
     List<Popular> populars = popularDAO.all().stream().sorted(Comparator.comparing(Popular::getPopularity).reversed()).collect(Collectors.toList());
+    populars.removeIf(popular -> popular.getPopularity() == 0);
     if (populars.isEmpty()) {
       return null;
     } else if (populars.size() < size) {

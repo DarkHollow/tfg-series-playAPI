@@ -160,4 +160,12 @@ public class TvShowServiceTest {
     assertFalse(borrado);
   }
 
+  // testeamos top series mejor valoradas y orden
+  @Test
+  public void testTvShowVoteServiceTopRatedTvShows() {
+    List<TvShow> topRated = jpa.withTransaction(() -> tvShowService.getTopRatedTvShows(5));
+    assertEquals(2, topRated.size());
+    assertEquals(2, (int) topRated.get(0).id);
+  }
+
 }

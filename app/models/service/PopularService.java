@@ -30,7 +30,7 @@ public class PopularService {
     List<Popular> populars = popularDAO.all().stream().sorted(Comparator.comparing(Popular::getPopularity).reversed()).collect(Collectors.toList());
     populars.removeIf(popular -> popular.getPopularity() == 0);
     if (populars.isEmpty()) {
-      return null;
+      return populars;
     } else if (populars.size() < size) {
       return populars.subList(0, populars.size());
     } else {

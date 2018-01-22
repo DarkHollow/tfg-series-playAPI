@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
+import models.Popular;
 import models.TvShow;
 import models.TvShowRequest;
 import models.service.*;
@@ -21,6 +22,7 @@ import utils.Security.Administrator;
 import utils.Security.Roles;
 import utils.json.JsonViews;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TvShowController extends Controller {
@@ -375,6 +377,52 @@ public class TvShowController extends Controller {
       result.put("error", "tv show not found");
       return notFound(result);
     }
+  }
+
+  // devolver las series mejor valoradas
+  @Transactional(readOnly = true)
+  @Security.Authenticated(Roles.class)
+  public Result getTopRated(Integer querySize) {
+    Integer size = 5;
+    Integer minimum = 1;
+    Integer maximum = 10;
+    // comprobar si tiene tamaño en la query
+    if (querySize != null && querySize > minimum && querySize <= maximum) {
+      size = querySize;
+    }
+
+    List<TvShow> topRated = tvShowService.getTopRatedTvShows(size);
+    // si la lista está vacía, not found
+    if (topRated.isEmpty()) {
+      ObjectNode result = Json.newObject();
+      result.put("error", "Not found");
+      return notFound(result);
+    } else {
+      // si la lista no está vacía, devolvemos datos
+      try {
+        JsonNode jsonNode = jsonUtils.jsonParseObject(topRated, JsonViews.SearchTvShow.class);
+        ObjectNode objectNode = Json.newObject();
+        // añadimos popularidad y tendencia de cada serie
+        jsonNode.forEach((tvShow) -> {
+          Popular popular = tvShowService.find(tvShow.get("id").asInt()).popular;
+          ((ObjectNode)tvShow).put("popularity", popular.getPopularity());
+          ((ObjectNode)tvShow).put("trend", popular.getTrend());
+        });
+        // añadimos tamaño
+        objectNode.put("size", topRated.size());
+        // añadimos series
+        objectNode.set("tvShows", jsonNode);
+
+        return ok(objectNode);
+      } catch (Exception ex) {
+        // si hubiese un error, devolver error interno
+        Logger.debug(ex.getMessage());
+        ObjectNode result = Json.newObject();
+        result.put("error", "It can't be processed");
+        return internalServerError(result);
+      }
+    }
+
   }
 
 }

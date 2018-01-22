@@ -19,8 +19,9 @@ GET     /api/tvshows                        controllers.TvShowController.all(sea
 POST    /api/tvshows                        controllers.TvShowController.create
 
 # --- URI pattern order ---
-# TV Show Popular
+# TV Show Popular and top rated
 GET     /api/tvshows/popular                controllers.PopularController.getPopular(size: Integer ?= -1)
+GET     /api/tvshows/toprated               controllers.TvShowController.getTopRated(size: Integer ?= -1)
 # --- URI pattern order ---
 
 GET     /api/tvshows/:id                    controllers.TvShowController.tvShowById(id: Integer)

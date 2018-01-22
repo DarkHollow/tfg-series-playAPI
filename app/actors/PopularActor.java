@@ -32,7 +32,7 @@ public class PopularActor extends UntypedActor {
     this.popularService = popularService;
     Cancellable cancellable = system.scheduler().schedule(
             Duration.create(0, TimeUnit.MILLISECONDS),
-            Duration.create(15, TimeUnit.MINUTES),
+            Duration.create(1441, TimeUnit.MINUTES),
             popularActor,"tick", system.dispatcher(),null);
   }
 

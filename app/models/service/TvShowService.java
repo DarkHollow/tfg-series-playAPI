@@ -10,9 +10,11 @@ import play.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 public class TvShowService {
 
@@ -160,6 +162,19 @@ public class TvShowService {
       return null;
     }
     return tvShow.tmdbId;
+  }
+
+  public List<TvShow> getTopRatedTvShows(Integer size) {
+    List<TvShow> topRatedTvShows = tvShowDAO.all().stream().sorted(Comparator.comparing((TvShow tvShow) -> tvShow.score)
+            .thenComparing(tvShow -> tvShow.voteCount).reversed()).collect(Collectors.toList());
+    topRatedTvShows.removeIf(tvShow -> tvShow.score == 0);
+    if (topRatedTvShows.isEmpty()) {
+      return topRatedTvShows;
+    } else if (topRatedTvShows.size() < size) {
+      return topRatedTvShows.subList(0, topRatedTvShows.size());
+    } else {
+      return topRatedTvShows.subList(0, size);
+    }
   }
 
 }

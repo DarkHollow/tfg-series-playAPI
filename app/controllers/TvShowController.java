@@ -403,10 +403,13 @@ public class TvShowController extends Controller {
         JsonNode jsonNode = jsonUtils.jsonParseObject(topRated, JsonViews.SearchTvShow.class);
         ObjectNode objectNode = Json.newObject();
         // añadimos popularidad y tendencia de cada serie
+        final Integer[] i = {0};
         jsonNode.forEach((tvShow) -> {
+          i[0]++;
           Popular popular = tvShowService.find(tvShow.get("id").asInt()).popular;
           ((ObjectNode)tvShow).put("popularity", popular.getPopularity());
           ((ObjectNode)tvShow).put("trend", popular.getTrend());
+          ((ObjectNode)tvShow).put("top", i[0]);
         });
         // añadimos tamaño
         objectNode.put("size", topRated.size());

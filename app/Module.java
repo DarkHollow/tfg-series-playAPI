@@ -1,7 +1,9 @@
+import actors.PopularActor;
 import actors.TvdbActor;
 import com.google.inject.AbstractModule;
 import models.service.external.TmdbConnection;
 import models.service.external.TvdbConnection;
+import play.db.jpa.Transactional;
 import play.libs.akka.AkkaGuiceSupport;
 
 import java.time.Clock;
@@ -19,6 +21,7 @@ import java.time.Clock;
 public class Module extends AbstractModule implements AkkaGuiceSupport {
 
     @Override
+    @Transactional
     public void configure() {
         // Use the system clock as the default implementation of Clock
         bind(Clock.class).toInstance(Clock.systemDefaultZone());
@@ -30,6 +33,9 @@ public class Module extends AbstractModule implements AkkaGuiceSupport {
 
         // Inicializar la clase TmdbConnection
         bind(TmdbConnection.class).asEagerSingleton();
+
+        // bindeamos el actor de Populars
+        bindActor(PopularActor.class, "PopularActor");
     }
 
 }

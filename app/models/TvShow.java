@@ -1,9 +1,6 @@
 package models;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
 import play.data.validation.Constraints;
 import utils.json.JsonViews;
 
@@ -15,6 +12,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "tvShow")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class TvShow {
   public enum Status { Continuing, Ended }
 
@@ -44,7 +42,6 @@ public class TvShow {
   @JsonView(JsonViews.SearchTvShow.class)
   public Date firstAired;
 
-  @Constraints.Required
   @Column(columnDefinition = "text")
   @JsonView(JsonViews.FullTvShow.class)
   public String overview;
@@ -151,20 +148,6 @@ public class TvShow {
     this.score = tvShow.score;
     this.voteCount = tvShow.voteCount;
     this.local = false;
-  }
-
-  // poner a null todos las cadenas vacías que no son null
-  public void nullify() {
-    if (imdbId != null && imdbId.isEmpty()) imdbId = null;
-    if (name != null && name.isEmpty()) name = null;
-    if (overview != null && overview.isEmpty()) overview = null;
-    if (banner != null && banner.isEmpty()) banner = null;
-    if (poster != null && poster.isEmpty()) poster = null;
-    if (fanart != null && fanart.isEmpty()) fanart = null;
-    if (network != null && network.isEmpty()) network = null;
-    if (runtime != null && runtime.isEmpty()) runtime = null;
-    if (rating != null && rating.isEmpty()) rating = null;
-    if (requestStatus != null && requestStatus.isEmpty()) requestStatus = null;
   }
 
   // solo informacion importante

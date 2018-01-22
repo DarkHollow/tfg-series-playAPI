@@ -10,6 +10,7 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.*;
+import play.Logger;
 import play.db.Database;
 import play.db.Databases;
 import play.db.jpa.JPA;
@@ -167,6 +168,23 @@ public class PopularServiceTest {
 
       tvShow1.popular.requestsCount.clear();
       tvShow2.popular.requestsCount.clear();
+    });
+  }
+
+  // testeamos obtener tendencia
+  @Test
+  public void testPopularServiceGetTrend(){
+    final TvShowDAO tvShowDAO = new TvShowDAO(jpa);
+    jpa.withTransaction(() -> {
+      TvShow tvShow = tvShowDAO.find(1);
+      tvShow.popular.updateDays();
+      tvShow.popular.requestsCount.set(0, 1000);
+      tvShow.popular.requestsCount.set(1, 2000);
+      tvShow.popular.requestsCount.set(2, 3000);
+
+      assertEquals((Double) 2142.86, tvShow.popular.getTrend());
+
+      tvShow.popular.requestsCount.clear();
     });
   }
 

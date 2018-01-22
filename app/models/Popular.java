@@ -81,4 +81,8 @@ public class Popular {
     return requestsCount.stream().reduce(0, (x, y) -> x + y);
   }
 
+  public Double getTrend() {
+    return Math.round(((requestsCount.get(0) + requestsCount.get(1)) - (getPopularity() / 7.0)) * 100) / 100.0;
+  }
+
 }

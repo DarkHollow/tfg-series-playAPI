@@ -17,6 +17,12 @@ GET     /api/                               controllers.RootController.index
 # TV Shows ------------------------
 GET     /api/tvshows                        controllers.TvShowController.all(search: String ?= "", tvdb: Integer ?= 0)
 POST    /api/tvshows                        controllers.TvShowController.create
+
+# --- URI pattern order ---
+# TV Show Popular
+GET     /api/tvshows/popular                controllers.PopularController.getPopular(size: Integer ?= -1)
+# --- URI pattern order ---
+
 GET     /api/tvshows/:id                    controllers.TvShowController.tvShowById(id: Integer)
 PUT     /api/tvshows/:id                    controllers.TvShowController.updateData(id: Integer)
 DELETE  /api/tvshows/:id                    controllers.TvShowController.delete(id: Integer)

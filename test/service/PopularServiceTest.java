@@ -86,18 +86,38 @@ public class PopularServiceTest {
     });
   }
 
-  // testeamos obtener top 10
+  // testeamos obtener series populares, con popularidad 0 no debería salir ninguna
   @Test
-  public void testPopularServiceGetTop10(){
+  public void testPopularServiceGetPopularPopularity0(){
     jpa.withTransaction(() -> {
-      List<Popular> top10Popular = popularService.getTop10();
-      assertEquals(2, top10Popular.size());
+      List<Popular> populars = popularService.getPopular(5);
+      assertEquals(0, populars.size());
+    });
+  }
+
+  // testeamos obtener series populares, con 2 series con popularidad > 0 debería dar 2 de tamaño
+  @Test
+  public void testPopularServiceGetPopular(){
+    final TvShowDAO tvShowDAO = new TvShowDAO(jpa);
+    jpa.withTransaction(() -> {
+      TvShow tvShow1 = tvShowDAO.find(1);
+      TvShow tvShow2 = tvShowDAO.find(2);
+      tvShow1.popular.updateDays();
+      tvShow2.popular.updateDays();
+      tvShow1.popular.requestsCount.set(0, 1000);
+      tvShow2.popular.requestsCount.set(0, 2000);
+
+      List<Popular> populars = popularService.getPopular(5);
+      assertEquals(2, populars.size());
+
+      tvShow1.popular.requestsCount.clear();
+      tvShow2.popular.requestsCount.clear();
     });
   }
 
   // testeamos obtener top 10 comprobar ordenacion 1
   @Test
-  public void testPopularServiceGetTop10Order1(){
+  public void testPopularServiceGetPopularOrder1(){
     final TvShowDAO tvShowDAO = new TvShowDAO(jpa);
     jpa.withTransaction(() -> {
       TvShow tvShow1 = tvShowDAO.find(1);
@@ -109,10 +129,10 @@ public class PopularServiceTest {
       tvShow1.popular.requestsCount.set(1, 2000);
       tvShow1.popular.requestsCount.set(2, 3000);
 
-      List<Popular> top10Popular = popularService.getTop10();
+      List<Popular> populars = popularService.getPopular(5);
 
-      assertEquals(1, (int) top10Popular.get(0).id);
-      assertEquals(6000, (int) top10Popular.get(0).getPopularity());
+      assertEquals(1, (int) populars.get(0).id);
+      assertEquals(6000, (int) populars.get(0).getPopularity());
 
       tvShow1.popular.requestsCount.clear();
       tvShow2.popular.requestsCount.clear();
@@ -141,13 +161,30 @@ public class PopularServiceTest {
       tvShow2.popular.requestsCount.set(2, 3000);
       tvShow2.popular.requestsCount.set(3, 1000);
 
-      List<Popular> top10Popular = popularService.getTop10();
+      List<Popular> populars = popularService.getPopular(5);
 
-      assertEquals(2, (int) top10Popular.get(0).id);
-      assertEquals(7000, (int) top10Popular.get(0).getPopularity());
+      assertEquals(2, (int) populars.get(0).id);
+      assertEquals(7000, (int) populars.get(0).getPopularity());
 
       tvShow1.popular.requestsCount.clear();
       tvShow2.popular.requestsCount.clear();
+    });
+  }
+
+  // testeamos obtener tendencia
+  @Test
+  public void testPopularServiceGetTrend(){
+    final TvShowDAO tvShowDAO = new TvShowDAO(jpa);
+    jpa.withTransaction(() -> {
+      TvShow tvShow = tvShowDAO.find(1);
+      tvShow.popular.updateDays();
+      tvShow.popular.requestsCount.set(0, 1000);
+      tvShow.popular.requestsCount.set(1, 2000);
+      tvShow.popular.requestsCount.set(2, 3000);
+
+      assertEquals((Double) 2142.86, tvShow.popular.getTrend());
+
+      tvShow.popular.requestsCount.clear();
     });
   }
 

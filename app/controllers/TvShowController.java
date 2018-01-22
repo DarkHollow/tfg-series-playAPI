@@ -146,6 +146,8 @@ public class TvShowController extends Controller {
       jsonNode.withArray("seasons").forEach(season -> ((ObjectNode)season).put("episodeCount", seasonService.getSeasonByNumber(tvShow, season.get("seasonNumber").asInt()).episodes.size()));
       // mostramos popularity
       ((ObjectNode) jsonNode).put("popularity", popularity);
+      // mostramos trend
+      ((ObjectNode) jsonNode).put("trend", tvShow.popular.getTrend());
 
       return ok(jsonNode);
     } catch (Exception ex) {

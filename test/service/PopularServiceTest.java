@@ -10,7 +10,6 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.*;
-import play.Logger;
 import play.db.Database;
 import play.db.Databases;
 import play.db.jpa.JPA;
@@ -86,12 +85,32 @@ public class PopularServiceTest {
     });
   }
 
-  // testeamos obtener top 10
+  // testeamos obtener series populares, con popularidad 0 no debería salir ninguna
   @Test
-  public void testPopularServiceGetPopular(){
+  public void testPopularServiceGetPopularPopularity0(){
     jpa.withTransaction(() -> {
       List<Popular> populars = popularService.getPopular(5);
+      assertEquals(0, populars.size());
+    });
+  }
+
+  // testeamos obtener series populares, con 2 series con popularidad > 0 debería dar 2 de tamaño
+  @Test
+  public void testPopularServiceGetPopular(){
+    final TvShowDAO tvShowDAO = new TvShowDAO(jpa);
+    jpa.withTransaction(() -> {
+      TvShow tvShow1 = tvShowDAO.find(1);
+      TvShow tvShow2 = tvShowDAO.find(2);
+      tvShow1.popular.updateDays();
+      tvShow2.popular.updateDays();
+      tvShow1.popular.requestsCount.set(0, 1000);
+      tvShow2.popular.requestsCount.set(0, 2000);
+
+      List<Popular> populars = popularService.getPopular(5);
       assertEquals(2, populars.size());
+
+      tvShow1.popular.requestsCount.clear();
+      tvShow2.popular.requestsCount.clear();
     });
   }
 

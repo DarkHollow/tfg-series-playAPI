@@ -2,6 +2,7 @@ package models.service;
 
 import com.google.inject.Inject;
 import models.TvShow;
+import models.User;
 import models.dao.TvShowDAO;
 import models.service.external.TmdbService;
 import models.service.external.TvdbService;
@@ -19,12 +20,14 @@ import java.util.stream.Collectors;
 public class TvShowService {
 
   private final TvShowDAO tvShowDAO;
+  private final UserService userService;
   private final TvdbService tvdbService;
   private final TmdbService tmdbService;
 
   @Inject
-  public TvShowService(TvShowDAO tvShowDAO, TvdbService tvdbService, TmdbService tmdbService) {
+  public TvShowService(TvShowDAO tvShowDAO, UserService userService, TvdbService tvdbService, TmdbService tmdbService) {
     this.tvShowDAO = tvShowDAO;
+    this.userService = userService;
     this.tvdbService = tvdbService;
     this.tmdbService = tmdbService;
   }
@@ -174,6 +177,30 @@ public class TvShowService {
       return topRatedTvShows.subList(0, topRatedTvShows.size());
     } else {
       return topRatedTvShows.subList(0, size);
+    }
+  }
+
+  public Boolean followTvShow(Integer tvShowId, Integer userId) {
+    TvShow tvShow = find(tvShowId);
+    User user = userService.find(userId);
+    if (tvShow != null && user != null) {
+      user.followedTvShows.add(tvShow);
+      tvShow.followingUsers.add(user);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public Boolean unfollowTvShow(Integer tvShowId, Integer userId) {
+    TvShow tvShow = find(tvShowId);
+    User user = userService.find(userId);
+    if (tvShow != null && user != null) {
+      user.followedTvShows.remove(tvShow);
+      tvShow.followingUsers.remove(user);
+      return true;
+    } else {
+      return false;
     }
   }
 

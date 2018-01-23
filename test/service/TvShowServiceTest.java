@@ -2,7 +2,9 @@ package service;
 
 import models.TvShow;
 import models.dao.TvShowDAO;
+import models.dao.UserDAO;
 import models.service.TvShowService;
+import models.service.UserService;
 import models.service.external.TmdbService;
 import models.service.external.TvdbService;
 import org.dbunit.JndiDatabaseTester;
@@ -14,6 +16,7 @@ import play.db.Database;
 import play.db.Databases;
 import play.db.jpa.JPA;
 import play.db.jpa.JPAApi;
+import utils.Security.Password;
 
 import java.io.FileInputStream;
 import java.util.Date;
@@ -43,9 +46,12 @@ public class TvShowServiceTest {
   @Before
   public void initData() throws Exception {
     TvShowDAO tvShowDAO = new TvShowDAO(jpa);
+    UserDAO userDAO = new UserDAO(jpa);
+    Password password = mock(Password.class);
+    UserService userService = new UserService(userDAO, password);
     TvdbService tvdbService = mock(TvdbService.class);
     TmdbService tmdbService = mock(TmdbService.class);
-    tvShowService = new TvShowService(tvShowDAO, tvdbService, tmdbService);
+    tvShowService = new TvShowService(tvShowDAO, userService, tvdbService, tmdbService);
 
     databaseTester = new JndiDatabaseTester("DefaultDS");
     IDataSet initialDataSet = new FlatXmlDataSetBuilder().build(new
@@ -166,6 +172,26 @@ public class TvShowServiceTest {
     List<TvShow> topRated = jpa.withTransaction(() -> tvShowService.getTopRatedTvShows(5));
     assertEquals(2, topRated.size());
     assertEquals(2, (int) topRated.get(0).id);
+  }
+
+  @Test
+  public void testTvShowVoteServiceFollowTvShow() {
+    assertTrue(jpa.withTransaction(() -> tvShowService.followTvShow(1, 1)));
+    jpa.withTransaction(() -> tvShowService.unfollowTvShow(1, 1));
+  }
+
+  @Test
+  public void testTvShowVoteServiceUnfollowTvShow() {
+    jpa.withTransaction(() -> {
+      TvShow tvShow = tvShowService.find(1);
+      assertEquals(0, tvShow.followingUsers.size());
+      assertTrue(tvShowService.followTvShow(1, 1));
+      tvShow = tvShowService.find(1);
+      assertEquals(1, tvShow.followingUsers.size());
+      assertTrue(tvShowService.unfollowTvShow(1, 1));
+      tvShow = tvShowService.find(1);
+      assertEquals(0, tvShow.followingUsers.size());
+    });
   }
 
 }

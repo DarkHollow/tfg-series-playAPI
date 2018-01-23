@@ -55,7 +55,7 @@ public class TvShowVoteServiceTest {
     TvShowDAO tvShowDAO = new TvShowDAO(jpa);
     TvdbService tvdbService = mock(TvdbService.class);
     TmdbService tmdbService = mock(TmdbService.class);
-    TvShowService tvShowService = new TvShowService(tvShowDAO, tvdbService, tmdbService);
+    TvShowService tvShowService = new TvShowService(tvShowDAO, userService, tvdbService, tmdbService);
     tvShowVoteService = new TvShowVoteService(tvShowVoteDAO, userService, tvShowService);
 
     // inicializamos base de datos de prueba

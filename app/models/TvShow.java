@@ -102,6 +102,9 @@ public class TvShow {
   @JsonIgnore
   public Popular popular;
 
+  @ManyToMany(mappedBy = "followedTvShows")
+  public List<User> followingUsers;
+
   // constructor vacio
   public TvShow() {}
 

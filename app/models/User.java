@@ -41,6 +41,12 @@ public class User {
   @JsonIgnore
   public List<TvShowVote> tvShowVotes;
 
+  @ManyToMany
+  @JoinTable(name = "follow",
+    joinColumns = @JoinColumn(name = "userId"),
+    inverseJoinColumns = @JoinColumn(name = "tvShowId"))
+  public List<TvShow> followedTvShows;
+
   // constructor vacío
   public User() {
     rol = "u";

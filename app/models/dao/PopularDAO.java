@@ -50,12 +50,20 @@ public class PopularDAO {
 
   public Popular growPopularity(Integer id) {
     Popular popular = find(id);
-    jpa.em().getTransaction().begin();
-    popular.updateDays();
-    popular.requestsCount.set(0, popular.requestsCount.get(0) + 1);
-    popular.requestsCount = Lists.reverse(popular.requestsCount);
-    jpa.em().getTransaction().commit();
-    jpa.em().refresh(popular);
+    try {
+      if (!jpa.em().getTransaction().isActive()) {
+        jpa.em().getTransaction().begin();
+        popular.updateDays();
+        popular.requestsCount.set(0, popular.requestsCount.get(0) + 1);
+        popular.requestsCount = Lists.reverse(popular.requestsCount);
+        jpa.em().getTransaction().commit();
+        jpa.em().refresh(popular);
+        return popular;
+      }
+    } catch (Exception ex) {
+      Logger.error("Error growPopularity");
+      jpa.em().getTransaction().rollback();
+    }
     return popular;
   }
 

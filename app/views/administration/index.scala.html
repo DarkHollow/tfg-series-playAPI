@@ -45,7 +45,7 @@
                         </li>
 
                         <li class="media">
-                            <a class="ajaxLink dd-parent-a">
+                            <a class="ajaxLink dd-parent-a" href="@routes.AdminController.tvShows()">
                                 <div class="media-left media-top">
                                     <span class="btn text-warning btn-flat btn-rounded btn-icon btn-xs">
                                         <span class="badge badge-danger">@deletedTvShowCount</span>
@@ -54,6 +54,40 @@
                                 <div class="media-body">
                                     Series eliminadas
                                     <div class="media-annotation">Series que han sido eliminadas</div>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <h6 class="panel-title"><a class="ajaxLink" href="@routes.AdminController.trending()"><i class="icon-stats-growth position-left"></i> <span class="media-middle">Popularidad y tendencia</span></a></h6>
+                </div>
+                <div class="panel-body" style="padding-top: 0;">
+                    <ul class="menu-list dd-menu">
+
+                        <li class="media">
+                            <a class="ajaxLink dd-parent-a" href="@routes.AdminController.trending()">
+                                <div style="vertical-align: middle" class="media-left media-top">
+                                    <i style="font-size: x-large; padding-right: 8px" class="icon-stats-growth2 position-right"></i>
+                                </div>
+                                <div class="media-body">
+                                    Series más populares
+                                    <div class="media-annotation">Las series que más visitas están recibiendo</div>
+                                </div>
+                            </a>
+                        </li>
+
+                        <li class="media">
+                            <a class="ajaxLink dd-parent-a" href="@routes.AdminController.trending()">
+                                <div style="vertical-align: middle" class="media-left media-top">
+                                    <i style="font-size: x-large; padding-right: 8px" class="icon-stats-bars2 position-right"></i>
+                                </div>
+                                <div class="media-body">
+                                    Series mejor valoradas
+                                    <div class="media-annotation">Series con mejor valoración media</div>
                                 </div>
                             </a>
                         </li>

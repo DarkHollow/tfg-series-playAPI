@@ -1,12 +1,10 @@
 package controllers;
 
 import com.google.inject.Inject;
+import models.Popular;
 import models.TvShow;
 import models.TvShowRequest;
-import models.service.EvolutionService;
-import models.service.TvShowRequestService;
-import models.service.TvShowService;
-import models.service.UserService;
+import models.service.*;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -27,14 +25,16 @@ import java.util.List;
 public class AdminController extends Controller {
 
   private final TvShowService tvShowService;
+  private final PopularService popularService;
   private final TvShowRequestService tvShowRequestService;
   private final UserService userService;
   private final utils.Security.Administrator adminAuth;
   private final EvolutionService evolutionService;
 
   @Inject
-  public AdminController(TvShowService tvShowService, TvShowRequestService tvShowRequestService, UserService userService, utils.Security.Administrator adminAuth, EvolutionService evolutionService) {
+  public AdminController(TvShowService tvShowService, PopularService popularService, TvShowRequestService tvShowRequestService, UserService userService, utils.Security.Administrator adminAuth, EvolutionService evolutionService) {
     this.tvShowService = tvShowService;
+    this.popularService = popularService;
     this.tvShowRequestService = tvShowRequestService;
     this.userService = userService;
     this.adminAuth = adminAuth;
@@ -87,7 +87,15 @@ public class AdminController extends Controller {
   }
 
   @Transactional(readOnly = true)
-    public Result loginView() {
+  @Security.Authenticated(Administrator.class)
+  public Result trending() {
+    List<Popular> populars = popularService.getPopular(10);
+    List<TvShow> topRated = tvShowService.getTopRatedTvShows(10);
+    return ok(views.html.administration.popularAndRating.render("Trending Series Administration - Popular y Tendencia", "trending", populars, topRated, evolutionService));
+  }
+
+  @Transactional(readOnly = true)
+  public Result loginView() {
     // llamar al método manualmente
     String email = adminAuth.getUsername(Http.Context.current());
     // si está identificado, comprobar si es admin

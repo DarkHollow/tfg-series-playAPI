@@ -114,6 +114,8 @@
                                     <span>Series</span>
                                 } else if (route == "tvShowRequests") {
                                     <span>Peticiones</span>
+                                } else if (route == "trending") {
+                                    <span>Popularidad y tendencias</span>
                                 }}
                             </li>
                         </ul>
@@ -133,16 +135,26 @@
                                 <li class="active"><a class="ajaxLink" href="@routes.AdminController.index()">Dashboard</a></li>
                                 <li><a class="ajaxLink" href="@routes.AdminController.tvShows()">Series</a></li>
                                 <li><a class="ajaxLink" href="@routes.AdminController.tvShowRequests()">Peticiones</a></li>
+                                <li><a class="ajaxLink" href="@routes.AdminController.trending()">Popularidad y tendencia</a></li>
                             } else {
                                 @if(route == "tvShow" || route == "tvShows") {
                                     <li><a class="ajaxLink" href="@routes.AdminController.index()">Dashboard</a></li>
                                     <li class="active"><a class="ajaxLink" href="@routes.AdminController.tvShows()">Series</a></li>
                                     <li><a class="ajaxLink" href="@routes.AdminController.tvShowRequests()">Peticiones</a></li>
+                                    <li><a class="ajaxLink" href="@routes.AdminController.trending()">Popularidad y tendencia</a></li>
                                 } else {
                                     @if(route == "tvShowRequests") {
                                         <li><a class="ajaxLink" href="@routes.AdminController.index()">Dashboard</a></li>
                                         <li><a class="ajaxLink" href="@routes.AdminController.tvShows()">Series</a></li>
                                         <li class="active"><a class="ajaxLink" href="@routes.AdminController.tvShowRequests()">Peticiones</a></li>
+                                        <li><a class="ajaxLink" href="@routes.AdminController.trending()">Popularidad y tendencia</a></li>
+                                    } else {
+                                        @if(route == "trending") {
+                                            <li><a class="ajaxLink" href="@routes.AdminController.index()">Dashboard</a></li>
+                                            <li><a class="ajaxLink" href="@routes.AdminController.tvShows()">Series</a></li>
+                                            <li><a class="ajaxLink" href="@routes.AdminController.tvShowRequests()">Peticiones</a></li>
+                                            <li class="active"><a class="ajaxLink" href="@routes.AdminController.trending()">Popularidad y tendencia</a></li>
+                                        }
                                     }
                                 }
                             }

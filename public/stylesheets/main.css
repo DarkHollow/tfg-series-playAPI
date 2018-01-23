@@ -75,6 +75,20 @@
     padding: 0;
 }
 
+.td-posterSmall {
+    padding: 0 !important;
+    width: 53px !important;
+    text-align: center !important;
+}
+
+.tvShowListPosterSmall {
+    height: 75px;
+    width: 51px;
+    margin: 0;
+    padding: 0;
+    display: inline !important;
+}
+
 .hr-mini {
     display: block;
     height: 1px;

@@ -16,6 +16,7 @@ import play.data.FormFactory;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
 import utils.Security.Administrator;
@@ -32,19 +33,21 @@ public class TvShowController extends Controller {
   private final EpisodeService episodeService;
   private final PopularService popularService;
   private final TvdbService tvdbService;
+  private final Roles roles;
   private final FormFactory formFactory;
   private final utils.json.Utils jsonUtils;
 
   @Inject
   public TvShowController(TvShowService tvShowService, SeasonService seasonService, EpisodeService episodeService,
                           PopularService popularService, TvdbService tvdbService, FormFactory formFactory,
-                          TvShowRequestService tvShowRequestService, utils.json.Utils jsonUtils) {
+                          TvShowRequestService tvShowRequestService, utils.json.Utils jsonUtils, Roles roles) {
     this.tvShowService = tvShowService;
     this.tvShowRequestService = tvShowRequestService;
     this.seasonService = seasonService;
     this.episodeService = episodeService;
     this.popularService = popularService;
     this.tvdbService = tvdbService;
+    this.roles = roles;
     this.formFactory = formFactory;
     this.jsonUtils = jsonUtils;
   }
@@ -145,6 +148,8 @@ public class TvShowController extends Controller {
 
       // contar numero episodio por temporada
       jsonNode.withArray("seasons").forEach(season -> ((ObjectNode)season).put("episodeCount", seasonService.getSeasonByNumber(tvShow, season.get("seasonNumber").asInt()).episodes.size()));
+      // mostrar si el usuario identificado sigue la serie o no
+      ((ObjectNode) jsonNode).put("following", tvShow.followingUsers.stream().anyMatch(user -> roles.getUsername(Http.Context.current()).equals(user.email)));
       // mostramos popularity
       ((ObjectNode) jsonNode).put("popularity", popularity);
       // mostramos trend
@@ -408,6 +413,9 @@ public class TvShowController extends Controller {
           Popular popular = tvShowService.find(tvShow.get("id").asInt()).popular;
           ((ObjectNode)tvShow).put("poster", popular.tvShow.poster);
           ((ObjectNode)tvShow).put("top", i[0]);
+          // mostrar si el usuario identificado sigue la serie o no
+          TvShow tvShow1 = tvShowService.find(tvShow.get("id").asInt());
+          ((ObjectNode)tvShow).put("following", tvShow1.followingUsers.stream().anyMatch(user -> roles.getUsername(Http.Context.current()).equals(user.email)));
         });
         // añadimos tamaño
         objectNode.put("size", topRated.size());

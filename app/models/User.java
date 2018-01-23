@@ -42,6 +42,7 @@ public class User {
   public List<TvShowVote> tvShowVotes;
 
   @ManyToMany
+  @JsonIgnore
   @JoinTable(name = "follow",
     joinColumns = @JoinColumn(name = "userId"),
     inverseJoinColumns = @JoinColumn(name = "tvShowId"))

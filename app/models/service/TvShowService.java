@@ -184,8 +184,12 @@ public class TvShowService {
     TvShow tvShow = find(tvShowId);
     User user = userService.find(userId);
     if (tvShow != null && user != null) {
-      user.followedTvShows.add(tvShow);
-      tvShow.followingUsers.add(user);
+      if (!user.followedTvShows.contains(tvShow)) {
+        user.followedTvShows.add(tvShow);
+      }
+      if (!tvShow.followingUsers.contains(user)) {
+        tvShow.followingUsers.add(user);
+      }
       return true;
     } else {
       return false;

@@ -433,4 +433,32 @@ public class TvShowController extends Controller {
 
   }
 
+  // seguir una serie
+  @Transactional
+  @Security.Authenticated(Roles.class)
+  public Result follow(Integer tvShowId) {
+    TvShow tvShow = tvShowService.find(tvShowId);
+    if (tvShow == null) {
+      ObjectNode result = Json.newObject();
+      result.put("error", "Not found");
+      return notFound(result);
+    }
+
+    if (tvShowService.followTvShow(tvShowId, roles.getUser(Http.Context.current()).id)) {
+      try {
+        return noContent();
+      } catch (Exception ex) {
+        // si hubiese un error, devolver error interno
+        ObjectNode result = Json.newObject();
+        result.put("error", "It can't be processed");
+        return internalServerError(result);
+      }
+    } else {
+      ObjectNode result = Json.newObject();
+      result.put("error", "It can't be processed");
+      return internalServerError(result);
+    }
+
+  }
+
 }

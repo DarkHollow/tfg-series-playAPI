@@ -22,7 +22,6 @@ import utils.Security.Administrator;
 import utils.Security.Roles;
 import utils.json.JsonViews;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TvShowController extends Controller {
@@ -407,15 +406,13 @@ public class TvShowController extends Controller {
         jsonNode.forEach((tvShow) -> {
           i[0]++;
           Popular popular = tvShowService.find(tvShow.get("id").asInt()).popular;
-          ((ObjectNode)tvShow).put("popularity", popular.getPopularity());
-          ((ObjectNode)tvShow).put("trend", popular.getTrend());
+          ((ObjectNode)tvShow).put("poster", popular.tvShow.poster);
           ((ObjectNode)tvShow).put("top", i[0]);
         });
         // añadimos tamaño
         objectNode.put("size", topRated.size());
         // añadimos series
         objectNode.set("tvShows", jsonNode);
-
         return ok(objectNode);
       } catch (Exception ex) {
         // si hubiese un error, devolver error interno

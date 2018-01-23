@@ -1,6 +1,7 @@
 package utils.Security;
 
 import org.apache.commons.codec.binary.Base64;
+import play.Logger;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -28,7 +29,9 @@ public class Password {
     }
   }
 
-  private static final String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA1";
+  // java soporta hasta SHA512 (futuro SHA-3?)
+  private static final String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA512";
+  private static final String ALGORITHM = "SHA512";
 
   // constantes que pueden ser cambiadas
   private static final int SALT_BYTE_SIZE = 24;
@@ -60,9 +63,11 @@ public class Password {
     int hashSize = hash.length;
 
     // formato: algoritmo:iteraciones:tamañoHash:salt:hash
-    return "sha1:" +
+    return ALGORITHM.toLowerCase() +
+            ":" +
             PBKDF2_ITERATIONS +
-            ":" + hashSize +
+            ":" +
+            hashSize +
             ":" +
             Base64.encodeBase64String(salt) +
             ":" +
@@ -83,8 +88,8 @@ public class Password {
       throw new InvalidHashException("Fields are missing from the password hash.");
     }
 
-    // java solo soporta SHA1 de momento
-    if (!params[HASH_ALGORITHM_INDEX].equals("sha1")) {
+    // java solo soporta SHA512 de momento (a falta de SHA3)
+    if (!params[HASH_ALGORITHM_INDEX].equals(ALGORITHM.toLowerCase())) {
       throw new CannotPerformOperationException("Unsupported hash type.");
     }
 

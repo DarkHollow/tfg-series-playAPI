@@ -134,4 +134,8 @@ public class Roles extends Security.Authenticator {
     }
     return null;
   }
+
+  public User getUser(Http.Context context) {
+    return userService.findByEmail(getUsername(context));
+  }
 }

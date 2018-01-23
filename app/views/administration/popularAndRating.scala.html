@@ -1,0 +1,247 @@
+@import java.util
+@import models.service.EvolutionService
+@(title: String, route: String, populars: util.List[Popular], topRated: util.List[TvShow])(implicit evolutionService: EvolutionService)
+
+@administration.adminMain(title, route) {
+<span id="host" hidden>@requestHeader.host</span>
+
+    <!-- Botón atrás -->
+    <ul class="fab-menu fab-menu-absolute fab-menu-top-left affix" id="affixed-back-button-left">
+        <li>
+            <a href="@routes.AdminController.index()" class="ajaxLink fab-menu-btn btn bg-indigo-400 btn-float btn-rounded btn-icon">
+                <i class="fab-icon-open icon-arrow-left8"></i>
+                <i class="fab-icon-open icon-arrow-left8"></i>
+            </a>
+        </li>
+    </ul>
+    <!-- /botón atrás -->
+
+    <!-- Panel y tabla de series mas populares en el sistema -->
+    <div class="panel" id="populars_table_panel">
+        <div class="panel-heading">
+            <h6 class="panel-title">Series más populares y su tendencia</h6>
+            <div class="heading-elements">
+                <ul class="icons-list">
+                    <li><a href="@routes.AdminController.trending()" data-action="get-list" class="tooltips" data-popup="tooltip" title="Recargar lista de series"><i class="icon-database-refresh"></i></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="panel-body padTop0">
+            <!-- TABLA -->
+            <table id="populars_table" class="table datatable-populars table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Posición</th>
+                        <th>Póster</th>
+                        <th>Título</th>
+                        <th>Visitas 7 últimos días</th>
+                        <th>Tendencia</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+            </table>
+            <!-- /style combinations -->
+            <!-- FIN TABLA -->
+        </div>
+    </div>
+    <!-- Fin panel y tabla de series en el sistema -->
+
+    <!-- Panel y tabla de series eliminadas -->
+    <div class="panel" id="topRated_table_panel">
+        <div class="panel-heading">
+            <h6 class="panel-title">Series mejor valoradas</h6>
+            <div class="heading-elements">
+                <ul class="icons-list">
+                    <li><a href="@routes.AdminController.trending()" data-action="get-list" class="tooltips" data-popup="tooltip" title="Recargar lista de series"><i class="icon-database-refresh"></i></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="panel-body padTop0">
+            <!-- TABLA -->
+            <table id="topRated_table" class="table datatable-topRated table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Top</th>
+                        <th>Póster</th>
+                        <th>Título</th>
+                        <th>Valoración</th>
+                        <th>Nº votos</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+            </table>
+            <!-- FIN TABLA -->
+        </div>
+    </div>
+    <!-- Fin panel y tabla de series eliminadas -->
+
+    <script>
+
+        // tooltips
+        $('body').tooltip({
+            selector: '.tooltips'
+        });
+
+        // ocultar tooltip
+        $(document).on('click', '[data-popup="tooltip"]', function(e) {
+            $('[data-popup="tooltip"]').tooltip('hide');
+        });
+
+        $(function() {
+            // Add bottom spacing if reached bottom,
+            // to avoid footer overlapping
+            // -------------------------
+            $(window).scroll(function() {
+                if($(window).scrollTop() + $(window).height() > $(document).height() - 40) {
+                    $('.fab-menu-bottom-left, .fab-menu-bottom-right').addClass('reached-bottom');
+                }
+                else {
+                    $('.fab-menu-bottom-left, .fab-menu-bottom-right').removeClass('reached-bottom');
+                }
+            });
+
+
+            // Affix
+            // -------------------------
+            // Left alignment
+            $('#affixed-back-button-left').affix({
+                offset: {
+                    top: $('#affixed-back-button-left').offset().top - 20
+                }
+            });
+
+        });
+
+        // on page ready
+        $(document).ready(function () {
+
+            containerHeight(); // recalculate page height
+
+            // Settings Tablas
+
+            // popular datatable
+            $('.datatable-populars').DataTable({
+                columnDefs: [{
+                    orderable: false,
+                    targets: [ 1, 5 ]
+                }]
+            });
+
+            // top rated tvShows datatable
+            $('.datatable-topRated').DataTable({
+                columnDefs: [{
+                    orderable: false,
+                    targets: [ 1, 5 ]
+                }]
+            });
+
+            // Cargar datos tabla popular
+            popularsTableLoad();
+            // Cargar datos tabla top rated
+            topRatedTableLoad();
+        });
+
+        // clear popular data
+        function popularsTableClear() {
+            $('#populars_table').DataTable().clear().draw();
+        }
+
+        // get populars data
+        function popularsTableLoad() {
+          console.log('popularsTableLoad');
+            $('#populars_table_panel').block({
+                message: '<i class="icon-spinner9 spinner"></i>',
+                overlayCSS: {
+                    backgroundColor: '#fff',
+                    opacity: 0.8,
+                    cursor: 'wait'
+                },
+                css: {
+                    border: 0,
+                    padding: 0,
+                    backgroundColor: 'none'
+                }
+            });
+            var i = 0;
+            @for(popular <- populars) {
+                i++;
+                var poster;
+                @if(popular.tvShow.poster != null){
+                    poster = "<img class='tvShowListPosterSmall img-responsive' src='http://@requestHeader.host@popular.tvShow.poster.substring(1)' />";
+                }else{
+                    poster = 'Sin poster';
+                }
+                popularsActions = '<button type="button" data-id="@popular.tvShow.id" data-action="view-tvShow" data-host="@requestHeader.host" class="btn btn-labeled btn-xs bg-blue-300 btn-action"><b><i class="icon-eye2"></i></b> Ver serie</button>';
+
+
+            var row = '';
+                row +=
+                    '<tr>' +
+                        '<td>' + i + '</td>' +
+                        '<td class="td-posterSmall">' + poster + '</td>' +
+                        '<td>' + "@popular.tvShow.name" + '</td>' +
+                        '<td>' + "@popular.getPopularity" + '</td>' +
+                        '<td>' + "@popular.getTrend" + '</td>' +
+                        '<td style="text-align: center;" id="status-@popular.tvShow.id">' + popularsActions + '</td>' +
+                    '<tr>';
+
+
+                // añadir fila a la tabla
+                $('#populars_table').DataTable().row.add($(row)).draw();
+            }
+            $('#populars_table_panel').unblock();
+
+        }
+
+        // top rated tv shows
+
+        // clear topRated data
+        function topRatedTableClear() {
+            $('#topRated_table').DataTable().clear().draw();
+        }
+
+        // load top rated  data
+        function topRatedTableLoad() {
+            $('#topRated_table_panel').block({
+                message: '<i class="icon-spinner9 spinner"></i>',
+                overlayCSS: {
+                    backgroundColor: '#fff',
+                    opacity: 0.8,
+                    cursor: 'wait'
+                },
+                css: {
+                    border: 0,
+                    padding: 0,
+                    backgroundColor: 'none'
+                }
+            });
+            var j = 0;
+            @for(tvShow <- topRated) {
+                j++;
+                var poster2;
+                @if(tvShow.poster != null){
+                    poster2 = "<img class='tvShowListPosterSmall img-responsive' src='http://@requestHeader.host@tvShow.poster.substring(1)' />";
+                }else{
+                    poster2 = 'Sin poster';
+                }
+                topRatedActions = '<button type="button" data-id="@tvShow.id" data-action="view-tvShow" data-host="@requestHeader.host" class="btn btn-labeled btn-xs bg-blue-300 btn-action"><b><i class="icon-eye2"></i></b> Ver serie</button>';
+                var row = '';
+                row +=
+                    '<tr>' +
+                        '<td>' + j + '</td>' +
+                        '<td class="td-posterSmall">' + poster2 + '</td>' +
+                        '<td>' + "@tvShow.name" + '</td>' +
+                        '<td>' + "@tvShow.score" + '</td>' +
+                        '<td>' + "@tvShow.voteCount" + '</td>' +
+                        '<td style="text-align: center;" id="status-@tvShow.id">' + topRatedActions + '</td>' +
+                    '<tr>';
+
+                // añadir fila a la tabla
+                $('#topRated_table').DataTable().row.add($(row)).draw();
+            }
+
+            $('#topRated_table_panel').unblock();
+        }
+
+    </script>
+}

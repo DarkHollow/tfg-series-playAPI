@@ -64,4 +64,5 @@ GET     /admin/login                        controllers.AdminController.loginVie
 GET     /admin                              controllers.AdminController.index
 GET     /admin/tvShows                      controllers.AdminController.tvShows
 GET     /admin/tvShows/:id                  controllers.AdminController.tvShow(id: Integer)
+GET     /admin/trending                     controllers.AdminController.trending
 GET     /admin/tvShowRequests               controllers.AdminController.tvShowRequests

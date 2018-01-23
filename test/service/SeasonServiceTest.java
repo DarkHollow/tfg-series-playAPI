@@ -2,10 +2,12 @@ package service;
 
 import models.Season;
 import models.TvShow;
+import models.User;
 import models.dao.SeasonDAO;
 import models.dao.TvShowDAO;
 import models.service.SeasonService;
 import models.service.TvShowService;
+import models.service.UserService;
 import models.service.external.ExternalUtils;
 import models.service.external.TmdbService;
 import models.service.external.TvdbService;
@@ -50,9 +52,10 @@ public class SeasonServiceTest {
     // inicializamos seasonService y demas
     SeasonDAO seasonDAO = new SeasonDAO(jpa);
     tvShowDAO = new TvShowDAO(jpa);
+    UserService userService = mock(UserService.class);
     TvdbService tvdbService = mock(TvdbService.class);
     TmdbService tmdbService = mock(TmdbService.class);
-    TvShowService tvShowService = new TvShowService(tvShowDAO, tvdbService, tmdbService);
+    TvShowService tvShowService = new TvShowService(tvShowDAO, userService, tvdbService, tmdbService);
     ExternalUtils externalUtils = new ExternalUtils();
     seasonService = new SeasonService(seasonDAO, tvShowService, tmdbService, externalUtils);
 

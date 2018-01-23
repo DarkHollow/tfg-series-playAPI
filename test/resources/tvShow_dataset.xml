@@ -33,4 +33,8 @@
     banner="graphical/81189-g21.jpg"  poster="posterBreakingBad.jpg"
     fanart="fanartBreakingBad.jpg" network="AMC" runtime="49" rating="TV-14"
     status="Ended" score="8" voteCount="2" />
+
+  <User id="1" email="email1" password="password1"
+        name="nombre1" registrationDate="2017-02-26" />
+
 </dataset>

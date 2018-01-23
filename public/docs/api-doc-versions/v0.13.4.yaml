@@ -1333,6 +1333,9 @@ definitions:
             voteCount:
               type: integer
               description: number of ratings
+            poster:
+              type: string
+              description: relative url of the poster image
             popularity:
               type: integer
               description: popular number
@@ -1368,12 +1371,9 @@ definitions:
             voteCount:
               type: integer
               description: number of ratings
-            popularity:
-              type: integer
-              description: popular number
-            trend:
-              type: number
-              description: trend of the popularity
+            poster:
+              type: string
+              description: relative url of the poster image
             top:
               type: integer
               description: position in the top rated TV Shows

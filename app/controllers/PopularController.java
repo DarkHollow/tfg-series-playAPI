@@ -64,6 +64,7 @@ public class PopularController extends Controller {
         // añadimos popularidad y tendencia de cada serie
         jsonNode.forEach((tvShow) -> {
           Popular popular = tvShowService.find(tvShow.get("id").asInt()).popular;
+          ((ObjectNode)tvShow).put("poster", popular.tvShow.poster);
           ((ObjectNode)tvShow).put("popularity", popular.getPopularity());
           ((ObjectNode)tvShow).put("trend", popular.getTrend());
         });

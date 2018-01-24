@@ -214,4 +214,8 @@ public class TvShowService {
     return (tvShow != null && user != null && tvShow.followingUsers.contains(user) && user.followedTvShows.contains(tvShow));
   }
 
+  public List<TvShow> getFollowingTvShows(Integer userId) {
+    return userService.find(userId).followedTvShows;
+  }
+
 }

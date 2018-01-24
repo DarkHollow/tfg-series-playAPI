@@ -447,8 +447,8 @@ public class TvShowController extends Controller {
       }
     } else {
       ObjectNode result = Json.newObject();
-      result.put("error", "It can't be processed");
-      return internalServerError(result);
+      result.put("error", "Not found");
+      return notFound(result);
     }
 
   }
@@ -468,8 +468,8 @@ public class TvShowController extends Controller {
       }
     } else {
       ObjectNode result = Json.newObject();
-      result.put("error", "It can't be processed");
-      return internalServerError(result);
+      result.put("error", "Not found");
+      return notFound(result);
     }
 
   }

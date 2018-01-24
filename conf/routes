@@ -41,6 +41,11 @@ GET     /api/tvshows/:tvShowId/rating       controllers.TvShowVoteController.get
 PUT     /api/tvshows/:tvShowId/rating       controllers.TvShowVoteController.voteTvShow(tvShowId: Integer)
 DELETE  /api/tvshows/:tvShowId/rating       controllers.TvShowVoteController.deleteTvShowVote(tvShowId: Integer)
 
+# TV Show Follow ------------------
+GET     /api/tvshows/:tvShowId/follow       controllers.TvShowController.followCheck(tvShowId: Integer)
+PUT     /api/tvshows/:tvShowId/follow       controllers.TvShowController.follow(tvShowId: Integer)
+DELETE  /api/tvshows/:tvShowId/follow       controllers.TvShowController.unfollow(tvShowId: Integer)
+
 # The TVDB API --------------------
 GET     /api/tvshows/tvdb/:tvdbId           controllers.TvdbController.tvShowById(tvdbId: Integer)
 

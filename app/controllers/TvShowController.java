@@ -433,4 +433,59 @@ public class TvShowController extends Controller {
 
   }
 
+  // seguir una serie
+  @Transactional
+  @Security.Authenticated(Roles.class)
+  public Result follow(Integer tvShowId) {
+    if (tvShowService.followTvShow(tvShowId, roles.getUser(Http.Context.current()).id)) {
+      try {
+        return noContent();
+      } catch (Exception ex) {
+        // si hubiese un error, devolver error interno
+        ObjectNode result = Json.newObject();
+        result.put("error", "It can't be processed");
+        return internalServerError(result);
+      }
+    } else {
+      ObjectNode result = Json.newObject();
+      result.put("error", "It can't be processed");
+      return internalServerError(result);
+    }
+
+  }
+
+  // dejar deseguir una serie
+  @Transactional
+  @Security.Authenticated(Roles.class)
+  public Result unfollow(Integer tvShowId) {
+    if (tvShowService.unfollowTvShow(tvShowId, roles.getUser(Http.Context.current()).id)) {
+      try {
+        return noContent();
+      } catch (Exception ex) {
+        // si hubiese un error, devolver error interno
+        ObjectNode result = Json.newObject();
+        result.put("error", "It can't be processed");
+        return internalServerError(result);
+      }
+    } else {
+      ObjectNode result = Json.newObject();
+      result.put("error", "It can't be processed");
+      return internalServerError(result);
+    }
+
+  }
+
+  // comprobar seguimiento de una serie
+  @Transactional
+  @Security.Authenticated(Roles.class)
+  public Result followCheck(Integer tvShowId) {
+    if (tvShowService.checkFollowTvShow(tvShowId, roles.getUser(Http.Context.current()).id)) {
+      return noContent();
+    } else {
+      ObjectNode result = Json.newObject();
+      result.put("error", "Not found");
+      return notFound(result);
+    }
+  }
+
 }

@@ -22,6 +22,8 @@ POST    /api/tvshows                        controllers.TvShowController.create
 # TV Show Popular and top rated
 GET     /api/tvshows/popular                controllers.PopularController.getPopular(size: Integer ?= -1)
 GET     /api/tvshows/toprated               controllers.TvShowController.getTopRated(size: Integer ?= -1)
+# TV Show Following
+GET     /api/tvshows/following              controllers.TvShowController.following()
 # --- URI pattern order ---
 
 GET     /api/tvshows/:id                    controllers.TvShowController.tvShowById(id: Integer)

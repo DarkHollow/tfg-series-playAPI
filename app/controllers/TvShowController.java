@@ -487,4 +487,42 @@ public class TvShowController extends Controller {
     }
   }
 
+  // devolver listado de ids de series que sigue el usuario identificado
+  @Transactional(readOnly = true)
+  @Security.Authenticated(Roles.class)
+  public Result following() {
+    List<TvShow> tvShows = tvShowService.getFollowingTvShows(roles.getUser(Http.Context.current()).id);
+    if (tvShows.isEmpty()) {
+      ObjectNode result = Json.newObject();
+      result.put("error", "Not found");
+      return notFound(result);
+    } else {
+      try {
+        JsonNode jsonNode = jsonUtils.jsonParseObject(tvShows, JsonViews.SearchTvShow.class);
+        ObjectNode objectNode = Json.newObject();
+        // añadimos popularidad y tendencia de cada serie
+        final Integer[] i = {0};
+        jsonNode.forEach((tvShow) -> {
+          i[0]++;
+          Popular popular = tvShowService.find(tvShow.get("id").asInt()).popular;
+          ((ObjectNode)tvShow).put("poster", popular.tvShow.poster);
+          ((ObjectNode)tvShow).put("top", i[0]);
+          // mostrar si el usuario identificado sigue la serie o no
+          ((ObjectNode)tvShow).put("following", tvShowService.checkFollowTvShow(tvShow.get("id").asInt(), roles.getUser(Http.Context.current()).id));
+        });
+        // añadimos tamaño
+        objectNode.put("size", tvShows.size());
+        // añadimos series
+        objectNode.set("tvShows", jsonNode);
+        return ok(objectNode);
+      } catch (Exception ex) {
+        // si hubiese un error, devolver error interno
+        Logger.debug(ex.getMessage());
+        ObjectNode result = Json.newObject();
+        result.put("error", "It can't be processed");
+        return internalServerError(result);
+      }
+    }
+  }
+
 }

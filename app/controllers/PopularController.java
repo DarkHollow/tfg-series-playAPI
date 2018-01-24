@@ -11,6 +11,7 @@ import play.Logger;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
 import utils.Security.Roles;
@@ -24,12 +25,15 @@ public class PopularController extends Controller {
   private final TvShowService tvShowService;
   private final PopularService popularService;
   private final utils.json.Utils jsonUtils;
+  private final Roles roles;
 
   @Inject
-  public PopularController(TvShowService tvShowService, PopularService popularService, utils.json.Utils jsonUtils) {
+  public PopularController(TvShowService tvShowService, PopularService popularService, utils.json.Utils jsonUtils,
+                           Roles roles) {
     this.tvShowService = tvShowService;
     this.popularService = popularService;
     this.jsonUtils = jsonUtils;
+    this.roles = roles;
   }
 
   // devolver las series más populares
@@ -67,6 +71,7 @@ public class PopularController extends Controller {
           ((ObjectNode)tvShow).put("poster", popular.tvShow.poster);
           ((ObjectNode)tvShow).put("popularity", popular.getPopularity());
           ((ObjectNode)tvShow).put("trend", popular.getTrend());
+          ((ObjectNode)tvShow).put("following", tvShowService.checkFollowTvShow(tvShow.get("id").asInt(), roles.getUser(Http.Context.current()).id));
         });
         // añadimos tamaño
         objectNode.put("size", tvShows.size());

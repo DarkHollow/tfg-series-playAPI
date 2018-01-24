@@ -194,4 +194,20 @@ public class TvShowServiceTest {
     });
   }
 
+  @Test
+  public void testTvShowServiceGetFollowedTvShowsByUser() {
+    jpa.withTransaction(() -> {
+      tvShowService.followTvShow(1, 1);
+      List<TvShow> tvShows = tvShowService.getFollowingTvShows(1);
+      assertEquals(1, tvShows.size());
+      tvShowService.followTvShow(2, 1);
+      tvShows = tvShowService.getFollowingTvShows(1);
+      assertEquals(2, tvShows.size());
+      tvShowService.unfollowTvShow(1, 1);
+      tvShowService.unfollowTvShow(2, 1);
+      tvShows = tvShowService.getFollowingTvShows(1);
+      assertEquals(0, tvShows.size());
+    });
+  }
+
 }

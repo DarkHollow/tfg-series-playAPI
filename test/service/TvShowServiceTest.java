@@ -168,20 +168,20 @@ public class TvShowServiceTest {
 
   // testeamos top series mejor valoradas y orden
   @Test
-  public void testTvShowVoteServiceTopRatedTvShows() {
+  public void testTvShowServiceTopRatedTvShows() {
     List<TvShow> topRated = jpa.withTransaction(() -> tvShowService.getTopRatedTvShows(5));
     assertEquals(2, topRated.size());
     assertEquals(2, (int) topRated.get(0).id);
   }
 
   @Test
-  public void testTvShowVoteServiceFollowTvShow() {
+  public void testTvShowServiceFollowTvShow() {
     assertTrue(jpa.withTransaction(() -> tvShowService.followTvShow(1, 1)));
     jpa.withTransaction(() -> tvShowService.unfollowTvShow(1, 1));
   }
 
   @Test
-  public void testTvShowVoteServiceUnfollowTvShow() {
+  public void testTvShowServiceUnfollowTvShow() {
     jpa.withTransaction(() -> {
       TvShow tvShow = tvShowService.find(1);
       assertEquals(0, tvShow.followingUsers.size());
@@ -191,6 +191,22 @@ public class TvShowServiceTest {
       assertTrue(tvShowService.unfollowTvShow(1, 1));
       tvShow = tvShowService.find(1);
       assertEquals(0, tvShow.followingUsers.size());
+    });
+  }
+
+  @Test
+  public void testTvShowServiceGetFollowedTvShowsByUser() {
+    jpa.withTransaction(() -> {
+      tvShowService.followTvShow(1, 1);
+      List<TvShow> tvShows = tvShowService.getFollowingTvShows(1);
+      assertEquals(1, tvShows.size());
+      tvShowService.followTvShow(2, 1);
+      tvShows = tvShowService.getFollowingTvShows(1);
+      assertEquals(2, tvShows.size());
+      tvShowService.unfollowTvShow(1, 1);
+      tvShowService.unfollowTvShow(2, 1);
+      tvShows = tvShowService.getFollowingTvShows(1);
+      assertEquals(0, tvShows.size());
     });
   }
 

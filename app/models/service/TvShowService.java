@@ -208,4 +208,10 @@ public class TvShowService {
     }
   }
 
+  public Boolean checkFollowTvShow(Integer tvShowId, Integer userId) {
+    TvShow tvShow = find(tvShowId);
+    User user = userService.find(userId);
+    return (tvShow != null && user != null && tvShow.followingUsers.contains(user) && user.followedTvShows.contains(tvShow));
+  }
+
 }

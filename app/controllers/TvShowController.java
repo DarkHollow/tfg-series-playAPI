@@ -489,4 +489,17 @@ public class TvShowController extends Controller {
 
   }
 
+  // comprobar seguimiento de una serie
+  @Transactional
+  @Security.Authenticated(Roles.class)
+  public Result followCheck(Integer tvShowId) {
+    if (tvShowService.checkFollowTvShow(tvShowId, roles.getUser(Http.Context.current()).id)) {
+      return noContent();
+    } else {
+      ObjectNode result = Json.newObject();
+      result.put("error", "Not found");
+      return notFound(result);
+    }
+  }
+
 }

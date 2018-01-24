@@ -149,7 +149,7 @@ public class TvShowController extends Controller {
       // contar numero episodio por temporada
       jsonNode.withArray("seasons").forEach(season -> ((ObjectNode)season).put("episodeCount", seasonService.getSeasonByNumber(tvShow, season.get("seasonNumber").asInt()).episodes.size()));
       // mostrar si el usuario identificado sigue la serie o no
-      ((ObjectNode) jsonNode).put("following", tvShow.followingUsers.stream().anyMatch(user -> roles.getUsername(Http.Context.current()).equals(user.email)));
+      ((ObjectNode) jsonNode).put("following", tvShowService.checkFollowTvShow(tvShow.id, roles.getUser(Http.Context.current()).id));
       // mostramos popularity
       ((ObjectNode) jsonNode).put("popularity", popularity);
       // mostramos trend
@@ -414,8 +414,7 @@ public class TvShowController extends Controller {
           ((ObjectNode)tvShow).put("poster", popular.tvShow.poster);
           ((ObjectNode)tvShow).put("top", i[0]);
           // mostrar si el usuario identificado sigue la serie o no
-          TvShow tvShow1 = tvShowService.find(tvShow.get("id").asInt());
-          ((ObjectNode)tvShow).put("following", tvShow1.followingUsers.stream().anyMatch(user -> roles.getUsername(Http.Context.current()).equals(user.email)));
+          ((ObjectNode)tvShow).put("following", tvShowService.checkFollowTvShow(tvShow.get("id").asInt(), roles.getUser(Http.Context.current()).id));
         });
         // añadimos tamaño
         objectNode.put("size", topRated.size());

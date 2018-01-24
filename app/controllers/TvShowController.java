@@ -437,13 +437,6 @@ public class TvShowController extends Controller {
   @Transactional
   @Security.Authenticated(Roles.class)
   public Result follow(Integer tvShowId) {
-    TvShow tvShow = tvShowService.find(tvShowId);
-    if (tvShow == null) {
-      ObjectNode result = Json.newObject();
-      result.put("error", "Not found");
-      return notFound(result);
-    }
-
     if (tvShowService.followTvShow(tvShowId, roles.getUser(Http.Context.current()).id)) {
       try {
         return noContent();
@@ -465,13 +458,6 @@ public class TvShowController extends Controller {
   @Transactional
   @Security.Authenticated(Roles.class)
   public Result unfollow(Integer tvShowId) {
-    TvShow tvShow = tvShowService.find(tvShowId);
-    if (tvShow == null) {
-      ObjectNode result = Json.newObject();
-      result.put("error", "Not found");
-      return notFound(result);
-    }
-
     if (tvShowService.unfollowTvShow(tvShowId, roles.getUser(Http.Context.current()).id)) {
       try {
         return noContent();

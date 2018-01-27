@@ -1,5 +1,6 @@
 import actors.PopularActor;
 import actors.TvdbActor;
+import actors.TwitterActor;
 import com.google.inject.AbstractModule;
 import models.service.external.TmdbConnection;
 import models.service.external.TvdbConnection;
@@ -36,6 +37,9 @@ public class Module extends AbstractModule implements AkkaGuiceSupport {
 
         // bindeamos el actor de Populars
         bindActor(PopularActor.class, "PopularActor");
+
+        // bindeamos el actor de TwitterService
+        bindActor(TwitterActor.class, "TwitterActor");
     }
 
 }

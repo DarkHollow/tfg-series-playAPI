@@ -45,7 +45,8 @@ public class PopularService {
 
   // Get top 30 popular for twitter
   public List<Popular> getTwitterPopular() {
-    return getPopularSize(30);
+    return getPopularSize(30).stream().sorted(Comparator.comparing((Popular popular) -> popular.tvShow.twitterRatio)
+    .thenComparing(Popular::getPopularity).reversed()).collect(Collectors.toList());
   }
 
   // Delete por id

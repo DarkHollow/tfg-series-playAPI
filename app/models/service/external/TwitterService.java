@@ -46,8 +46,6 @@ public class TwitterService {
 
         Double diferencia = new Long(primero.getTime() - ultimo.getTime()).doubleValue();
         Double difHoras = diferencia / (60 * 60 * 1000);
-        Double tweetsHora = tweets.size() / difHoras;
-        Logger.debug("Tweets por hora de: #" + hashtag + ": " + tweetsHora);
 
         // guardar en fichero
         /*
@@ -57,7 +55,7 @@ public class TwitterService {
           System.out.println(ex.getMessage());
         }
         */
-        return tweetsHora;
+        return tweets.size() / difHoras;
       }
 
     } catch (TwitterException te) {

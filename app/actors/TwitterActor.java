@@ -38,16 +38,14 @@ public class TwitterActor extends UntypedActor {
   @Override
   @Transactional
   public void onReceive(Object msg) throws Exception {
-    // sea el mensaje que sea, llamar a check
-
-    Logger.info("Actor TwitterService - getting ratios");
+    // sea el mensaje que sea
     jpa.withTransaction(() -> {
       List<Popular> populars = popularService.getTwitterPopular();
       populars.forEach(popular -> {
         popular.tvShow.twitterRatio = twitterService.getRatio(popular.tvShow.name.replaceAll("\\s", ""));
       });
     });
-    Logger.info("Actor TwitterService - getting ratios terminado");
+    Logger.info("Actor TwitterService - ratios actualizados");
   }
 
 }

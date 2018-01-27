@@ -25,8 +25,8 @@ public class PopularService {
     return popularDAO.create(popular);
   }
 
-  // Get top 10 popular
-  public List<Popular> getPopular(Integer size) {
+  // Get top popular by size
+  private List<Popular> getPopularSize(Integer size) {
     List<Popular> populars = popularDAO.all().stream().sorted(Comparator.comparing(Popular::getPopularity).reversed()).collect(Collectors.toList());
     populars.removeIf(popular -> popular.getPopularity() == 0);
     if (populars.isEmpty()) {
@@ -36,6 +36,16 @@ public class PopularService {
     } else {
       return populars.subList(0, size);
     }
+  }
+
+  // Get top 1-10 popular
+  public List<Popular> getPopular(Integer size) {
+    return getPopularSize(size);
+  }
+
+  // Get top 30 popular for twitter
+  public List<Popular> getTwitterPopular() {
+    return getPopularSize(30);
   }
 
   // Delete por id

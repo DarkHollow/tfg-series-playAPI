@@ -1,6 +1,7 @@
 package models.service;
 
 import com.google.inject.Inject;
+import models.Popular;
 import models.TvShow;
 import models.User;
 import models.dao.TvShowDAO;
@@ -11,6 +12,7 @@ import play.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -216,6 +218,14 @@ public class TvShowService {
 
   public List<TvShow> getFollowingTvShows(Integer userId) {
     return userService.find(userId).followedTvShows;
+  }
+
+  public List<TvShow> getTvShowsFromPopulars(List<Popular> populars) {
+    List<TvShow> tvShows = new ArrayList<>();
+    populars.forEach(popular -> {
+      tvShows.add(popular.tvShow);
+    });
+    return tvShows;
   }
 
 }

@@ -106,6 +106,7 @@ public class TvShow {
   @JsonIgnore
   public List<User> followingUsers;
 
+  @JsonIgnore
   public Double twitterRatio;
 
   // constructor vacio

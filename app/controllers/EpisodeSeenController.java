@@ -76,4 +76,88 @@ public class EpisodeSeenController extends Controller {
     }
   }
 
+  // marcar un episodio como visto
+  @Transactional
+  @Security.Authenticated(User.class)
+  public Result setEpisodeSeen(Integer tvShowId, Integer seasonNumber, Integer episodeNumber) {
+    ObjectNode result = Json.newObject();
+
+    // obtenemos el usuario identificado
+    models.User user = userService.findByEmail(request().username());
+
+    if (tvShowId != null && seasonNumber != null && episodeNumber != null && user != null) {
+      TvShow tvShow = tvShowService.find(tvShowId);
+      if (tvShow != null) {
+        EpisodeSeen episodeSeen = episodeSeenService.setEpisodeAsSeen(tvShow, seasonNumber, episodeNumber, user.id);
+        if (episodeSeen != null) {
+          // devolvemos los datos
+          ObjectNode episodeSeenJSON = Json.newObject();
+          episodeSeenJSON.put("date", episodeSeen.date.toString());
+          result.put("ok", "seen episode");
+          result.set("episodeSeen", episodeSeenJSON);
+          return ok(result);
+        } else {
+          // no se ha podido marcar como visto, objetos no encontrados
+          result.put("error", "not found");
+          return notFound(result);
+        }
+      } else {
+        // serie no encontrada
+        result.put("error", "tv show not found");
+        return notFound(result);
+      }
+    } else {
+      result.put("error", "invalid parameters");
+      return badRequest(result);
+    }
+  }
+
+  /*
+  // Acción de borrar votación
+  @Transactional
+  @Security.Authenticated(User.class)
+  public Result deleteEpisodeSeen(Integer tvShowId) {
+    ObjectNode result = Json.newObject();
+
+    // obtenemos el usuario identificado
+    models.User user = userService.findByEmail(request().username());
+
+    if (tvShowId != null && user != null) {
+      // comprobamos si existe una votación del usuario identificado a esta serie
+      EpisodeSeen episodeSeen;
+      episodeSeen = episodeSeenService.findByTvShowIdUserId(tvShowId, user.id);
+      if (episodeSeen != null) {
+        // actualizar score de borrado
+        if (episodeSeenService.updateDeletedScore(episodeSeen)) {
+          // intentar eliminar votación
+          if (deleteVote(episodeSeen.id)) {
+            result.put("ok", "vote deleted");
+            return ok(result);
+          } else {
+            Logger.error("EpisodeSeenService.deleteEpisodeSeen - EpisodeSeen no borrado");
+            result.put("error", "data updated (warning: vote not deleted");
+            return internalServerError(result);
+          }
+        } else {
+          // no se ha podido actualizar datos
+          result.put("error", "score cannot be updated (vote not deleted)");
+          return ok(result);
+        }
+      } else {
+        // la votación no existe, nada que borrar
+        result.put("error", "logged user didn't vote this tv show");
+        result.put("mensaje", "No has votado esta serie");
+        return notFound(result);
+      }
+    } else {
+      result.put("error", "user not valid or tvShowId null/not number");
+      return badRequest(result);
+    }
+  }
+
+  @Transactional
+  private Boolean deleteVote(Integer id) {
+    return episodeSeenService.delete(id);
+  }
+*/
 }

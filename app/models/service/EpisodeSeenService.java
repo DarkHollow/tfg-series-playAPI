@@ -1,7 +1,9 @@
 package models.service;
 
 import com.google.inject.Inject;
+import models.Episode;
 import models.EpisodeSeen;
+import models.TvShow;
 import models.User;
 import models.dao.EpisodeSeenDAO;
 import play.Logger;
@@ -85,6 +87,25 @@ public class EpisodeSeenService {
     } else {
       Logger.debug("No existe?");
       return false;
+    }
+  }
+
+  public EpisodeSeen setEpisodeAsSeen(TvShow tvShow, Integer seasonNumber, Integer episodeNumber, Integer userId) {
+    Episode episode = episodeService.getEpisodeByNumber(tvShow, seasonNumber, episodeNumber);
+    User user = userService.find(userId);
+
+    if (tvShow != null && user != null && episode != null) {
+      EpisodeSeen oldEpisodeSeen = findByEpisodeIdUserId(episode.id, userId);
+
+      if (oldEpisodeSeen == null) {
+        EpisodeSeen newEpisodeSeen = new EpisodeSeen(user, episode, new Date());
+        newEpisodeSeen = create(newEpisodeSeen);
+        return newEpisodeSeen;
+      } else {
+        return oldEpisodeSeen;
+      }
+    } else {
+      return null;
     }
   }
 

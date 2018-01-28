@@ -48,6 +48,11 @@ public class User {
     inverseJoinColumns = @JoinColumn(name = "tvShowId"))
   public List<TvShow> followedTvShows;
 
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonManagedReference
+  @JsonIgnore
+  public List<EpisodeSeen> episodesSeen;
+
   // constructor vacío
   public User() {
     rol = "u";

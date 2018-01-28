@@ -21,12 +21,10 @@ public class EpisodeDAO {
 
   // Create
   public Episode create(Episode episode) throws ConstraintViolationException {
-    Logger.info("Persistencia - intentando crear episode: " + episode.season.tvShow.name + " - Temporada " +
-                    episode.season.seasonNumber  + " Episodio " + episode.episodeNumber);
     jpa.em().persist(episode);
     jpa.em().flush();
     jpa.em().refresh(episode);
-    Logger.info("Persistencia - episode añadido: " + episode.season.tvShow.name + " - Temporada " +
+    Logger.info("Persistencia - Episodio creado: " + episode.season.tvShow.name + " - Temporada " +
             episode.season.seasonNumber  + " Episodio " + episode.episodeNumber);
     return episode;
   }

@@ -5,6 +5,7 @@ import models.*;
 import models.dao.EpisodeSeenDAO;
 import play.Logger;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -191,6 +192,20 @@ public class EpisodeSeenService {
       result = false;
     }
     return result;
+  }
+
+  public List<EpisodeSeen> getSeasonEpisodesSeen(Season season, Integer userId) {
+    List<EpisodeSeen> episodesSeen = new ArrayList<>();
+    Integer result = 0;
+    if (season != null) {
+      for (Episode episode : season.episodes) {
+        EpisodeSeen episodeSeen = findByEpisodeIdUserId(episode.id, userId);
+        if (episodeSeen != null) {
+          episodesSeen.add(episodeSeen);
+        }
+      }
+    }
+    return episodesSeen;
   }
 
 }

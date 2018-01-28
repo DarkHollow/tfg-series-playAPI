@@ -3,9 +3,13 @@ package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
+import models.EpisodeSeen;
 import models.Popular;
+import models.Season;
 import models.TvShow;
+import models.service.EpisodeSeenService;
 import models.service.PopularService;
+import models.service.SeasonService;
 import models.service.TvShowService;
 import play.Logger;
 import play.db.jpa.Transactional;
@@ -24,14 +28,18 @@ public class PopularController extends Controller {
 
   private final TvShowService tvShowService;
   private final PopularService popularService;
+  private final SeasonService seasonService;
+  private final EpisodeSeenService episodeSeenService;
   private final utils.json.Utils jsonUtils;
   private final Roles roles;
 
   @Inject
-  public PopularController(TvShowService tvShowService, PopularService popularService, utils.json.Utils jsonUtils,
-                           Roles roles) {
+  public PopularController(TvShowService tvShowService, PopularService popularService, SeasonService seasonService,
+                           EpisodeSeenService episodeSeenService, utils.json.Utils jsonUtils, Roles roles) {
     this.tvShowService = tvShowService;
     this.popularService = popularService;
+    this.seasonService = seasonService;
+    this.episodeSeenService = episodeSeenService;
     this.jsonUtils = jsonUtils;
     this.roles = roles;
   }
@@ -63,7 +71,7 @@ public class PopularController extends Controller {
           tvShows.add(popular.tvShow);
         }
 
-        JsonNode jsonNode = jsonUtils.jsonParseObject(tvShows, JsonViews.SearchTvShow.class);
+        JsonNode jsonNode = jsonUtils.jsonParseObject(tvShows, JsonViews.FullTvShow.class);
         ObjectNode objectNode = Json.newObject();
         // añadimos popularidad y tendencia de cada serie
         jsonNode.forEach((tvShow) -> {
@@ -71,7 +79,47 @@ public class PopularController extends Controller {
           ((ObjectNode)tvShow).put("poster", popular.tvShow.poster);
           ((ObjectNode)tvShow).put("popularity", popular.getPopularity());
           ((ObjectNode)tvShow).put("trend", popular.getTrend());
-          ((ObjectNode)tvShow).put("following", tvShowService.checkFollowTvShow(tvShow.get("id").asInt(), roles.getUser(Http.Context.current()).id));
+          Boolean following = tvShowService.checkFollowTvShow(tvShow.get("id").asInt(), roles.getUser(Http.Context.current()).id);
+          ((ObjectNode)tvShow).put("following", following);
+          // si el usuario sigue la serie, comprobar cuántos episodio de cada temporada no ha visto
+          if (following) {
+            Integer totalEpisodes = 0;
+            Integer totalSeenEpisodes = 0;
+            for (JsonNode season : tvShow.withArray("seasons")) {
+
+              Integer seasonEpisodesCount = 0;
+              Integer seasonSeenEpisodesCount = 0;
+
+              Season seasonObject = seasonService.getSeasonByNumber(tvShowService.find(tvShow.get("id").asInt()), season.get("seasonNumber").asInt());
+              if (seasonObject != null) {
+                seasonEpisodesCount = seasonObject.episodes.size();
+                seasonSeenEpisodesCount = episodeSeenService.getSeasonEpisodesSeen(seasonObject, roles.getUser(Http.Context.current()).id).size();
+              }
+              totalEpisodes += seasonEpisodesCount;
+              totalSeenEpisodes += seasonSeenEpisodesCount;
+            }
+            // mostrar en la serie numero de episodio total, numero de episodios vistos total y numero de episodio no vistos total
+            ((ObjectNode) tvShow).put("episodeCount", totalEpisodes);
+            ((ObjectNode) tvShow).put("seenCount", totalSeenEpisodes);
+            ((ObjectNode) tvShow).put("unSeenCount", totalEpisodes - totalSeenEpisodes);
+          }
+          // por ultimo, borrar los campos innecesarios que han sido necesarios poner para calcular...
+          // TODO: mejorar todo esto !
+          ((ObjectNode) tvShow).remove("tvdbId");
+          ((ObjectNode) tvShow).remove("tmdbId");
+          ((ObjectNode) tvShow).remove("overview");
+          ((ObjectNode) tvShow).remove("banner");
+          ((ObjectNode) tvShow).remove("fanart");
+          ((ObjectNode) tvShow).remove("network");
+          ((ObjectNode) tvShow).remove("runtime");
+          ((ObjectNode) tvShow).remove("genre");
+          ((ObjectNode) tvShow).remove("rating");
+          ((ObjectNode) tvShow).remove("status");
+          ((ObjectNode) tvShow).remove("tvShowVotes");
+          ((ObjectNode) tvShow).remove("seasons");
+          ((ObjectNode) tvShow).remove("rating");
+          ((ObjectNode) tvShow).remove("rating");
+          ((ObjectNode) tvShow).remove("rating");
         });
         // añadimos tamaño
         objectNode.put("size", tvShows.size());

@@ -5,9 +5,39 @@ TFG - Series playAPI
 Branches
 ========
 
-## master [![Build Status](https://travis-ci.org/DarkHollow/tfg-series-playAPI.svg?branch=master)](https://travis-ci.org/DarkHollow/tfg-series-playAPI) [![Version](https://img.shields.io/badge/release-v0.10.0-blue.svg?ts=1)](https://github.com/DarkHollow/tfg-series-playAPI/releases/tag/v0.10.0) [![Documentation](https://img.shields.io/badge/doc-v0.10.0-green.svg?ts=1)](#documentation)
+## master [![Build Status](https://travis-ci.org/DarkHollow/tfg-series-playAPI.svg?branch=master)](https://travis-ci.org/DarkHollow/tfg-series-playAPI) [![Version](https://img.shields.io/badge/release-v1.0.0-blue.svg?ts=1)](https://github.com/DarkHollow/tfg-series-playAPI/releases/tag/v1.0.0) [![Documentation](https://img.shields.io/badge/doc-v1.0.0-green.svg?ts=1)](#documentation)
 
-##### Actual version `v0.10.0`
+##### Version `v1.0.0`
+
+[![Release](https://darkhollow.github.io/tfg-series-playAPI/rocket.svg) v1.0.0](https://github.com/DarkHollow/tfg-series-playAPI/releases/tag/v1.0.0)
+Including:
+
+- Seasons
+  - Obtain all seasons of a TV Show
+  - See seasons information including: poster, name, number, overview, etc.
+- Episodes
+  - Obtain all episodes of a TV Show seasons
+  - See episodes information including: screenshot, name, number, overview, etc.
+- Popular
+  - Track all the TV Shows visits
+  - Get lists with most visited TV Shows
+  - Get lists with most rated TV Shows
+- Following
+  - Following/unfollowing TV Shows
+  - My TV Shows list
+- Twitter trending
+  - Get a tweet/hour ratio of the most popular TV Shows in the system
+  - Get a list of top Twitter ratio TV Shows
+- Seen episodes
+  - Set episodes as seen for tracking TV Shows
+  - Enought data to develop a complete tracking system
+- Technical changes
+  - Inheritance implementations to reduce code
+  - Many improvements and code enhacements
+  - Many improvements of API responses (work in progress)
+
+
+##### Version `v0.10.0`
 [![Release](https://darkhollow.github.io/tfg-series-playAPI/rocket.svg) v0.10.0](https://github.com/DarkHollow/tfg-series-playAPI/releases/tag/v0.10.0)
 Including:
 - Register and login

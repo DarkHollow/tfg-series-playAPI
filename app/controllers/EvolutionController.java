@@ -5,37 +5,31 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
-import json.TvShowViews;
+import utils.json.JsonViews;
 import models.Evolution;
-import models.TvShow;
-import models.TvShowRequest;
 import models.service.EvolutionService;
-import models.service.TvShowRequestService;
-import models.service.TvShowService;
-import models.service.UserService;
 import play.Logger;
 import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
-import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
 import utils.Security.Administrator;
-import views.html.administration.index;
-import views.html.administration.login;
 
 import java.util.List;
 
 public class EvolutionController extends Controller {
   private final EvolutionService evolutionService;
   private final FormFactory formFactory;
+  private final utils.json.Utils jsonUtils;
 
   @Inject
-  public EvolutionController(EvolutionService evolutionService, FormFactory formFactory) {
+  public EvolutionController(EvolutionService evolutionService, FormFactory formFactory, utils.json.Utils jsonUtils) {
     this.evolutionService = evolutionService;
     this.formFactory = formFactory;
+    this.jsonUtils = jsonUtils;
   }
 
   @Transactional(readOnly = true)
@@ -58,9 +52,7 @@ public class EvolutionController extends Controller {
     // todas la evolutions
     List<Evolution> allEvolutions = evolutionService.all();
     try {
-      JsonNode jsonNode = Json.parse(new ObjectMapper()
-              .writerWithView(TvShowViews.FullTvShow.class)
-              .writeValueAsString(allEvolutions));
+      JsonNode jsonNode = jsonUtils.jsonParseObject(allEvolutions, JsonViews.FullTvShow.class);
       result.set("evolutions", jsonNode);
     } catch (Exception ex) {
       Logger.error("Cannot parse evolutions object");
@@ -111,7 +103,7 @@ public class EvolutionController extends Controller {
   @Security.Authenticated(Administrator.class)
     public Result applyEvolutionJSON() {
     ObjectNode result = Json.newObject();
-    Integer evolutionId = null;
+    Integer evolutionId;
 
     // obtenemos datos de la evolution a aplicar de la petición post
     DynamicForm requestForm = formFactory.form().bindFromRequest();

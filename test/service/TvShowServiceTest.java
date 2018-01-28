@@ -2,7 +2,10 @@ package service;
 
 import models.TvShow;
 import models.dao.TvShowDAO;
+import models.dao.UserDAO;
 import models.service.TvShowService;
+import models.service.UserService;
+import models.service.external.TmdbService;
 import models.service.external.TvdbService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
@@ -13,6 +16,7 @@ import play.db.Database;
 import play.db.Databases;
 import play.db.jpa.JPA;
 import play.db.jpa.JPAApi;
+import utils.Security.Password;
 
 import java.io.FileInputStream;
 import java.util.Date;
@@ -42,8 +46,12 @@ public class TvShowServiceTest {
   @Before
   public void initData() throws Exception {
     TvShowDAO tvShowDAO = new TvShowDAO(jpa);
+    UserDAO userDAO = new UserDAO(jpa);
+    Password password = mock(Password.class);
+    UserService userService = new UserService(userDAO, password);
     TvdbService tvdbService = mock(TvdbService.class);
-    tvShowService = new TvShowService(tvShowDAO, tvdbService);
+    TmdbService tmdbService = mock(TmdbService.class);
+    tvShowService = new TvShowService(tvShowDAO, userService, tvdbService, tmdbService);
 
     databaseTester = new JndiDatabaseTester("DefaultDS");
     IDataSet initialDataSet = new FlatXmlDataSetBuilder().build(new
@@ -74,9 +82,9 @@ public class TvShowServiceTest {
   // testeamos crear una tv show
   @Test
   public void testTvShowServiceCreate() {
-    TvShow tvShow1 = new TvShow(3, "tvdbId", "Stranger Things", new Date(), "Descripción",
-      "banner.jpg", "poster.jpg", "fanart.jpg", "Network", "45", null, "TV-14",
-      TvShow.Status.Continuing, (float)9.0, 10);
+    TvShow tvShow1 = new TvShow(3, "imdbId", 66732, "Stranger Things", new Date(), "Descripción",
+            "banner.jpg", "poster.jpg", "fanart.jpg", "Network", "45", null, "TV-14",
+            TvShow.Status.Continuing, (float)9.0, 10);
 
     TvShow tvShow2 = jpa.withTransaction(() -> tvShowService.create(tvShow1));
     assertEquals(tvShow1, tvShow2);
@@ -156,6 +164,50 @@ public class TvShowServiceTest {
   public void testTvShowServiceDeleteNotFound() {
     Boolean borrado = jpa.withTransaction(() -> tvShowService.delete(0));
     assertFalse(borrado);
+  }
+
+  // testeamos top series mejor valoradas y orden
+  @Test
+  public void testTvShowServiceTopRatedTvShows() {
+    List<TvShow> topRated = jpa.withTransaction(() -> tvShowService.getTopRatedTvShows(5));
+    assertEquals(2, topRated.size());
+    assertEquals(2, (int) topRated.get(0).id);
+  }
+
+  @Test
+  public void testTvShowServiceFollowTvShow() {
+    assertTrue(jpa.withTransaction(() -> tvShowService.followTvShow(1, 1)));
+    jpa.withTransaction(() -> tvShowService.unfollowTvShow(1, 1));
+  }
+
+  @Test
+  public void testTvShowServiceUnfollowTvShow() {
+    jpa.withTransaction(() -> {
+      TvShow tvShow = tvShowService.find(1);
+      assertEquals(0, tvShow.followingUsers.size());
+      assertTrue(tvShowService.followTvShow(1, 1));
+      tvShow = tvShowService.find(1);
+      assertEquals(1, tvShow.followingUsers.size());
+      assertTrue(tvShowService.unfollowTvShow(1, 1));
+      tvShow = tvShowService.find(1);
+      assertEquals(0, tvShow.followingUsers.size());
+    });
+  }
+
+  @Test
+  public void testTvShowServiceGetFollowedTvShowsByUser() {
+    jpa.withTransaction(() -> {
+      tvShowService.followTvShow(1, 1);
+      List<TvShow> tvShows = tvShowService.getFollowingTvShows(1);
+      assertEquals(1, tvShows.size());
+      tvShowService.followTvShow(2, 1);
+      tvShows = tvShowService.getFollowingTvShows(1);
+      assertEquals(2, tvShows.size());
+      tvShowService.unfollowTvShow(1, 1);
+      tvShowService.unfollowTvShow(2, 1);
+      tvShows = tvShowService.getFollowingTvShows(1);
+      assertEquals(0, tvShows.size());
+    });
   }
 
 }

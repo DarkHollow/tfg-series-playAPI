@@ -15,6 +15,7 @@ libraryDependencies ++= Seq(
   "org.mockito" % "mockito-core" % "2.7.5",
   "com.auth0" % "java-jwt" % "3.1.0",
   "commons-io" % "commons-io" % "2.5",
+  "org.twitter4j" % "twitter4j-core" % "[4.0.4,)",
   javaJdbc,
   cache,
   javaWs,

@@ -7,14 +7,14 @@ import utils.Security.Password;
 import static org.junit.Assert.*;
 
 public class SecurityPasswordTest {
-  private final String GOOD_PASSWORD = "123456";
-  private final String GOOD_PASSWORD_HASH = "sha1:64000:18:4lQrF5gzo3z+l6tsmdAuODQRmo6hGt0N:1wGzUmfWiwh2DUrPUhactIUJ";
-  private final String INVALID_SECTIONS_HASH = "sha1:64000:18:4lQrF5gzo3z+l6tsmdAuODQRmo6hGt0N";
-  private final String INVALID_TYPE_HASH = "sha2:64000:18:4lQrF5gzo3z+l6tsmdAuODQRmo6hGt0N:1wGzUmfWiwh2DUrPUhactIUJ";
-  private final String INVALID_ITERATION_HASH = "sha1:hola:18:4lQrF5gzo3z+l6tsmdAuODQRmo6hGt0N:1wGzUmfWiwh2DUrPUhactIUJ";
-  private final String INVALID_ITERATION_NUMBER_HASH = "sha1:0:18:4lQrF5gzo3z+l6tsmdAuODQRmo6hGt0N:1wGzUmfWiwh2DUrPUhactIUJ";
-  private final String INVALID_SECTION_SIZE_HASH = "sha1:64000:hola:4lQrF5gzo3z+l6tsmdAuODQRmo6hGt0N:1wGzUmfWiwh2DUrPUhactIUJ";
-  private final String INVALID_SIZE_HASH = "sha1:64000:18:4lQrF5gzo3z+l6tsmdAuODQRmo6hGt0N:1wGzUmfWiwhASDFASDFASDF2DUrPUhactIUJ";
+  private final String GOOD_PASSWORD = "BA3253876AED6BC22D4A6FF53D8406C6AD864195ED144AB5C87621B6C233B548BAEAE6956DF346EC8C17F5EA10F35EE3CBC514797ED7DDD3145464E2A0BAB413".toLowerCase();
+  private final String GOOD_PASSWORD_HASH = "sha512:64000:18:qJVfoLXprJGWy+Fmi2QqCqTmptxWWLT3:MtMGf4sQHQ7hqfQbX3iW5klV";
+  private final String INVALID_SECTIONS_HASH = "sha512:64000:18:qJVfoLXprJGWy+Fmi2QqCqTmptxWWLT3";
+  private final String INVALID_TYPE_HASH = "sha99:64000:18:qJVfoLXprJGWy+Fmi2QqCqTmptxWWLT3:MtMGf4sQHQ7hqfQbX3iW5klV";
+  private final String INVALID_ITERATION_HASH = "sha512:hola:18:qJVfoLXprJGWy+Fmi2QqCqTmptxWWLT3:MtMGf4sQHQ7hqfQbX3iW5klV";
+  private final String INVALID_ITERATION_NUMBER_HASH = "sha512:0:18:qJVfoLXprJGWy+Fmi2QqCqTmptxWWLT3:MtMGf4sQHQ7hqfQbX3iW5klV";
+  private final String INVALID_SECTION_SIZE_HASH = "sha512:64000:hola:qJVfoLXprJGWy+Fmi2QqCqTmptxWWLT3:MtMGf4sQHQ7hqfQbX3iW5klV";
+  private final String INVALID_SIZE_HASH = "sha512:64000:18:qJVfoLXprJGWy+Fmi2QqCqTmptxWWLT3:MtMGf4s_INVALIDO_QHQ7hqfQbX3iW5klV";
   private final String BAD_PASSWORD = "111111";
 
   private Password securityPassword = new Password();

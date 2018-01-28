@@ -7,14 +7,10 @@ import play.Logger;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSResponse;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletionStage;
@@ -25,22 +21,22 @@ import java.util.concurrent.TimeoutException;
 public class TvdbService {
 
   private final WSClient ws;
-  private final SimpleDateFormat df;
+  private final ExternalUtils externalUtils;
   private final TvdbConnection tvdbConnection;
 
   private static char SEPARATOR = File.separatorChar;
 
   @Inject
-  public TvdbService(WSClient ws, SimpleDateFormat df, TvdbConnection tvdbConnection) {
+  public TvdbService(WSClient ws, ExternalUtils externalUtils, TvdbConnection tvdbConnection) {
     this.ws = ws;
-    this.df = df;
+    this.externalUtils = externalUtils;
     this.tvdbConnection = tvdbConnection;
   }
 
   // peticion a TVDB
   private JsonNode tvdbGetRequest(String query, String language)
           throws InterruptedException, ExecutionException, TimeoutException {
-    JsonNode result = null;
+    JsonNode result;
     int MAXTRIES = 2; // maximos intentos de refrescar token
     int count = 0;
 
@@ -90,28 +86,8 @@ public class TvdbService {
     return result;
   }
 
-  // descargar una imagen desde una url a un directorio local definido por tvdbId y tipo
-  private String downloadImage(URL url, String format, String path) {
-    BufferedImage image;
-    try {
-      // descargamos imagen
-      image = ImageIO.read(url);
-      File imageFile = new File(path);
-      // creamos carpetas
-      Boolean foldersCreated = imageFile.getParentFile().mkdirs();
-      Logger.info("Ruta creada: " + foldersCreated);
-      // guardamos imagen
-      ImageIO.write(image, format, imageFile);
-    } catch (Exception ex) {
-      Logger.error("Download Image - error descargando imagen");
-      return null;
-    }
-    return path;
-  }
-
   // obtener imagen por tvdbId y tipo
   public String getImage(TvShow tvShow, String type) {
-    Logger.info(tvShow.name + " - descargando " + type);
     String imageQuery = "https://api.thetvdb.com/series/" + tvShow.tvdbId.toString() + "/images/query?keyType=" + type;
 
     try {
@@ -120,26 +96,26 @@ public class TvdbService {
 
       if (images.size() > 1) {
         // seleccionamos la imagen mas votada
-        Integer bestRating = -1;
+        Double bestRating = -1.0;
         Integer moreRatings = -1;
 
         for (JsonNode image: images) {
-          Integer imageRating = image.get("ratingsInfo").get("average").asInt();
+          Double imageRating = image.get("ratingsInfo").get("average").asDouble();
           if (imageRating > bestRating) {
-            fileName = image.get("fileName").asText();
+            fileName = externalUtils.nullableString(image.get("fileName").asText());
             bestRating = imageRating;
           } else if (imageRating.equals(bestRating)) {
             // si tienen la misma puntuacion, cogemos la que mas votaciones lleve
             Integer imageRatings = image.get("ratingsInfo").get("count").asInt();
             if (imageRatings > moreRatings) {
-              fileName = image.get("fileName").asText();
+              fileName = externalUtils.nullableString(image.get("fileName").asText());
               moreRatings = imageRatings;
             }
           }
         }
       } else if (images.size() == 1) {
         // solo hay una imagen, la cogemos
-        fileName = images.get(0).get("fileName").asText();
+        fileName = externalUtils.nullableString(images.get(0).get("fileName").asText());
       } else {
         // no se han encontrado imagenes
         return null;
@@ -148,11 +124,20 @@ public class TvdbService {
       if (fileName != null) {
         // descargar imagen
         URL downloadURL = new URL("https://thetvdb.com/banners/" + fileName);
+        // generamos nombre a guardar a partir de la primera letra del tipo con la mitad del hashCode en positivo
+        String saveName = type.substring(0, 1) + externalUtils.positiveHalfHashCode(fileName.hashCode());
+        // sacamos la extensión del fichero de imagen
         String format = fileName.substring(fileName.lastIndexOf('.') + 1);
-        String path = "." + SEPARATOR + "public" + SEPARATOR + "images" + SEPARATOR + "series" + SEPARATOR + tvShow.id.toString() + SEPARATOR + type + "." + format;
-        String resultPath = downloadImage(downloadURL, format, path);
+        // generamos la ruta donde se guardará la imagen
+        String folderPath = "." + SEPARATOR + "public" + SEPARATOR + "images" + SEPARATOR + "series" + SEPARATOR + tvShow.id.toString();
+        // ruta absoluta
+        String path = folderPath + SEPARATOR + saveName + "." + format;
+        // descargamos imagen
+        String resultPath = externalUtils.downloadImage(downloadURL, format, path);
         if (resultPath != null) {
           Logger.info(tvShow.name + " - " + type + " descargado");
+          // borrar imagen antigua
+          externalUtils.deleteOldImages(folderPath, type.substring(0, 1), saveName + "." + format);
           return resultPath;
         }
       } else {
@@ -168,18 +153,25 @@ public class TvdbService {
 
   // obtener banner - función específica por características especiales de banner...
   public String getBanner(TvShow tvShow) {
-    Logger.info(tvShow.name + " - descargando banner");
     try {
       TvShow newTvShow = getTvShowTVDB(tvShow.tvdbId);
-      String newBanner = newTvShow.banner;
+      String newBanner = externalUtils.nullableString(newTvShow.banner);
 
-      if (!newBanner.isEmpty()) {
+      if (newBanner != null) {
         URL downloadURL = new URL("https://thetvdb.com/banners/" + newBanner);
+        // generamos nombre a guardar a partir de la primera letra del tipo con la mitad del hashCode en positivo
+        String saveName = "b" + externalUtils.positiveHalfHashCode(newBanner.hashCode());
+        // sacamos la extensión del archivo
         String format = newBanner.substring(newBanner.lastIndexOf('.') + 1);
-        String path = "." + SEPARATOR + "public" + SEPARATOR + "images" + SEPARATOR + "series" + SEPARATOR + tvShow.id.toString() + SEPARATOR + "banner." + format;
-        String resultPath = downloadImage(downloadURL, format, path);
+        // generamos la ruta donde se guardará la imagen
+        String folderPath = "." + SEPARATOR + "public" + SEPARATOR + "images" + SEPARATOR + "series" + SEPARATOR + tvShow.id.toString();
+        // ruta absoluta
+        String path = folderPath + SEPARATOR + saveName + "." + format;
+        // descargamos la imagen
+        String resultPath = externalUtils.downloadImage(downloadURL, format, path);
         if (resultPath != null) {
           Logger.info(tvShow.name + " - banner descargado");
+          externalUtils.deleteOldImages(folderPath, "b", saveName + "." + format);
           return resultPath;
         }
       } else {
@@ -205,21 +197,18 @@ public class TvdbService {
     if (respuesta != null && respuesta.has("data")) {
       JsonNode jsonTvShow = respuesta.with("data");
       Logger.debug("TvShow encontrado en TvdbConnection: " + jsonTvShow.get("seriesName").asText());
-
       // inicializamos el tv show
-      tvShow =  new TvShow();
-      tvShow.tvdbId = jsonTvShow.get("id").asInt();                    // id de tvdbConnection
-      tvShow.imdbId = jsonTvShow.get("imdbId").asText();
-      tvShow.name = jsonTvShow.get("seriesName").asText();             // nombre de la tvShow
-      tvShow.banner = jsonTvShow.get("banner").asText();               // banner de la tvShow
+      tvShow = new TvShow();
+      tvShow.tvdbId = jsonTvShow.get("id").asInt();
+      tvShow.imdbId = externalUtils.nullableString(jsonTvShow.get("imdbId").asText());
+      tvShow.name = externalUtils.nullableString(jsonTvShow.get("seriesName").asText());
+      tvShow.banner = externalUtils.nullableString(jsonTvShow.get("banner").asText());
       tvShow.local = false;
       JsonNode fecha = jsonTvShow.get("firstAired");
-      tvShow.firstAired = parseDate(fecha);
-
+      tvShow.firstAired = externalUtils.parseDate(fecha);
     } else {
-      Logger.info("TvShow no encontrada en TVDB");
+      Logger.info("TheTVDB - TV Show no encontrada en TVDB");
     }
-
     return tvShow;
   }
 
@@ -239,13 +228,13 @@ public class TvdbService {
         for (JsonNode jsonTvShow : respuesta.withArray("data")) {
           // obtenemos datos del TV Show
           TvShow nuevaTvShow = new TvShow();
-          nuevaTvShow.tvdbId = Integer.parseInt(jsonTvShow.get("id").asText()); // id de tvdbConnection
-          nuevaTvShow.name = jsonTvShow.get("seriesName").asText();   // nombre del TV Show
-          nuevaTvShow.banner = jsonTvShow.get("banner").asText();     // banner del TV Show
-          nuevaTvShow.local = false;                                  // iniciamos por defecto a false
+          nuevaTvShow.tvdbId = Integer.parseInt(jsonTvShow.get("id").asText());
+          nuevaTvShow.name = externalUtils.nullableString(jsonTvShow.get("seriesName").asText());
+          nuevaTvShow.banner = externalUtils.nullableString(jsonTvShow.get("banner").asText());
+          nuevaTvShow.local = false;  // iniciamos por defecto a false
 
           JsonNode fecha = jsonTvShow.get("firstAired");
-          nuevaTvShow.firstAired = parseDate(fecha);
+          nuevaTvShow.firstAired = externalUtils.parseDate(fecha);
 
           // finalmente la añadimos a la lista
           tvShows.add(nuevaTvShow);
@@ -270,21 +259,21 @@ public class TvdbService {
     // comprobamos si ha encontrado el tv show en Tvdb
     if (respuesta != null && respuesta.has("data")) {
       JsonNode jsonTvShow = respuesta.with("data");
-      Logger.info("TvShow encontrado en TvdbConnection: " + jsonTvShow.get("seriesName").asText());
+      Logger.info("TheTVDB - TV Show encontrada: " + jsonTvShow.get("seriesName").asText());
 
       // inicializamos el tv show
       tvShow =  new TvShow();
-      tvShow.tvdbId = jsonTvShow.get("id").asInt();                    // id de tvdbConnection
-      tvShow.imdbId = jsonTvShow.get("imdbId").asText();
-      tvShow.name = jsonTvShow.get("seriesName").asText();             // nombre de la tvShow
-      tvShow.banner = jsonTvShow.get("banner").asText();               // banner de la tvShow
-      tvShow.network = jsonTvShow.get("network").asText();
-      tvShow.overview = jsonTvShow.get("overview").asText();
-      tvShow.rating = jsonTvShow.get("rating").asText();
-      tvShow.runtime = jsonTvShow.get("runtime").asText();
+      tvShow.tvdbId = jsonTvShow.get("id").asInt();
+      tvShow.imdbId = externalUtils.nullableString(jsonTvShow.get("imdbId").asText());
+      tvShow.name = externalUtils.nullableString(jsonTvShow.get("seriesName").asText());
+      tvShow.banner = externalUtils.nullableString(jsonTvShow.get("banner").asText());
+      tvShow.network = externalUtils.nullableString(jsonTvShow.get("network").asText());
+      tvShow.overview = externalUtils.nullableString(jsonTvShow.get("overview").asText());
+      tvShow.rating = externalUtils.nullableString(jsonTvShow.get("rating").asText());
+      tvShow.runtime = externalUtils.nullableString(jsonTvShow.get("runtime").asText());
       tvShow.local = false;
       JsonNode fecha = jsonTvShow.get("firstAired");
-      tvShow.firstAired = parseDate(fecha);
+      tvShow.firstAired = externalUtils.parseDate(fecha);
 
       // generos
       for (JsonNode genre : jsonTvShow.get("genre")) {
@@ -303,32 +292,6 @@ public class TvdbService {
     }
 
     return tvShow;
-  }
-
-  // parsear fecha
-  private Date parseDate(JsonNode jsonDate) {
-    int i = 0, tries = 100;
-    Date result = null;
-
-    if (!jsonDate.isNull() && !jsonDate.asText().equals("")) {
-
-      while (i < tries) {
-        try {
-          df.applyPattern("yyyy-MM-dd");
-          result = df.parse(jsonDate.asText()); // fecha estreno
-          break;
-        } catch (Exception e) {
-          i++;
-          if (i != 100) {
-            Logger.info("Reintentando parsear fecha de estreno");
-          } else {
-            Logger.error("No se ha podido parsear la fecha");
-          }
-        }
-      }
-    }
-
-    return result;
   }
 
 }

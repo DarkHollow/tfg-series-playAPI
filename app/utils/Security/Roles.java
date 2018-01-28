@@ -65,6 +65,7 @@ public class Roles extends Security.Authenticator {
         return null;
       } catch (JWTVerificationException ex) {
         Logger.debug("jwt roles - verifier.verify(token) ha generado JWTVerificationException");
+        Logger.debug(ex.toString());
         return null;
       }
     }
@@ -133,5 +134,9 @@ public class Roles extends Security.Authenticator {
       return authTokenHeaderValues[0];
     }
     return null;
+  }
+
+  public User getUser(Http.Context context) {
+    return userService.findByEmail(getUsername(context));
   }
 }

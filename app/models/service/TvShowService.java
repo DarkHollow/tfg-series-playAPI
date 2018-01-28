@@ -1,27 +1,37 @@
 package models.service;
 
 import com.google.inject.Inject;
+import models.Popular;
 import models.TvShow;
+import models.User;
 import models.dao.TvShowDAO;
+import models.service.external.TmdbService;
 import models.service.external.TvdbService;
 import org.apache.commons.io.FileUtils;
 import play.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 public class TvShowService {
 
   private final TvShowDAO tvShowDAO;
+  private final UserService userService;
   private final TvdbService tvdbService;
+  private final TmdbService tmdbService;
 
   @Inject
-  public TvShowService(TvShowDAO tvShowDAO, TvdbService tvdbService) {
+  public TvShowService(TvShowDAO tvShowDAO, UserService userService, TvdbService tvdbService, TmdbService tmdbService) {
     this.tvShowDAO = tvShowDAO;
+    this.userService = userService;
     this.tvdbService = tvdbService;
+    this.tmdbService = tmdbService;
   }
 
   // CRUD
@@ -62,7 +72,7 @@ public class TvShowService {
     return tvShowDAO.all();
   }
 
-  // Delete por id - TODO acordarse de llamar también a TvShowRequestService.delete !!!
+  // Delete por id - TODO pensar en si llamar también a TvShowRequestService.delete !!!
   public Boolean delete(Integer id) {
     TvShow tvShow = tvShowDAO.find(id);
     if (tvShow != null) {
@@ -103,6 +113,119 @@ public class TvShowService {
       }
     }
     return tvShow;
+  }
+
+  public Boolean getAndSetImage(TvShow tvShow, String type) {
+    String path = null;
+
+    switch (type) {
+      case "banner":
+        path = tvdbService.getBanner(tvShow);
+        break;
+      case "poster":
+      case "fanart":
+        path = tvdbService.getImage(tvShow, type);
+        break;
+      default:
+    }
+
+    if (path != null && !path.equals("")) {
+      path = path.replace("public", "assets");
+      switch (type) {
+        case "banner":
+          tvShow.banner = path;
+          break;
+        case "poster":
+          tvShow.poster = path;
+          break;
+        case "fanart":
+          tvShow.fanart = path;
+          break;
+        default:
+      }
+      return true;
+    } else {
+      // no se ha podido obtener la imagen
+      Logger.info(tvShow.name + " - no se ha podido obtener la imagen " + type);
+      return false;
+    }
+  }
+
+  Integer getObtainTmdbId(TvShow tvShow) {
+    if (tvShow != null) {
+      try {
+        if (tvShow.tmdbId == null) {
+          TvShow tmdbShow = tmdbService.findByTvdbId(tvShow.tvdbId);
+          if (tmdbShow != null) {
+            tvShow.tmdbId = tmdbShow.tmdbId;
+          }
+        }
+      } catch (Exception ex) {
+        Logger.info("No se ha podido obtener el tmdbId para la serie " + tvShow.name);
+      }
+    } else {
+      return null;
+    }
+    return tvShow.tmdbId;
+  }
+
+  public List<TvShow> getTopRatedTvShows(Integer size) {
+    List<TvShow> topRatedTvShows = tvShowDAO.all().stream().sorted(Comparator.comparing((TvShow tvShow) -> tvShow.score)
+            .thenComparing(tvShow -> tvShow.voteCount).reversed()).collect(Collectors.toList());
+    topRatedTvShows.removeIf(tvShow -> tvShow.score == 0);
+    if (topRatedTvShows.isEmpty()) {
+      return topRatedTvShows;
+    } else if (topRatedTvShows.size() < size) {
+      return topRatedTvShows.subList(0, topRatedTvShows.size());
+    } else {
+      return topRatedTvShows.subList(0, size);
+    }
+  }
+
+  public Boolean followTvShow(Integer tvShowId, Integer userId) {
+    TvShow tvShow = find(tvShowId);
+    User user = userService.find(userId);
+    if (tvShow != null && user != null) {
+      if (!user.followedTvShows.contains(tvShow)) {
+        user.followedTvShows.add(tvShow);
+      }
+      if (!tvShow.followingUsers.contains(user)) {
+        tvShow.followingUsers.add(user);
+      }
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public Boolean unfollowTvShow(Integer tvShowId, Integer userId) {
+    TvShow tvShow = find(tvShowId);
+    User user = userService.find(userId);
+    if (tvShow != null && user != null) {
+      user.followedTvShows.remove(tvShow);
+      tvShow.followingUsers.remove(user);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public Boolean checkFollowTvShow(Integer tvShowId, Integer userId) {
+    TvShow tvShow = find(tvShowId);
+    User user = userService.find(userId);
+    return (tvShow != null && user != null && tvShow.followingUsers.contains(user) && user.followedTvShows.contains(tvShow));
+  }
+
+  public List<TvShow> getFollowingTvShows(Integer userId) {
+    return userService.find(userId).followedTvShows;
+  }
+
+  public List<TvShow> getTvShowsFromPopulars(List<Popular> populars) {
+    List<TvShow> tvShows = new ArrayList<>();
+    populars.forEach(popular -> {
+      tvShows.add(popular.tvShow);
+    });
+    return tvShows;
   }
 
 }

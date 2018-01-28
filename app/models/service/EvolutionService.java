@@ -14,11 +14,16 @@ import java.util.List;
 public class EvolutionService {
   private final EvolutionDAO evolutionDAO;
   private final TvShowService tvShowService;
+  private final SeasonService seasonService;
+  private final EpisodeService episodeService;
 
   @Inject
-  public EvolutionService(EvolutionDAO evolutionDAO, TvShowService tvShowService) {
+  public EvolutionService(EvolutionDAO evolutionDAO, TvShowService tvShowService, SeasonService seasonService,
+                          EpisodeService episodeService) {
     this.evolutionDAO = evolutionDAO;
     this.tvShowService = tvShowService;
+    this.seasonService = seasonService;
+    this.episodeService = episodeService;
   }
 
   public Evolution createEvolution(Evolution evolution) {
@@ -66,14 +71,27 @@ public class EvolutionService {
     // obtenemos las play evolutions aplicadas
     List<Object[]> playEvolutions = evolutionDAO.getAppliedPlayEvolutions();
 
-    // comparamos el tamaño de las listas
-    if (evolutions.size() < playEvolutions.size()) {
-      // hay más evolutions de play, por lo que hay evolutions que debemos importar
-      Integer index = playEvolutions.size() - evolutions.size() - 1;
-      for (int i = index; i < playEvolutions.size(); i++) {
-        createEvolution(new Evolution((Integer)playEvolutions.get(i)[0], null));
+    // ver qué evolutions no tenemos aplicadas
+    if (evolutions != null && playEvolutions != null) {
+      // sacamos ids de todas las play evolutions
+      List<Integer> playEvolutionsIds = new ArrayList<>();
+      for (Object[] playEvolution: playEvolutions) {
+        playEvolutionsIds.add((Integer)playEvolution[0]);
       }
-      result = true;
+
+      // obtenemos ids de las play evolutions no aplicadas
+      List<Integer> notAppliedEvolutionsIds = new ArrayList<>();
+      for (Integer id: playEvolutionsIds) {
+        if (evolutions.stream().noneMatch(evolution -> id.equals(evolution.version))) {
+          notAppliedEvolutionsIds.add(id);
+          result = true;
+        }
+      }
+
+      // creamos evolutions de ids que no tenemos
+      for (Integer id: notAppliedEvolutionsIds) {
+        createEvolution(new Evolution(id, null));
+      }
     }
 
     return result;
@@ -152,6 +170,65 @@ public class EvolutionService {
     }
 
     Logger.info("Evolution 1 - Actualización finalizada con éxito");
+    return true;
+  }
+
+  // Evolution 2
+  // - nuevo atributo de TvShow: tmdbId, obtener ese id en series ya persistidas
+  // - nuevo model Season, obtener temporadas para las series ya persistidas
+  public Boolean applyEvolution2() {
+    try {
+      List<TvShow> tvShows = tvShowService.all();
+      if (!tvShows.isEmpty()) {
+        Logger.info("Evolution 2 - Actualizando series...\nEvolution 2 - este proceso tardará en proporción a la cantidad" +
+                " de series de las que disponga el sistema persistidas.");
+        // si no está vacía, obtener TMDb ids de todas la series y obtener sus temporadas
+        for (TvShow tvShow: tvShows) {
+          // updateSeasons se encarga de ambas cosas, de obtener el tmdbId si no lo tiene
+          // y después borra las temporadas actuales y descarga todas
+          seasonService.updateSeasons(tvShow);
+        }
+      } else {
+        Logger.info("Evolution 2 - No hay series que actualizar");
+      }
+    } catch (Exception ex) {
+      Logger.error("Evolution 2 - No se ha podido actualizar: " + ex.getClass().toString());
+      return false;
+    }
+
+    Logger.info("Evolution 2 - Actualización finalizada con éxito");
+    return true;
+  }
+
+  // Evolution 3
+  // nuevo model Episode, obtener episodios para las series ya persistidas
+  public Boolean applyEvolution3() {
+    try {
+      List<TvShow> tvShows = tvShowService.all();
+      if (tvShows != null && !tvShows.isEmpty()) {
+        Logger.info("Evolution 3 - Actualizando series...\nEvolution 3 - este proceso tardará en proporción a la cantidad" +
+                " de series de las que disponga el sistema persistidas.");
+        for (TvShow tvShow: tvShows) {
+          // updateEpisodes
+          if (tvShow.seasons == null) {
+            // temporadas null ?? Obtenerlas
+            seasonService.updateSeasons(tvShow);
+          }
+          if (tvShow.seasons != null) {
+            episodeService.updateEpisodes(tvShow);
+          } else {
+            Logger.error("No se puede obtener los episodios por error de temporadas");
+          }
+        }
+      } else {
+        Logger.info("Evolution 3 - No hay series que actualizar");
+      }
+    } catch (Exception ex) {
+      Logger.error("Evolution 3 - No se ha podido actualizar: " + ex.getClass().toString());
+      return false;
+    }
+
+    Logger.info("Evolution 3 - Actualización finalizada con éxito");
     return true;
   }
 

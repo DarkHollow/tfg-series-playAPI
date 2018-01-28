@@ -24,11 +24,10 @@ public class TvShowDAO {
 
   // Create
   public TvShow create(TvShow tvShow) {
-    Logger.debug("Persistencia - intentando crear tvShow: " + tvShow.name);
     jpa.em().persist(tvShow);
     jpa.em().flush();
     jpa.em().refresh(tvShow);
-    Logger.debug("Persistencia - tvShow añadido: id " + tvShow.id + ", nombre " + tvShow.name);
+    Logger.info("Persistencia - TV Show creada: id " + tvShow.id + ": " + tvShow.name);
     return tvShow;
   }
 

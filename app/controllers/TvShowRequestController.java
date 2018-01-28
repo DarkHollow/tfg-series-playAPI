@@ -2,15 +2,13 @@ package controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
-import json.TvShowViews;
+import models.Popular;
 import models.TvShow;
 import models.TvShowRequest;
-import models.service.TvShowRequestService;
-import models.service.TvShowService;
-import models.service.UserService;
+import models.service.*;
+import models.service.external.TmdbService;
 import models.service.external.TvdbService;
 import play.Logger;
 import play.data.DynamicForm;
@@ -24,26 +22,39 @@ import play.mvc.Security;
 import utils.Security.Administrator;
 import utils.Security.Roles;
 import utils.Security.User;
+import utils.json.JsonViews;
 
 public class TvShowRequestController extends Controller {
 
   private final TvdbService tvdbService;
+  private final TmdbService tmdbService;
   private final TvShowService tvShowService;
+  private final SeasonService seasonService;
+  private final EpisodeService episodeService;
+  private final PopularService popularService;
   private final TvShowRequestService tvShowRequestService;
   private final UserService userService;
   private final FormFactory formFactory;
   private final utils.Security.User userAuth;
+  private final utils.json.Utils jsonUtils;
 
   @Inject
-  public TvShowRequestController(TvdbService tvdbService, TvShowService tvShowService,
-                                 TvShowRequestService tvShowRequestService, UserService userService,
-                                 FormFactory formFactory, utils.Security.User userAuth) {
+  public TvShowRequestController(TvdbService tvdbService, TmdbService tmdbService, TvShowService tvShowService,
+                                 SeasonService seasonService, EpisodeService episodeService,
+                                 PopularService popularService, TvShowRequestService tvShowRequestService,
+                                 UserService userService, FormFactory formFactory, utils.Security.User userAuth,
+                                 utils.json.Utils jsonUtils) {
     this.tvdbService = tvdbService;
+    this.tmdbService = tmdbService;
     this.tvShowService = tvShowService;
+    this.seasonService = seasonService;
+    this.episodeService = episodeService;
+    this.popularService = popularService;
     this.tvShowRequestService = tvShowRequestService;
     this.userService = userService;
     this.formFactory = formFactory;
     this.userAuth = userAuth;
+    this.jsonUtils = jsonUtils;
   }
 
   // Peticion POST TvShowRequest
@@ -195,41 +206,33 @@ public class TvShowRequestController extends Controller {
                   tvShow = tvShowService.create(tvShow);
                   if (tvShow != null) {
                     result.put("ok", "Serie persistida");
-                    // descargamos las imagenes del TV Show
-                    // obtenemos banner
-                    tvShow.banner = tvdbService.getBanner(tvShow);
-                    if (tvShow.banner != null) {
-                      tvShow.banner = tvShow.banner.replace("public", "assets");
-                      // banner obtenido
-                      result.put("banner", true);
-                    } else {
-                      // no se ha podido obtener el banner
-                      Logger.info(tvShow.name + " - no se ha podido obtener el banner");
-                      result.put("banner", false);
-                    }
+                    // descargamos las imagenes del TV Show y la seteamos al show
+                    result.put("banner", tvShowService.getAndSetImage(tvShow, "banner"));
+                    result.put("poster", tvShowService.getAndSetImage(tvShow, "poster"));
+                    result.put("fanart", tvShowService.getAndSetImage(tvShow, "fanart"));
 
-                    // obtenemos poster
-                    tvShow.poster = tvdbService.getImage(tvShow, "poster");
-                    if (tvShow.poster != null) {
-                      tvShow.poster = tvShow.poster.replace("public", "assets");
-                      // poster obtenido
-                      result.put("poster", true);
-                    } else {
-                      // no se ha podido obtener el poster
-                      Logger.info(tvShow.name + " - no se ha podido obtener el poster");
-                      result.put("poster", false);
-                    }
+                    // popularidad
+                    Popular popular = new Popular();
+                    popular.tvShow = tvShow;
+                    tvShow.popular = popularService.create(popular);
 
-                    // obtenemos fanart
-                    tvShow.fanart = tvdbService.getImage(tvShow, "fanart");
-                    if (tvShow.fanart != null) {
-                      tvShow.fanart = tvShow.fanart.replace("public", "assets");
-                      // fanart obtenido
-                      result.put("fanart", true);
+                    // TMDb
+                    TvShow tmdbShow = tmdbService.findByTvdbId(tvShow.tvdbId);
+                    if (tmdbShow != null) {
+                      // obtenemos tmdbId
+                      tvShow.tmdbId = tmdbShow.tmdbId;
+                      // obtenemos temporadas vacías
+                      seasonService.setSeasons(tvShow, seasonService.getSeasonsFromTmdbByTmdbId(tvShow.tmdbId));
+                      // refrescamos tvShow
+                      tvShow = tvShowService.find(tvShow.id);
+                      // obtenemos las temporadas completas (sin episodios)
+                      result.put("seasons", seasonService.fullfillSeasons(tvShow));
+                      // obtenemos episodios de cada temporada
+                      result.put("episodes", episodeService.setEpisodesAllSeasonsFromTmdb(tvShow));
                     } else {
-                      // no se ha podido obtener el fanart
-                      Logger.info(tvShow.name + " - no se ha podido obtener el fanart");
-                      result.put("fanart", false);
+                      result.put("seasons", false);
+                      result.put("episodes", false);
+                      Logger.info("No se ha podido obtener la serie en TMDB, por lo tanto, tampoco sus temporadas ni episodios");
                     }
 
                     // poner request como persistida
@@ -237,9 +240,7 @@ public class TvShowRequestController extends Controller {
 
                     // respuesta ok - devolvemos datos obtenidos
                     try {
-                      JsonNode jsonNode = Json.parse(new ObjectMapper()
-                              .writerWithView(TvShowViews.FullTvShow.class)
-                              .writeValueAsString(tvShow));
+                      JsonNode jsonNode = jsonUtils.jsonParseObject(tvShow, JsonViews.FullTvShow.class);
                       result.set("tvShow", jsonNode);
                       return ok(result);
                     } catch (JsonProcessingException e) {

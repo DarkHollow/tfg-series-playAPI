@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
-  <TvShow id="1" tvdbId="78804" imdbId="imdbId1" name="Doctor Who (2005)"
+  <TvShow id="1" tvdbId="78804" imdbId="imdbId1" tmdbId="57243" name="Doctor Who (2005)"
     firstAired="2005-03-26"
     overview="Doctor Who es una puesta al día de la tvShow de televisión del
               mismo título que, emitida por la BBC entre 1963 y 1989, llegó a
@@ -17,9 +17,9 @@
               fatigas."
     banner="graphical/78804-g44.jpg" poster="posterDoctor.jpg"
     fanart="fanartDoctor.jpg" network="BBC One" runtime="45" rating="TV-14"
-    status="Continuing" score="1" voteCount="1" />
+    status="Continuing" score="8" voteCount="1" />
 
-  <TvShow id="2" tvdbId="81189" imdbId="imdbId2" name="Breaking Bad"
+  <TvShow id="2" tvdbId="81189" imdbId="imdbId2" tmdbId="1396" name="Breaking Bad"
     firstAired="2008-01-20"
     overview="Walter White es un esforzado profesor de química de preparatoria
               (secundaria, high school), padre de Walter White Jr, un joven
@@ -32,5 +32,9 @@
               esté."
     banner="graphical/81189-g21.jpg"  poster="posterBreakingBad.jpg"
     fanart="fanartBreakingBad.jpg" network="AMC" runtime="49" rating="TV-14"
-    status="Ended" score="2" voteCount="2" />
+    status="Ended" score="8" voteCount="2" />
+
+  <User id="1" email="email1" password="password1"
+        name="nombre1" registrationDate="2017-02-26" />
+
 </dataset>

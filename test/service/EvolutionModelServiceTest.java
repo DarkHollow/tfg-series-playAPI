@@ -2,8 +2,11 @@ package service;
 
 import models.Evolution;
 import models.dao.EvolutionDAO;
+import models.service.EpisodeService;
 import models.service.EvolutionService;
+import models.service.SeasonService;
 import models.service.TvShowService;
+import models.service.external.TmdbService;
 import org.dbunit.JndiDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
@@ -42,7 +45,9 @@ public class EvolutionModelServiceTest {
   public void initData() throws Exception {
     EvolutionDAO evolutionDAO = new EvolutionDAO(jpa);
     TvShowService tvShowService = mock(TvShowService.class);
-    evolutionService = new EvolutionService(evolutionDAO, tvShowService);
+    SeasonService seasonService = mock(SeasonService.class);
+    EpisodeService episodeService = mock(EpisodeService.class);
+    evolutionService = new EvolutionService(evolutionDAO, tvShowService, seasonService, episodeService);
 
     databaseTester = new JndiDatabaseTester("DefaultDS");
     IDataSet initialDataSet = new FlatXmlDataSetBuilder().build(new

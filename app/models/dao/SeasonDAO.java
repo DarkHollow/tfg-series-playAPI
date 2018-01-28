@@ -21,11 +21,10 @@ public class SeasonDAO {
 
   // Create
   public Season create(Season season) throws ConstraintViolationException {
-    Logger.info("Persistencia - intentando crear season: " + season.tvShow.name + " - Temporada " + season.seasonNumber);
     jpa.em().persist(season);
     jpa.em().flush();
     jpa.em().refresh(season);
-    Logger.info("Persistencia - season añadida: " + season.tvShow.name + " - Temporada " + season.seasonNumber);
+    Logger.info("Persistencia - Temporada creada: " + season.tvShow.name + " - Temporada " + season.seasonNumber);
     return season;
   }
 

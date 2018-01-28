@@ -25,7 +25,6 @@ public class TwitterService {
   }
 
   public Double getRatio(String hashtag) {
-    Logger.debug("Getting ratio de #" + hashtag);
     try {
       Query query = new Query("#" + hashtag);
       query.setCount(100);

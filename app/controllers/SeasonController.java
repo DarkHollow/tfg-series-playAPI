@@ -80,11 +80,11 @@ public class SeasonController {
 
             // mostrar en cada temporada numero de episodios vistos y no vistos
             ((ObjectNode)season).put("seenCount", seasonSeenEpisodesCount);
-            ((ObjectNode)season).put("unSeenCount", seasonEpisodesCount - seasonSeenEpisodesCount);
+            ((ObjectNode)season).put("unseenCount", seasonEpisodesCount - seasonSeenEpisodesCount);
             // mostrar en la serie numero de episodio total, numero de episodios vistos total y numero de episodio no vistos total
             objectNode.put("episodeCount", totalEpisodes);
             objectNode.put("seenCount", totalSeenEpisodes);
-            objectNode.put("unSeenCount", totalEpisodes - totalSeenEpisodes);
+            objectNode.put("unseenCount", totalEpisodes - totalSeenEpisodes);
           }
 
         }

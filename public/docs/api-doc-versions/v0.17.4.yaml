@@ -1429,9 +1429,24 @@ definitions:
             episodeCount:
               type: integer
               description: number of episodes
+            seenCount:
+              type: integer
+              description: number of episodes seen by the user
+            unSeenCount:
+              type: integer
+              description: number of episodes not seen by the user
       following:
         type: boolean
         description: identified user follows or not the tv show
+      episodeCount:
+        type: integer
+        description: number of episodes of the whole tv show
+      seenCount:
+        type: integer
+        description: number of episodes of the whole tv show seen by the user
+      unseenCount:
+        type: integer
+        description: number of episodes of the whole tv show not seen by the user
       popularity:
         type: integer
         description: popular number
@@ -1606,23 +1621,62 @@ definitions:
             overview:
               type: string
               description: a summary of the episode
+            seen:
+              type: string
+              description: date of viewing
+      following:
+        type: boolean
+        description: identified user follows or not the tv show
+      episodeCount:
+        type: integer
+        description: number of episodes of the season
+      seenCount:
+        type: integer
+        description: number of episodes of the season seen by the user
+      unseenCount:
+        type: integer
+        description: number of episodes of the season not seen by the user
   ArraySimpleSeason:
-    type: array
-    items:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: season id
-        seasonNumber:
-          type: integer
-          description: season number
-        poster:
-          type: string
-          description: relative url of the season poster image
-        episodeCount:
-          type: integer
-          description: number of episodes
+    type: object
+    properties:
+      size:
+        type: integer
+        description: size of the array of seasons
+      following:
+        type: boolean
+        description: identified user follows or not the tv show
+      episodeCount:
+        type: integer
+        description: number of episodes of all seasons
+      seenCount:
+        type: integer
+        description: number of episodes of all seasons seen by the user
+      unseenCount:
+        type: integer
+        description: number of episodes of all seasons not seen by the user
+      seasons:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: season id
+            seasonNumber:
+              type: integer
+              description: season number
+            poster:
+              type: string
+              description: relative url of the season poster image
+            episodeCount:
+              type: integer
+              description: number of episodes
+            seenCount:
+              type: integer
+              description: number of episodes of the season seen by the user
+            unseenCount:
+              type: integer
+              description: number of episodes of the season not seen by the user
   CompleteEpisode:
     type: object
     properties:
@@ -1644,29 +1698,53 @@ definitions:
       overview:
         type: string
         description: a summary of the episode
+      following:
+        type: boolean
+        description: identified user follows or not the tv show
+      seen:
+        type: string
+        description: date of viewing
   ArrayEpisodes:
-    type: array
-    items:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: episode id
-        episodeNumber:
-          type: integer
-          description: episode number
-        firstAired:
-          type: string
-          description: episode first air date
-        screenshot:
-          type: string
-          description: relative url of the episode screenshot
-        name:
-          type: string
-          description: episode name
-        overview:
-          type: string
-          description: a summary of the episode
+    type: object
+    properties:
+      following:
+        type: boolean
+        description: identified user follows or not the tv show
+      seenCount:
+        type: integer
+        description: number of episodes of the season seen by the user
+      unseenCount:
+        type: integer
+        description: number of episodes of the season not seen by the user
+      size:
+        type: integer
+        description: size of the array of episodes
+      episodes:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: episode id
+            episodeNumber:
+              type: integer
+              description: episode number
+            firstAired:
+              type: string
+              description: episode first air date
+            screenshot:
+              type: string
+              description: relative url of the episode screenshot
+            name:
+              type: string
+              description: episode name
+            overview:
+              type: string
+              description: a summary of the episode
+            seen:
+              type: string
+              description: date of viewing
   TvShowRating:
     type: object
     properties:
@@ -1739,6 +1817,15 @@ definitions:
             following:
               type: boolean
               description: identified user follows or not the tv show
+            episodeCount:
+              type: integer
+              description: number of episodes of the whole tv show
+            seenCount:
+              type: integer
+              description: number of episodes of the whole tv show seen by the user
+            unseenCount:
+              type: integer
+              description: number of episodes of the whole tv show not seen by the user
   TopRatedArray:
     type: object
     properties:
@@ -1777,6 +1864,15 @@ definitions:
             following:
               type: boolean
               description: identified user follows or not the tv show
+            episodeCount:
+              type: integer
+              description: number of episodes of the whole tv show
+            seenCount:
+              type: integer
+              description: number of episodes of the whole tv show seen by the user
+            unseenCount:
+              type: integer
+              description: number of episodes of the whole tv show not seen by the user
   TopTwitterArray:
     type: object
     properties:
@@ -1818,6 +1914,15 @@ definitions:
             following:
               type: boolean
               description: identified user follows or not the tv show
+            episodeCount:
+              type: integer
+              description: number of episodes of the whole tv show
+            seenCount:
+              type: integer
+              description: number of episodes of the whole tv show seen by the user
+            unseenCount:
+              type: integer
+              description: number of episodes of the whole tv show not seen by the user
   UserAuthenticated:
     type: object
     properties:

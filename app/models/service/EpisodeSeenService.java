@@ -142,4 +142,23 @@ public class EpisodeSeenService {
     }
   }
 
+  public Boolean setSeasonAsUnseen(TvShow tvShow, Integer seasonNumber, Integer userId) {
+    if (tvShow != null) {
+      Season foundSeason = tvShow.seasons.stream().filter(season -> season.seasonNumber.equals(seasonNumber)).findFirst().orElse(null);
+      if (foundSeason != null) {
+        AtomicReference<Boolean> result = new AtomicReference<>(true);
+        foundSeason.episodes.forEach(episode -> {
+          if (!setEpisodeAsUnseen(tvShow, seasonNumber, episode.episodeNumber, userId)) {
+            result.set(false);
+          }
+        });
+        return result.get();
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
 }

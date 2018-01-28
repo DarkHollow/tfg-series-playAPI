@@ -1,9 +1,6 @@
 package models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
 import play.data.validation.Constraints;
 import utils.json.JsonViews;
 
@@ -39,7 +36,7 @@ public class Episode {
 
   @OneToMany(mappedBy = "episode", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonManagedReference
-  @JsonView(JsonViews.FullTvShow.class)
+  @JsonIgnore
   public List<EpisodeSeen> episodesSeen;
 
   // constructor vacio

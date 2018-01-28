@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+  <User id="1" email="email1" password="password1"
+        name="nombre1" registrationDate="2017-02-26" />
+
+  <TvShow id="1" tvdbId="78804" tmdbId="57243" name="Doctor Who (2005)"
+         firstAired="2005-03-26"
+         overview="Doctor Who es una puesta al día de la tvShow de televisión del
+              mismo título que, emitida por la BBC entre 1963 y 1989, llegó a
+              convertirse en una de las más longevas de la historia de la
+              pequeña pantalla. En ella acompañamos en sus aventuras a El
+              Doctor, un misterioso y divertido alienígena de aspecto humano
+              que viaja a través del tiempo y el espacio para combatir el mal
+              en sus más variadas y estrambóticas formas a bordo de lo que
+              parece una cabina de teléfonos de los años 50. A su lado, Rose
+              Tyler, una ex empleada de unos grandes almacenes a la que salvó
+              de morir aniquilada por un grupo de maniquíes de plástico y que,
+              arrastrada por su curiosidad y su pasión por el riesgo, abandona
+              a su madre y a su novio para convertirse en su compañera de
+              fatigas."
+         banner="graphical/78804-g44.jpg" poster="posterDoctor.jpg"
+         fanart="fanartDoctor.jpg" network="BBC One" runtime="45" rating="TV-14"
+         status="Continuing" score="1" voteCount="1" />
+
+  <Season id="1" firstAired="2008-01-20" overview="resumen temporada" poster="url al poster" seasonNumber="1"
+          tvShowId="1" name="Temporada 1" />
+
+  <Episode id="1" seasonId="1" episodeNumber="1" firstAired="2008-01-20" screenshot="screenshot 1" name="Episodio 1"
+           overview="Resumen episodio 1" />
+  <Episode id="2" seasonId="1" episodeNumber="2" firstAired="2008-02-20" screenshot="screenshot 2" name="Episodio 2"
+           overview="Resumen episodio 2" />
+
+  <EpisodeSeen id="1" userId="1" episodeId="1" />
+
+  <TvShow id="2" tvdbId="81189" tmdbId="1396" name="Breaking Bad"
+         firstAired="2008-01-20"
+         overview="Walter White es un esforzado profesor de química de preparatoria
+              (secundaria, high school), padre de Walter White Jr, un joven
+              discapacitado, y esposo de Skyler White quien presenta un
+              incipiente embarazo. Cuando la vida ya le era bastante complicada
+              para Walter, le diagnostican un cáncer pulmonar terminal, lo que
+              le lleva a quebrantar la ley e instalar un laboratorio de
+              metanfetamina con su antiguo estudiante Jesse Pinkman para así
+              asegurar el bienestar económico de su familia cuando el ya no
+              esté."
+         banner="graphical/81189-g21.jpg"  poster="posterBreakingBad.jpg"
+         fanart="fanartBreakingBad.jpg" network="AMC" runtime="49" rating="TV-14"
+         status="Ended" score="2" voteCount="2" />
+
+</dataset>

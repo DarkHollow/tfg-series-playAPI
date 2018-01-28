@@ -10,7 +10,6 @@ import play.libs.ws.WSClient;
 import play.libs.ws.WSResponse;
 
 import java.io.File;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
@@ -107,7 +106,7 @@ public class TmdbService {
     // comprobamos si ha encontrado el tv show en Tmdb
     if (respuesta != null && respuesta.withArray("tv_results").size() > 0) {
       JsonNode jsonTvShow = respuesta.withArray("tv_results").get(0);
-      Logger.info("Find - TvShow encontrado en The Movie Database API: " + jsonTvShow.get("name").asText());
+      Logger.info("The Movie Database API - TV Show encontrada: " + jsonTvShow.get("name").asText());
 
       // inicializamos el tv show
       tvShow = new TvShow();
@@ -134,7 +133,7 @@ public class TmdbService {
 
     // comprobamos si ha encontrado el tv show en Tmdb
     if (respuesta != null && respuesta.get("status_code") == null) {
-      Logger.info("Get Seasons - TvShow encontrado en The Movie Database API: " + respuesta.get("name").asText());
+      Logger.info("The Movie Database API - Temporadas de " + respuesta.get("name").asText() + " encontradas");
       return respuesta;
     } else {
       Logger.info("TvShow no encontrada en The Movie Database API");
@@ -152,7 +151,7 @@ public class TmdbService {
 
     // comprobamos si ha encontrado la season en Tmdb
     if (respuesta != null && respuesta.get("status_code") == null) {
-      Logger.info("Get Season - Season encontrada en The Movie Database API");
+      Logger.info("The Movie Database API - Temporada " + seasonNumber + " encontrada");
       // temporada
       season = new Season();
       // temporada de capítulos especiales?
@@ -167,7 +166,7 @@ public class TmdbService {
       JsonNode fecha = respuesta.get("air_date");
       season.firstAired = externalUtils.parseDate(fecha);
     } else {
-      Logger.info("Season no encontrada en The Movie Database API");
+      Logger.info("The Movie Database API - Temporada " + seasonNumber + " no encontrada");
     }
 
     return season;
@@ -183,7 +182,7 @@ public class TmdbService {
 
     // comprobamos si ha encontrado la season en Tmdb
     if (respuesta != null && respuesta.get("status_code") == null) {
-      Logger.info("TMDb Service - Get all season episodes: Season y episodes encontrados en The Movie Database API");
+      Logger.info("The Movie Database API - Temporada " + seasonNumber + " y sus episodios encontrada");
       // inicializamos lista
       episodes = new ArrayList<>();
 

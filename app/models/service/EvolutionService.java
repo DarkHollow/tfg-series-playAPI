@@ -3,7 +3,6 @@ package models.service;
 import models.Evolution;
 import models.TvShow;
 import models.dao.EvolutionDAO;
-import models.service.external.TmdbService;
 import play.Logger;
 
 import javax.inject.Inject;
@@ -85,6 +84,7 @@ public class EvolutionService {
       for (Integer id: playEvolutionsIds) {
         if (evolutions.stream().noneMatch(evolution -> id.equals(evolution.version))) {
           notAppliedEvolutionsIds.add(id);
+          result = true;
         }
       }
 
@@ -92,8 +92,6 @@ public class EvolutionService {
       for (Integer id: notAppliedEvolutionsIds) {
         createEvolution(new Evolution(id, null));
       }
-
-      result = true;
     }
 
     return result;

@@ -101,7 +101,7 @@ public class PopularController extends Controller {
             // mostrar en la serie numero de episodio total, numero de episodios vistos total y numero de episodio no vistos total
             ((ObjectNode) tvShow).put("episodeCount", totalEpisodes);
             ((ObjectNode) tvShow).put("seenCount", totalSeenEpisodes);
-            ((ObjectNode) tvShow).put("unSeenCount", totalEpisodes - totalSeenEpisodes);
+            ((ObjectNode) tvShow).put("unseenCount", totalEpisodes - totalSeenEpisodes);
           }
           // por ultimo, borrar los campos innecesarios que han sido necesarios poner para calcular...
           // TODO: mejorar todo esto !

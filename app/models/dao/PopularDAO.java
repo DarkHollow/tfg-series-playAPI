@@ -3,13 +3,9 @@ package models.dao;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import models.Popular;
-import models.TvShow;
 import play.Logger;
 import play.db.jpa.JPAApi;
 
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.TypedQuery;
 import java.util.List;
 
 public class PopularDAO {
@@ -26,11 +22,9 @@ public class PopularDAO {
 
   // Create
   public Popular create(Popular popular) {
-    Logger.debug("Persistencia - intentando crear popular de: " + popular.tvShow.name);
     jpa.em().persist(popular);
     jpa.em().flush();
     jpa.em().refresh(popular);
-    Logger.debug("Persistencia - popular de " + popular.tvShow.name + " añadido: id " + popular.id);
     return popular;
   }
 

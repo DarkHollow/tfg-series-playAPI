@@ -88,7 +88,6 @@ public class TvdbService {
 
   // obtener imagen por tvdbId y tipo
   public String getImage(TvShow tvShow, String type) {
-    Logger.info(tvShow.name + " - descargando " + type);
     String imageQuery = "https://api.thetvdb.com/series/" + tvShow.tvdbId.toString() + "/images/query?keyType=" + type;
 
     try {
@@ -154,7 +153,6 @@ public class TvdbService {
 
   // obtener banner - función específica por características especiales de banner...
   public String getBanner(TvShow tvShow) {
-    Logger.info(tvShow.name + " - descargando banner");
     try {
       TvShow newTvShow = getTvShowTVDB(tvShow.tvdbId);
       String newBanner = externalUtils.nullableString(newTvShow.banner);
@@ -209,7 +207,7 @@ public class TvdbService {
       JsonNode fecha = jsonTvShow.get("firstAired");
       tvShow.firstAired = externalUtils.parseDate(fecha);
     } else {
-      Logger.info("TvShow no encontrada en TVDB");
+      Logger.info("TheTVDB - TV Show no encontrada en TVDB");
     }
     return tvShow;
   }
@@ -261,7 +259,7 @@ public class TvdbService {
     // comprobamos si ha encontrado el tv show en Tvdb
     if (respuesta != null && respuesta.has("data")) {
       JsonNode jsonTvShow = respuesta.with("data");
-      Logger.info("TvShow encontrado en TvdbConnection: " + jsonTvShow.get("seriesName").asText());
+      Logger.info("TheTVDB - TV Show encontrada: " + jsonTvShow.get("seriesName").asText());
 
       // inicializamos el tv show
       tvShow =  new TvShow();

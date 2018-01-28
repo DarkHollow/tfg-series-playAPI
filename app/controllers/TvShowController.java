@@ -172,12 +172,12 @@ public class TvShowController extends Controller {
 
           // mostrar en cada temporada numero de episodios vistos y no vistos
           ((ObjectNode)season).put("seenCount", seasonSeenEpisodesCount);
-          ((ObjectNode)season).put("unSeenCount", seasonEpisodesCount - seasonSeenEpisodesCount);
+          ((ObjectNode)season).put("unseenCount", seasonEpisodesCount - seasonSeenEpisodesCount);
         }
         // mostrar en la serie numero de episodio total, numero de episodios vistos total y numero de episodio no vistos total
         ((ObjectNode) jsonNode).put("episodeCount", totalEpisodes);
         ((ObjectNode) jsonNode).put("seenCount", totalSeenEpisodes);
-        ((ObjectNode) jsonNode).put("unSeenCount", totalEpisodes - totalSeenEpisodes);
+        ((ObjectNode) jsonNode).put("unseenCount", totalEpisodes - totalSeenEpisodes);
       }
       // mostramos popularity
       ((ObjectNode) jsonNode).put("popularity", popularity);
@@ -465,7 +465,7 @@ public class TvShowController extends Controller {
             // mostrar en la serie numero de episodio total, numero de episodios vistos total y numero de episodio no vistos total
             ((ObjectNode) tvShow).put("episodeCount", totalEpisodes);
             ((ObjectNode) tvShow).put("seenCount", totalSeenEpisodes);
-            ((ObjectNode) tvShow).put("unSeenCount", totalEpisodes - totalSeenEpisodes);
+            ((ObjectNode) tvShow).put("unseenCount", totalEpisodes - totalSeenEpisodes);
           }
           // por ultimo, borrar los campos innecesarios que han sido necesarios poner para calcular...
           // TODO: mejorar todo esto !
@@ -567,7 +567,7 @@ public class TvShowController extends Controller {
       return notFound(result);
     } else {
       try {
-        JsonNode jsonNode = jsonUtils.jsonParseObject(tvShows, JsonViews.SearchTvShow.class);
+        JsonNode jsonNode = jsonUtils.jsonParseObject(tvShows, JsonViews.FullTvShow.class);
         ObjectNode objectNode = Json.newObject();
         // añadimos popularidad y tendencia de cada serie
         final Integer[] i = {0};
@@ -577,7 +577,47 @@ public class TvShowController extends Controller {
           ((ObjectNode)tvShow).put("poster", popular.tvShow.poster);
           ((ObjectNode)tvShow).put("top", i[0]);
           // mostrar si el usuario identificado sigue la serie o no
-          ((ObjectNode)tvShow).put("following", tvShowService.checkFollowTvShow(tvShow.get("id").asInt(), roles.getUser(Http.Context.current()).id));
+          Boolean following = tvShowService.checkFollowTvShow(tvShow.get("id").asInt(), roles.getUser(Http.Context.current()).id);
+          ((ObjectNode)tvShow).put("following", following);
+          // si el usuario sigue la serie, comprobar cuántos episodio de cada temporada no ha visto
+          if (following) {
+            Integer totalEpisodes = 0;
+            Integer totalSeenEpisodes = 0;
+            for (JsonNode season : tvShow.withArray("seasons")) {
+
+              Integer seasonEpisodesCount = 0;
+              Integer seasonSeenEpisodesCount = 0;
+
+              Season seasonObject = seasonService.getSeasonByNumber(tvShowService.find(tvShow.get("id").asInt()), season.get("seasonNumber").asInt());
+              if (seasonObject != null) {
+                seasonEpisodesCount = seasonObject.episodes.size();
+                seasonSeenEpisodesCount = episodeSeenService.getSeasonEpisodesSeen(seasonObject, roles.getUser(Http.Context.current()).id).size();
+              }
+              totalEpisodes += seasonEpisodesCount;
+              totalSeenEpisodes += seasonSeenEpisodesCount;
+            }
+            // mostrar en la serie numero de episodio total, numero de episodios vistos total y numero de episodio no vistos total
+            ((ObjectNode) tvShow).put("episodeCount", totalEpisodes);
+            ((ObjectNode) tvShow).put("seenCount", totalSeenEpisodes);
+            ((ObjectNode) tvShow).put("unseenCount", totalEpisodes - totalSeenEpisodes);
+          }
+          // por ultimo, borrar los campos innecesarios que han sido necesarios poner para calcular...
+          // TODO: mejorar todo esto !
+          ((ObjectNode) tvShow).remove("tvdbId");
+          ((ObjectNode) tvShow).remove("tmdbId");
+          ((ObjectNode) tvShow).remove("overview");
+          ((ObjectNode) tvShow).remove("banner");
+          ((ObjectNode) tvShow).remove("fanart");
+          ((ObjectNode) tvShow).remove("network");
+          ((ObjectNode) tvShow).remove("runtime");
+          ((ObjectNode) tvShow).remove("genre");
+          ((ObjectNode) tvShow).remove("rating");
+          ((ObjectNode) tvShow).remove("status");
+          ((ObjectNode) tvShow).remove("tvShowVotes");
+          ((ObjectNode) tvShow).remove("seasons");
+          ((ObjectNode) tvShow).remove("rating");
+          ((ObjectNode) tvShow).remove("rating");
+          ((ObjectNode) tvShow).remove("rating");
         });
         // añadimos tamaño
         objectNode.put("size", tvShows.size());
@@ -643,7 +683,7 @@ public class TvShowController extends Controller {
             // mostrar en la serie numero de episodio total, numero de episodios vistos total y numero de episodio no vistos total
             ((ObjectNode) tvShow).put("episodeCount", totalEpisodes);
             ((ObjectNode) tvShow).put("seenCount", totalSeenEpisodes);
-            ((ObjectNode) tvShow).put("unSeenCount", totalEpisodes - totalSeenEpisodes);
+            ((ObjectNode) tvShow).put("unseenCount", totalEpisodes - totalSeenEpisodes);
           }
           // por ultimo, borrar los campos innecesarios que han sido necesarios poner para calcular...
           // TODO: mejorar todo esto !

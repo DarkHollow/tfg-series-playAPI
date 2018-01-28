@@ -240,4 +240,36 @@ public class EpisodeSeenController extends Controller {
     }
   }
 
+  // marcar una temporada entera como vista (todos sus episodios)
+  @Transactional
+  @Security.Authenticated(User.class)
+  public Result setTvShowUnseen(Integer tvShowId) {
+    ObjectNode result = Json.newObject();
+
+    // obtenemos el usuario identificado
+    models.User user = userService.findByEmail(request().username());
+
+    if (tvShowId != null && user != null) {
+      TvShow tvShow = tvShowService.find(tvShowId);
+      if (tvShow != null) {
+        if (episodeSeenService.setTvShowAsUnseen(tvShow, user.id)) {
+          // devolvemos los datos
+          result.put("ok", "unseen tv show");
+          return ok(result);
+        } else {
+          // no se ha podido marcar como visto, objetos no encontrados
+          result.put("error", "not found");
+          return notFound(result);
+        }
+      } else {
+        // serie no encontrada
+        result.put("error", "tv show not found");
+        return notFound(result);
+      }
+    } else {
+      result.put("error", "invalid parameters");
+      return badRequest(result);
+    }
+  }
+
 }

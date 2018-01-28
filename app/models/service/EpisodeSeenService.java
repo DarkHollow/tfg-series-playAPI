@@ -177,4 +177,20 @@ public class EpisodeSeenService {
     return result;
   }
 
+  public Boolean setTvShowAsUnseen(TvShow tvShow, Integer userId) {
+    Boolean result = true;
+
+    if (tvShow != null) {
+      for (Season season : tvShow.seasons) {
+        Boolean resultSeason = setSeasonAsUnseen(tvShow, season.seasonNumber, userId);
+        if (!resultSeason) {
+          return false;
+        }
+      }
+    } else {
+      result = false;
+    }
+    return result;
+  }
+
 }

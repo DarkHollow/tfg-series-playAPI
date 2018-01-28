@@ -42,6 +42,7 @@ GET     /api/tvshows/:id/seasons/:sNumber/episodes/:eNumber     controllers.Epis
 # TV Show Episodes seen/unseen
 GET     /api/tvshows/:id/seasons/:sNumber/episodes/:eNumber/seen     controllers.EpisodeSeenController.getEpisodeSeen(id: Integer, sNumber: Integer, eNumber: Integer)
 PUT     /api/tvshows/:id/seasons/:sNumber/episodes/:eNumber/seen     controllers.EpisodeSeenController.setEpisodeSeen(id: Integer, sNumber: Integer, eNumber: Integer)
+DELETE  /api/tvshows/:id/seasons/:sNumber/episodes/:eNumber/seen     controllers.EpisodeSeenController.setEpisodeUnseen(id: Integer, sNumber: Integer, eNumber: Integer)
 
 # TV Show Votes -------------------
 GET     /api/tvshows/:tvShowId/rating       controllers.TvShowVoteController.getTvShowVote(tvShowId: Integer)

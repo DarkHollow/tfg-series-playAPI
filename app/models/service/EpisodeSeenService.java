@@ -109,4 +109,20 @@ public class EpisodeSeenService {
     }
   }
 
+  public Boolean setEpisodeAsUnseen(TvShow tvShow, Integer seasonNumber, Integer episodeNumber, Integer userId) {
+    Episode episode = episodeService.getEpisodeByNumber(tvShow, seasonNumber, episodeNumber);
+    User user = userService.find(userId);
+
+    if (tvShow != null && user != null && episode != null) {
+      EpisodeSeen episodeSeen = findByEpisodeIdUserId(episode.id, userId);
+      if (episodeSeen == null) {
+        return true;
+      } else {
+        return (delete(episodeSeen.id));
+      }
+    } else {
+      return false;
+    }
+  }
+
 }

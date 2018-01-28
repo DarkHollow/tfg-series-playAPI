@@ -112,6 +112,38 @@ public class EpisodeSeenController extends Controller {
     }
   }
 
+  // desmarcar un episodio como visto (no visto)
+  @Transactional
+  @Security.Authenticated(User.class)
+  public Result setEpisodeUnseen(Integer tvShowId, Integer seasonNumber, Integer episodeNumber) {
+    ObjectNode result = Json.newObject();
+
+    // obtenemos el usuario identificado
+    models.User user = userService.findByEmail(request().username());
+
+    if (tvShowId != null && seasonNumber != null && episodeNumber != null && user != null) {
+      TvShow tvShow = tvShowService.find(tvShowId);
+      if (tvShow != null) {
+        if (episodeSeenService.setEpisodeAsUnseen(tvShow, seasonNumber, episodeNumber, user.id)) {
+          // devolvemos los datos
+          result.put("ok", "unseen episode");
+          return ok(result);
+        } else {
+          // no se ha podido marcar como no visto, objetos no encontrados
+          result.put("error", "not found");
+          return notFound(result);
+        }
+      } else {
+        // serie no encontrada
+        result.put("error", "tv show not found");
+        return notFound(result);
+      }
+    } else {
+      result.put("error", "invalid parameters");
+      return badRequest(result);
+    }
+  }
+
   /*
   // Acción de borrar votación
   @Transactional

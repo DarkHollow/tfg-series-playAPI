@@ -1,15 +1,13 @@
 package models.service;
 
 import com.google.inject.Inject;
-import models.Episode;
-import models.EpisodeSeen;
-import models.TvShow;
-import models.User;
+import models.*;
 import models.dao.EpisodeSeenDAO;
 import play.Logger;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class EpisodeSeenService {
 
@@ -119,6 +117,25 @@ public class EpisodeSeenService {
         return true;
       } else {
         return (delete(episodeSeen.id));
+      }
+    } else {
+      return false;
+    }
+  }
+
+  public Boolean setSeasonAsSeen(TvShow tvShow, Integer seasonNumber, Integer userId) {
+    if (tvShow != null) {
+      Season foundSeason = tvShow.seasons.stream().filter(season -> season.seasonNumber.equals(seasonNumber)).findFirst().orElse(null);
+      if (foundSeason != null) {
+        AtomicReference<Boolean> result = new AtomicReference<>(true);
+        foundSeason.episodes.forEach(episode -> {
+          if (setEpisodeAsSeen(tvShow, seasonNumber, episode.episodeNumber, userId) == null) {
+            result.set(false);
+          }
+        });
+        return result.get();
+      } else {
+        return false;
       }
     } else {
       return false;

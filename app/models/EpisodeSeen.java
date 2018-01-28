@@ -25,6 +25,7 @@ public class EpisodeSeen {
   @JsonBackReference
   public Episode episode;
 
+  @JsonIgnore
   public Date date;
 
   // constructor vacío

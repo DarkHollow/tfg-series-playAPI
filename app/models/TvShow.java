@@ -110,7 +110,9 @@ public class TvShow {
   public Double twitterRatio;
 
   // constructor vacio
-  public TvShow() {}
+  public TvShow() {
+    twitterRatio = 0D;
+  }
 
   // contructor por campos
   public TvShow(Integer tvdbId, String imdbId, Integer tmdbId, String name, Date firstAired, String overview,
@@ -134,6 +136,7 @@ public class TvShow {
     this.score = score;
     this.voteCount = voteCount;
     local = false;
+    twitterRatio = 0D;
   }
 
   // contructor copia
@@ -155,6 +158,7 @@ public class TvShow {
     this.score = tvShow.score;
     this.voteCount = tvShow.voteCount;
     this.local = false;
+    twitterRatio = 0D;
   }
 
   // solo informacion importante

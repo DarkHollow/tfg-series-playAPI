@@ -39,6 +39,9 @@ GET     /api/tvshows/:id/seasons/:number    controllers.SeasonController.seasonB
 GET     /api/tvshows/:id/seasons/:sNumber/episodes              controllers.EpisodeController.allTvShowSeasonEpisodes(id: Integer, sNumber: Integer)
 GET     /api/tvshows/:id/seasons/:sNumber/episodes/:eNumber     controllers.EpisodeController.seasonByTvShowIdAndSeasonNumber(id: Integer, sNumber: Integer, eNumber: Integer)
 
+# TV Show Episodes seen/unseen
+GET     /api/tvshows/:id/seasons/:sNumber/episodes/:eNumber/seen     controllers.EpisodeSeenController.getEpisodeSeen(id: Integer, sNumber: Integer, eNumber: Integer)
+
 # TV Show Votes -------------------
 GET     /api/tvshows/:tvShowId/rating       controllers.TvShowVoteController.getTvShowVote(tvShowId: Integer)
 PUT     /api/tvshows/:tvShowId/rating       controllers.TvShowVoteController.voteTvShow(tvShowId: Integer)

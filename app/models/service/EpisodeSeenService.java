@@ -1,13 +1,13 @@
 package models.service;
 
 import com.google.inject.Inject;
-import models.EpisodeSeen;
-import models.User;
+import models.*;
 import models.dao.EpisodeSeenDAO;
 import play.Logger;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class EpisodeSeenService {
 
@@ -86,6 +86,111 @@ public class EpisodeSeenService {
       Logger.debug("No existe?");
       return false;
     }
+  }
+
+  public EpisodeSeen setEpisodeAsSeen(TvShow tvShow, Integer seasonNumber, Integer episodeNumber, Integer userId) {
+    Episode episode = episodeService.getEpisodeByNumber(tvShow, seasonNumber, episodeNumber);
+    User user = userService.find(userId);
+
+    if (tvShow != null && user != null && episode != null) {
+      EpisodeSeen oldEpisodeSeen = findByEpisodeIdUserId(episode.id, userId);
+
+      if (oldEpisodeSeen == null) {
+        EpisodeSeen newEpisodeSeen = new EpisodeSeen(user, episode, new Date());
+        newEpisodeSeen = create(newEpisodeSeen);
+        return newEpisodeSeen;
+      } else {
+        return oldEpisodeSeen;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  public Boolean setEpisodeAsUnseen(TvShow tvShow, Integer seasonNumber, Integer episodeNumber, Integer userId) {
+    Episode episode = episodeService.getEpisodeByNumber(tvShow, seasonNumber, episodeNumber);
+    User user = userService.find(userId);
+
+    if (tvShow != null && user != null && episode != null) {
+      EpisodeSeen episodeSeen = findByEpisodeIdUserId(episode.id, userId);
+      if (episodeSeen == null) {
+        return true;
+      } else {
+        return (delete(episodeSeen.id));
+      }
+    } else {
+      return false;
+    }
+  }
+
+  public Boolean setSeasonAsSeen(TvShow tvShow, Integer seasonNumber, Integer userId) {
+    if (tvShow != null) {
+      Season foundSeason = tvShow.seasons.stream().filter(season -> season.seasonNumber.equals(seasonNumber)).findFirst().orElse(null);
+      if (foundSeason != null) {
+        AtomicReference<Boolean> result = new AtomicReference<>(true);
+        foundSeason.episodes.forEach(episode -> {
+          if (setEpisodeAsSeen(tvShow, seasonNumber, episode.episodeNumber, userId) == null) {
+            result.set(false);
+          }
+        });
+        return result.get();
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  public Boolean setSeasonAsUnseen(TvShow tvShow, Integer seasonNumber, Integer userId) {
+    if (tvShow != null) {
+      Season foundSeason = tvShow.seasons.stream().filter(season -> season.seasonNumber.equals(seasonNumber)).findFirst().orElse(null);
+      if (foundSeason != null) {
+        AtomicReference<Boolean> result = new AtomicReference<>(true);
+        foundSeason.episodes.forEach(episode -> {
+          if (!setEpisodeAsUnseen(tvShow, seasonNumber, episode.episodeNumber, userId)) {
+            result.set(false);
+          }
+        });
+        return result.get();
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  public Boolean setTvShowAsSeen(TvShow tvShow, Integer userId) {
+    Boolean result = true;
+
+    if (tvShow != null) {
+      for (Season season : tvShow.seasons) {
+        Boolean resultSeason = setSeasonAsSeen(tvShow, season.seasonNumber, userId);
+        if (!resultSeason) {
+          return false;
+        }
+      }
+    } else {
+      result = false;
+    }
+    return result;
+  }
+
+  public Boolean setTvShowAsUnseen(TvShow tvShow, Integer userId) {
+    Boolean result = true;
+
+    if (tvShow != null) {
+      for (Season season : tvShow.seasons) {
+        Boolean resultSeason = setSeasonAsUnseen(tvShow, season.seasonNumber, userId);
+        if (!resultSeason) {
+          return false;
+        }
+      }
+    } else {
+      result = false;
+    }
+    return result;
   }
 
 }

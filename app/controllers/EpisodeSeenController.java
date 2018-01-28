@@ -176,7 +176,7 @@ public class EpisodeSeenController extends Controller {
     }
   }
 
-  // marcar una temporada entera como vista (todos sus episodios)
+  // marcar una temporada entera como NO vista (todos sus episodios)
   @Transactional
   @Security.Authenticated(User.class)
   public Result setSeasonUnseen(Integer tvShowId, Integer seasonNumber) {
@@ -208,52 +208,36 @@ public class EpisodeSeenController extends Controller {
     }
   }
 
-  /*
-  // Acción de borrar votación
+  // marcar una temporada entera como vista (todos sus episodios)
   @Transactional
   @Security.Authenticated(User.class)
-  public Result deleteEpisodeSeen(Integer tvShowId) {
+  public Result setTvShowSeen(Integer tvShowId) {
     ObjectNode result = Json.newObject();
 
     // obtenemos el usuario identificado
     models.User user = userService.findByEmail(request().username());
 
     if (tvShowId != null && user != null) {
-      // comprobamos si existe una votación del usuario identificado a esta serie
-      EpisodeSeen episodeSeen;
-      episodeSeen = episodeSeenService.findByTvShowIdUserId(tvShowId, user.id);
-      if (episodeSeen != null) {
-        // actualizar score de borrado
-        if (episodeSeenService.updateDeletedScore(episodeSeen)) {
-          // intentar eliminar votación
-          if (deleteVote(episodeSeen.id)) {
-            result.put("ok", "vote deleted");
-            return ok(result);
-          } else {
-            Logger.error("EpisodeSeenService.deleteEpisodeSeen - EpisodeSeen no borrado");
-            result.put("error", "data updated (warning: vote not deleted");
-            return internalServerError(result);
-          }
-        } else {
-          // no se ha podido actualizar datos
-          result.put("error", "score cannot be updated (vote not deleted)");
+      TvShow tvShow = tvShowService.find(tvShowId);
+      if (tvShow != null) {
+        if (episodeSeenService.setTvShowAsSeen(tvShow, user.id)) {
+          // devolvemos los datos
+          result.put("ok", "seen tv show");
           return ok(result);
+        } else {
+          // no se ha podido marcar como visto, objetos no encontrados
+          result.put("error", "not found");
+          return notFound(result);
         }
       } else {
-        // la votación no existe, nada que borrar
-        result.put("error", "logged user didn't vote this tv show");
-        result.put("mensaje", "No has votado esta serie");
+        // serie no encontrada
+        result.put("error", "tv show not found");
         return notFound(result);
       }
     } else {
-      result.put("error", "user not valid or tvShowId null/not number");
+      result.put("error", "invalid parameters");
       return badRequest(result);
     }
   }
 
-  @Transactional
-  private Boolean deleteVote(Integer id) {
-    return episodeSeenService.delete(id);
-  }
-*/
 }

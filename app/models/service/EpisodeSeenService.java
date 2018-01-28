@@ -161,4 +161,20 @@ public class EpisodeSeenService {
     }
   }
 
+  public Boolean setTvShowAsSeen(TvShow tvShow, Integer userId) {
+    Boolean result = true;
+
+    if (tvShow != null) {
+      for (Season season : tvShow.seasons) {
+        Boolean resultSeason = setSeasonAsSeen(tvShow, season.seasonNumber, userId);
+        if (!resultSeason) {
+          return false;
+        }
+      }
+    } else {
+      result = false;
+    }
+    return result;
+  }
+
 }

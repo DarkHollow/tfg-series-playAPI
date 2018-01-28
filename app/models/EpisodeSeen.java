@@ -31,7 +31,7 @@ public class EpisodeSeen {
   public EpisodeSeen() {}
 
   // constructor por parámetros
-  public EpisodeSeen(User user, TvShow tvShow, Date date) {
+  public EpisodeSeen(User user, Episode episode, Date date) {
     this.user = user;
     this.episode = episode;
     this.date = date;

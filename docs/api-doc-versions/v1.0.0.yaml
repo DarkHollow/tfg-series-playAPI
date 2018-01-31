@@ -1416,7 +1416,7 @@ definitions:
             seenCount:
               type: integer
               description: number of episodes seen by the user
-            unSeenCount:
+            unseenCount:
               type: integer
               description: number of episodes not seen by the user
       following:
@@ -1658,7 +1658,7 @@ definitions:
             seenCount:
               type: integer
               description: number of episodes of the season seen by the user
-            seenCount:
+            unseenCount:
               type: integer
               description: number of episodes of the season not seen by the user
   CompleteEpisode:

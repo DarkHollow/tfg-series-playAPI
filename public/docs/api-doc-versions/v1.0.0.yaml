@@ -1432,7 +1432,7 @@ definitions:
             seenCount:
               type: integer
               description: number of episodes seen by the user
-            unSeenCount:
+            unseenCount:
               type: integer
               description: number of episodes not seen by the user
       following:

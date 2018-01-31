@@ -1690,45 +1690,45 @@ definitions:
         description: date of viewing
   ArrayEpisodes:
     type: object
-      properties:
-        following:
-          type: boolean
-          description: identified user follows or not the tv show
-        seenCount:
-          type: integer
-          description: number of episodes of the season seen by the user
-        unseenCount:
-          type: integer
-          description: number of episodes of the season not seen by the user
-        size:
-          type: integer
-          description: size of the array of episodes
-        episodes:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-                description: episode id
-              episodeNumber:
-                type: integer
-                description: episode number
-              firstAired:
-                type: string
-                description: episode first air date
-              screenshot:
-                type: string
-                description: relative url of the episode screenshot
-              name:
-                type: string
-                description: episode name
-              overview:
-                type: string
-                description: a summary of the episode
-              seen:
-                type: string
-                description: date of viewing
+    properties:
+      following:
+        type: boolean
+        description: identified user follows or not the tv show
+      seenCount:
+        type: integer
+        description: number of episodes of the season seen by the user
+      unseenCount:
+        type: integer
+        description: number of episodes of the season not seen by the user
+      size:
+        type: integer
+        description: size of the array of episodes
+      episodes:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: episode id
+            episodeNumber:
+              type: integer
+              description: episode number
+            firstAired:
+              type: string
+              description: episode first air date
+            screenshot:
+              type: string
+              description: relative url of the episode screenshot
+            name:
+              type: string
+              description: episode name
+            overview:
+              type: string
+              description: a summary of the episode
+            seen:
+              type: string
+              description: date of viewing
   TvShowRating:
     type: object
     properties:
